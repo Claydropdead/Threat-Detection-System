@@ -45,9 +45,7 @@ export interface AudioContentDetails {
   format?: string;
   duration?: string;
   speakers?: number;
-  languages?: string[];
-  contentSummary?: string;
-  contentSummaryTagalog?: string;
+  languages?: string[];  contentSummary?: string;
 }
 
 export interface ScamDetectionResult {
@@ -56,7 +54,6 @@ export interface ScamDetectionResult {
   probability: number; // number, 0-100. Was scam_probability (string)
   confidence: string;  // "Low", "Medium", "High". Was ai_confidence
   explanation: string; // Was explanation_english
-  explanationTagalog: string; // Was explanation_tagalog
   riskLevel: string;   // "Low", "Medium", "High", "Very High". API provides this directly.
   advice: string;
   tutorialsAndTips: string[]; // Was how_to_avoid_scams
@@ -81,10 +78,7 @@ export interface ScamDetectionResult {
   // but all content types (text, image, audio) now use the same risk calculation and indicator detection
   audioQualityAssessment?: AudioQualityAssessment; // Maintained for API compatibility
   audioContentVerification?: string; // Maintained for API compatibility
-  audioContentVerificationTagalog?: string; // Maintained for API compatibility
   contentDetails?: AudioContentDetails; // Maintained for API compatibility
-
   // Added back from previous version as per user request
   true_vs_false?: string;
-  true_vs_false_tagalog?: string;
 }

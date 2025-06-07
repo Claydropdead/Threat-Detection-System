@@ -64,7 +64,40 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
   }
   
   // Get UI styles based on calculated risk percentage to ensure consistency
-  const statusStyles = getColorByPercentage(finalRiskPercentage);  // Prepare display explanation, prioritizing proper integration of audio analysis
+  const statusStyles = getColorByPercentage(finalRiskPercentage);  // Function to clean up structured formatting from explanations
+  const cleanupStructuredFormatting = (text: string): string => {
+    if (!text) return text;
+    
+    return text
+      // Remove structured headers with bold markdown and colons
+      .replace(/\*\*Red Flags?:\*\*/gi, '')
+      .replace(/\*\*Potential Harm Vectors?:\*\*/gi, '')
+      .replace(/\*\*Recommendations?:\*\*/gi, '')
+      .replace(/\*\*Risk Assessment:\*\*/gi, '')
+      .replace(/\*\*Analysis:\*\*/gi, '')
+      .replace(/\*\*Warning Signs?:\*\*/gi, '')
+      .replace(/\*\*Safety Advice:\*\*/gi, '')
+      .replace(/\*\*Key Concerns?:\*\*/gi, '')
+      .replace(/\*\*Summary:\*\*/gi, '')
+      
+      // Remove other common structured headers without bold
+      .replace(/Red Flags?:/gi, '')
+      .replace(/Potential Harm Vectors?:/gi, '')
+      .replace(/Recommendations?:/gi, '')
+      .replace(/Risk Assessment:/gi, '')
+      .replace(/Analysis:/gi, '')
+      .replace(/Warning Signs?:/gi, '')
+      .replace(/Safety Advice:/gi, '')
+      .replace(/Key Concerns?:/gi, '')
+      .replace(/Summary:/gi, '')
+      
+      // Clean up excessive line breaks and whitespace
+      .replace(/\n\s*\n\s*\n/g, '\n\n')
+      .replace(/^\s+/gm, '')
+      .trim();
+  };
+
+  // Prepare display explanation, prioritizing proper integration of audio analysis
   let displayExplanation = analysisResult.explanation;
   const genericEnglishFallbacks = [
     "no detailed risk analysis available", 
@@ -86,29 +119,10 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
   } else if (!displayExplanation) { 
     displayExplanation = "No English explanation available."; 
   }
+
+  // Clean up structured formatting from the explanation
+  displayExplanation = cleanupStructuredFormatting(displayExplanation);
   
-  // Prepare display explanation for Tagalog
-  let displayExplanationTagalog = analysisResult.explanationTagalog;
-  const genericTagalogFallbacks = [
-    "hindi available ang paliwanag sa tagalog", 
-    "hindi available ang detalyadong pagsusuri ng panganib",
-    "walang available na paliwanag"
-  ];
-  const isTagalogExplanationGeneric = !displayExplanationTagalog ||
-    genericTagalogFallbacks.some(fallback => displayExplanationTagalog?.toLowerCase().includes(fallback));
-  
-  // If we have audio analysis but generic Tagalog explanation, use audio analysis info
-  if (audioAnalysisContent) {
-    if (isTagalogExplanationGeneric) {
-      // Replace with audio analysis for Tagalog with clear header
-      displayExplanationTagalog = `Pagsusuri ng Voice Recording: ${audioAnalysisContent}`;
-    } else if (displayExplanationTagalog) {
-      // Append audio analysis to existing Tagalog explanation
-      displayExplanationTagalog = `${displayExplanationTagalog}\n\nKaragdagang Pagsusuri ng Audio: ${audioAnalysisContent}`;
-    }
-  } else if (!displayExplanationTagalog) {
-    displayExplanationTagalog = "Hindi available ang paliwanag sa Tagalog.";
-  }
   
   // Extract indicators from Gemini's analysis instead of pattern matching
   const originalExplanationForIndicators = analysisResult.explanation || "";
@@ -384,9 +398,8 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
     displayComplaintAgencies = [
       { name: "Federal Trade Commission (FTC)", url: "https://reportfraud.ftc.gov/", description: "For reporting scams, fraud, and bad business practices in the US." },
       { name: "Internet Crime Complaint Center (IC3)", url: "https://www.ic3.gov/", description: "For reporting internet-related criminal complaints in the US (a partnership between the FBI and NW3C)." }
-    ];
-    // Example for Philippines, can be expanded with more context
-    if (isAudioClearlyScam && (audioAnalysisContent && audioAnalysisContent.toLowerCase().includes("peso") || displayExplanationTagalog.includes("peso"))) {
+    ];    // Example for Philippines, can be expanded with more context
+    if (isAudioClearlyScam && (audioAnalysisContent && audioAnalysisContent.toLowerCase().includes("peso"))) {
         displayComplaintAgencies.push({ name: "PNP Anti-Cybercrime Group (Philippines)", url: "https://acg.pnp.gov.ph/eComplaint/", description: "For reporting cybercrimes in the Philippines." });
     }
   }
@@ -734,14 +747,7 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
                   <div className="mt-2">
                     <span className="font-medium">Content Summary:</span> 
                     <p className="mt-1 text-sm">{analysisResult.contentDetails.contentSummary}</p>
-                  </div>
-                )}
-                {analysisResult.contentDetails.contentSummaryTagalog && (
-                  <div className="mt-2">
-                    <span className="font-medium">Content Summary (Tagalog):</span> 
-                    <p className="mt-1 text-sm">{analysisResult.contentDetails.contentSummaryTagalog}</p>
-                  </div>
-                )}
+                  </div>                )}
               </div>
             )}
             
@@ -782,28 +788,14 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
             </div>
           </div>
         </div>
-      )}
-
-      {/* Explanations */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
-          <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
-            <span className="mr-2">🔍</span>
-            Explanation (English)
-          </h3>
-          <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-            <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{displayExplanation}</p>
-          </div>
-        </div>
-        
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
-          <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
-            <span className="mr-2">🔍</span>
-            Paliwanag (Tagalog)
-          </h3>
-          <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-            <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{displayExplanationTagalog}</p> {/* Changed from analysisResult.explanationTagalog */}
-          </div>
+      )}      {/* Explanation */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+        <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
+          <span className="mr-2">🔍</span>
+          Explanation
+        </h3>
+        <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+          <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{displayExplanation}</p>
         </div>
       </div>
 
@@ -882,7 +874,7 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
       </div>
 
       {/* Audio Content Verification Section - Enhanced */}
-      {(analysisResult.audioContentVerification || analysisResult.audioContentVerificationTagalog) && (
+      {analysisResult.audioContentVerification && (
         <div className="p-6 rounded-xl bg-cyan-50 dark:bg-cyan-900/30 border-2 border-cyan-200 dark:border-cyan-700 shadow-lg">
           <h3 className="text-xl font-bold mb-3 text-cyan-800 dark:text-cyan-200 flex items-center">
             <span className="mr-2">🗣️</span>
@@ -921,27 +913,13 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
                   including artificial urgency, pressuring language, and inconsistent audio quality. 
                   This recording shows these characteristics.
                 </p>
-              </div>
-            )}
-            
-            {analysisResult.audioContentVerificationTagalog && (
-              <>
-                <div className="mt-4 pt-3 border-t border-cyan-200 dark:border-cyan-700">
-                  <h4 className="text-lg font-semibold mb-2 text-cyan-800 dark:text-cyan-200">
-                    Patunay sa Nilalaman ng Audio (Tagalog)
-                  </h4>
-                  <p className="text-sm text-cyan-900 dark:text-cyan-100 whitespace-pre-wrap leading-relaxed">
-                    {analysisResult.audioContentVerificationTagalog}
-                  </p>
-                </div>
-              </>
-            )}
+              </div>            )}
           </div>
         </div>
       )}
 
       {/* Content Authenticity Check (formerly True vs. False Analysis Section) - Enhanced */}
-      {(analysisResult.true_vs_false || analysisResult.true_vs_false_tagalog || isAudioClearlyScam) && (
+      {(analysisResult.true_vs_false || isAudioClearlyScam) && (
         <div className="p-6 rounded-xl bg-green-50 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-700 shadow-lg">
           <h3 className="text-xl font-bold mb-3 text-green-800 dark:text-green-200 flex items-center">
             <span className="mr-2">✅</span>
@@ -990,24 +968,10 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
                     <li>Investment fraud patterns: Contains suspicious investment terminology</li>
                   )}
                 </ul>
-              </div>
-            )}
-            
-            {analysisResult.true_vs_false_tagalog && (
-              <>
-                <div className="mt-4 pt-3 border-t border-green-200 dark:border-green-700">
-                  <h4 className="text-lg font-semibold mb-2 text-green-800 dark:text-green-200">
-                    Pagsusuri ng Katotohanan (Tagalog)
-                  </h4>
-                  <p className="text-sm text-green-900 dark:text-green-100 whitespace-pre-wrap leading-relaxed">
-                    {analysisResult.true_vs_false_tagalog}
-                  </p>
-                </div>
-              </>
-            )}
+              </div>            )}
             
             {/* Fallback message if provided fields are empty */}
-            {!analysisResult.true_vs_false && !analysisResult.true_vs_false_tagalog && !isAudioClearlyScam && (
+            {!analysisResult.true_vs_false && !isAudioClearlyScam && (
                 <p className="text-sm text-green-900 dark:text-green-100 whitespace-pre-wrap leading-relaxed">
                     No specific authenticity information available.
                 </p>
