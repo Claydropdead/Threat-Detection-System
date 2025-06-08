@@ -799,6 +799,284 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
         </div>
       </div>
 
+      {/* Fact-Checking and Misinformation Analysis */}
+      {(analysisResult.factCheckResult || analysisResult.misinformationAnalysis || analysisResult.credibilityAssessment) && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+          <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-200 flex items-center">
+            <span className="mr-2">🔎</span>
+            Fact-Check & Misinformation Analysis
+          </h3>
+          
+          {/* Misinformation Risk Assessment */}
+          {analysisResult.misinformationAnalysis && (
+            <div className="mb-4 p-4 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50">
+              <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">Misinformation Risk Assessment</h4>
+              <p className="text-sm text-gray-700 dark:text-gray-300">{analysisResult.misinformationAnalysis}</p>
+            </div>
+          )}
+
+          {/* Credibility Score */}
+          {analysisResult.credibilityAssessment && (
+            <div className="mb-4 p-4 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50">
+              <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">Credibility Assessment</h4>
+              <div className="flex items-center mb-2">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 mr-2">Credibility Score:</span>
+                <div className={`px-2 py-1 rounded text-xs font-bold ${
+                  analysisResult.credibilityAssessment.score >= 70 
+                    ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100'
+                    : analysisResult.credibilityAssessment.score >= 50
+                    ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
+                    : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
+                }`}>
+                  {analysisResult.credibilityAssessment.score}/100
+                </div>
+              </div>
+              
+              {/* Credibility Factors */}
+              {analysisResult.credibilityAssessment.factors.length > 0 && (
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Assessment Factors:</span>
+                  <ul className="list-disc list-inside text-xs text-gray-600 dark:text-gray-400 mt-1 space-y-1">
+                    {analysisResult.credibilityAssessment.factors.map((factor, index) => (
+                      <li key={index}>{factor}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Verified Claims */}
+              {analysisResult.credibilityAssessment.verifiedClaims.length > 0 && (
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-green-700 dark:text-green-300">✅ Verified Claims:</span>
+                  <ul className="list-disc list-inside text-xs text-gray-600 dark:text-gray-400 mt-1 space-y-1 max-h-32 overflow-y-auto">
+                    {analysisResult.credibilityAssessment.verifiedClaims.map((claim, index) => (
+                      <li key={index}>{claim}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Contradicted Claims */}
+              {analysisResult.credibilityAssessment.contradictedClaims.length > 0 && (
+                <div className="mb-2">
+                  <span className="text-sm font-medium text-red-700 dark:text-red-300">❌ Contradicted Claims:</span>
+                  <ul className="list-disc list-inside text-xs text-gray-600 dark:text-gray-400 mt-1 space-y-1 max-h-32 overflow-y-auto">
+                    {analysisResult.credibilityAssessment.contradictedClaims.map((claim, index) => (
+                      <li key={index}>{claim}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Fact-Check Sources */}
+          {analysisResult.factCheckResult && (
+            <div className="space-y-4">
+              {/* Summary */}
+              {analysisResult.factCheckResult.summary && (
+                <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-600 bg-blue-50 dark:bg-blue-900/20">
+                  <h4 className="font-semibold mb-2 text-blue-800 dark:text-blue-200">Fact-Check Summary</h4>
+                  <p className="text-sm text-blue-700 dark:text-blue-300 whitespace-pre-wrap">{analysisResult.factCheckResult.summary}</p>
+                </div>
+              )}
+
+              {/* Keywords Analyzed */}
+              {analysisResult.factCheckResult.keywords.length > 0 && (
+                <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50">
+                  <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-200">Keywords Analyzed</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {analysisResult.factCheckResult.keywords.slice(0, 8).map((keyword, index) => (
+                      <span key={index} className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded">
+                        {keyword}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Copy All Links Button */}
+              {(analysisResult.factCheckResult.factCheckSources.length > 0 || 
+                analysisResult.factCheckResult.supportingArticles.length > 0 || 
+                analysisResult.factCheckResult.contradictingArticles.length > 0) && (
+                <div className="mb-4 text-center">
+                  <button
+                    onClick={() => {
+                      const allSources = [
+                        ...(analysisResult.factCheckResult!.factCheckSources || []),
+                        ...(analysisResult.factCheckResult!.supportingArticles || []),
+                        ...(analysisResult.factCheckResult!.contradictingArticles || [])
+                      ];
+                      const allLinks = allSources.map((source, index) => 
+                        `${index + 1}. ${source.title}: ${source.link}`
+                      ).join('\n');
+                      navigator.clipboard.writeText(allLinks).then(() => {
+                        alert('All fact-checking links copied to clipboard!');
+                      });
+                    }}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg transition-colors"
+                  >
+                    📋 Copy All Links ({(analysisResult.factCheckResult.factCheckSources?.length || 0) + 
+                                      (analysisResult.factCheckResult.supportingArticles?.length || 0) + 
+                                      (analysisResult.factCheckResult.contradictingArticles?.length || 0)})
+                  </button>
+                </div>
+              )}
+
+              {/* Grid for fact-check sources */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Fact-Check Sources */}
+                {analysisResult.factCheckResult.factCheckSources.length > 0 && (
+                  <div className="p-4 rounded-lg border border-blue-200 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-blue-800 dark:text-blue-200 flex items-center">
+                        <span className="mr-2">🏛️</span>
+                        Fact-Check Sources ({analysisResult.factCheckResult.factCheckSources.length})
+                      </h4>
+                      <button
+                        onClick={() => {
+                          const links = analysisResult.factCheckResult!.factCheckSources.map((source, index) => 
+                            `${index + 1}. ${source.title}: ${source.link}`
+                          ).join('\n');
+                          navigator.clipboard.writeText(links);
+                          alert('Fact-check source links copied!');
+                        }}
+                        className="text-xs px-2 py-1 bg-blue-200 hover:bg-blue-300 dark:bg-blue-700 dark:hover:bg-blue-600 text-blue-800 dark:text-blue-200 rounded transition-colors"
+                        title="Copy these links"
+                      >
+                        📋
+                      </button>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {analysisResult.factCheckResult.factCheckSources.map((source, index) => (
+                        <div key={index} className="p-3 bg-white dark:bg-gray-800 rounded border hover:shadow-md transition-shadow">
+                          <div className="flex items-start justify-between mb-2">
+                            <a href={source.link} target="_blank" rel="noopener noreferrer" 
+                               className="text-sm font-medium text-blue-700 dark:text-blue-300 hover:underline flex-1 mr-2">
+                              {source.title}
+                            </a>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(source.link);
+                                alert('Link copied!');
+                              }}
+                              className="text-xs px-1 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded transition-colors flex-shrink-0"
+                              title="Copy this link"
+                            >
+                              🔗
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-1">{source.snippet}</p>
+                          <p className="text-xs text-blue-600 dark:text-blue-400 font-mono">{source.displayLink}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Supporting Articles */}
+                {analysisResult.factCheckResult.supportingArticles.length > 0 && (
+                  <div className="p-4 rounded-lg border border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/20">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-green-800 dark:text-green-200 flex items-center">
+                        <span className="mr-2">✅</span>
+                        Supporting Sources ({analysisResult.factCheckResult.supportingArticles.length})
+                      </h4>
+                      <button
+                        onClick={() => {
+                          const links = analysisResult.factCheckResult!.supportingArticles.map((source, index) => 
+                            `${index + 1}. ${source.title}: ${source.link}`
+                          ).join('\n');
+                          navigator.clipboard.writeText(links);
+                          alert('Supporting source links copied!');
+                        }}
+                        className="text-xs px-2 py-1 bg-green-200 hover:bg-green-300 dark:bg-green-700 dark:hover:bg-green-600 text-green-800 dark:text-green-200 rounded transition-colors"
+                        title="Copy these links"
+                      >
+                        📋
+                      </button>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {analysisResult.factCheckResult.supportingArticles.map((source, index) => (
+                        <div key={index} className="p-3 bg-white dark:bg-gray-800 rounded border hover:shadow-md transition-shadow">
+                          <div className="flex items-start justify-between mb-2">
+                            <a href={source.link} target="_blank" rel="noopener noreferrer" 
+                               className="text-sm font-medium text-green-700 dark:text-green-300 hover:underline flex-1 mr-2">
+                              {source.title}
+                            </a>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(source.link);
+                                alert('Link copied!');
+                              }}
+                              className="text-xs px-1 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded transition-colors flex-shrink-0"
+                              title="Copy this link"
+                            >
+                              🔗
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-1">{source.snippet}</p>
+                          <p className="text-xs text-green-600 dark:text-green-400 font-mono">{source.displayLink}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Contradicting Articles */}
+                {analysisResult.factCheckResult.contradictingArticles.length > 0 && (
+                  <div className="p-4 rounded-lg border border-red-200 dark:border-red-700 bg-red-50 dark:bg-red-900/20">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold text-red-800 dark:text-red-200 flex items-center">
+                        <span className="mr-2">❌</span>
+                        Contradicting Sources ({analysisResult.factCheckResult.contradictingArticles.length})
+                      </h4>
+                      <button
+                        onClick={() => {
+                          const links = analysisResult.factCheckResult!.contradictingArticles.map((source, index) => 
+                            `${index + 1}. ${source.title}: ${source.link}`
+                          ).join('\n');
+                          navigator.clipboard.writeText(links);
+                          alert('Contradicting source links copied!');
+                        }}
+                        className="text-xs px-2 py-1 bg-red-200 hover:bg-red-300 dark:bg-red-700 dark:hover:bg-red-600 text-red-800 dark:text-red-200 rounded transition-colors"
+                        title="Copy these links"
+                      >
+                        📋
+                      </button>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {analysisResult.factCheckResult.contradictingArticles.map((source, index) => (
+                        <div key={index} className="p-3 bg-white dark:bg-gray-800 rounded border hover:shadow-md transition-shadow">
+                          <div className="flex items-start justify-between mb-2">
+                            <a href={source.link} target="_blank" rel="noopener noreferrer" 
+                               className="text-sm font-medium text-red-700 dark:text-red-300 hover:underline flex-1 mr-2">
+                              {source.title}
+                            </a>
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(source.link);
+                                alert('Link copied!');
+                              }}
+                              className="text-xs px-1 py-1 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded transition-colors flex-shrink-0"
+                              title="Copy this link"
+                            >
+                              🔗
+                            </button>
+                          </div>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-1">{source.snippet}</p>
+                          <p className="text-xs text-red-600 dark:text-red-400 font-mono">{source.displayLink}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Advice Section */}
       <div className={`p-6 rounded-xl border-2 ${statusStyles.containerClasses} shadow-lg`}>
         <h3 className={`text-xl font-bold mb-4 ${statusStyles.textClasses} flex items-center`}>
