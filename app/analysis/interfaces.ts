@@ -49,27 +49,6 @@ export interface AudioContentDetails {
   contentSummary?: string;
 }
 
-// Interface for Google Search Results
-export interface GoogleSearchResult {
-  title: string;
-  link: string;
-  snippet: string;
-  displayLink: string;
-  formattedUrl: string;
-}
-
-// Interface for Fact-Check Results
-export interface FactCheckResult {
-  claim: string;
-  keywords: string[];
-  supportingArticles: GoogleSearchResult[];
-  contradictingArticles: GoogleSearchResult[];
-  factCheckSources: GoogleSearchResult[];
-  credibilityScore: number; // 0-100, higher means more credible
-  misinformationRisk: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-  summary: string;
-}
-
 export interface ScamDetectionResult {
   // Fields directly from API
   isScam: boolean;
@@ -80,7 +59,6 @@ export interface ScamDetectionResult {
   advice: string;
   tutorialsAndTips: string[]; // Was how_to_avoid_scams
   complaintFilingInfo: ApiComplaintFilingInfo; // New structure, replaces where_to_report
-
   // Enhanced contextual fields for all content types (text, image, audio)
   status?: string; // Contextual display status that includes content type
   assessment?: string; // Assessment text that's contextually relevant to query
@@ -94,17 +72,7 @@ export interface ScamDetectionResult {
   culturalContext?: string; // Cultural context, if relevant
   keyPoints?: string[]; // Key takeaways or points from the analysis
   
-  // Fact-checking and misinformation detection
-  factCheckResult?: FactCheckResult; // Results from Google Search fact-checking
-  misinformationAnalysis?: string; // AI analysis of potential misinformation
-  credibilityAssessment?: {
-    score: number; // 0-100
-    factors: string[]; // Factors affecting credibility
-    verifiedClaims: string[]; // Claims that were verified
-    unverifiedClaims: string[]; // Claims that couldn't be verified
-    contradictedClaims: string[]; // Claims that were contradicted
-  };
-    // Analysis text from API - all treated as part of the unified content
+  // Analysis text from API - all treated as part of the unified content
   audioAnalysis?: string; // Audio content is analyzed using the same pipeline as text
   image_analysis?: string; // Image content is analyzed using the same pipeline as text
   extractedImageText?: string; // Text extracted from images via OCR for fact-checking

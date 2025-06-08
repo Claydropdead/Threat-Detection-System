@@ -1,68 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { performFactCheckSearch, FactCheckResult, shouldPerformIntelligentFactCheck } from '../../utils/googleSearch';
 
 // API key is now expected to be in an environment variable
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY; // For OCR and fact-checking
 
 // OCR function to extract text from images using Google Vision API
 async function extractTextFromImage(imageBase64: string): Promise<string> {
-  if (!GOOGLE_API_KEY) {
-    console.log('⚠️ Google API key not available for OCR - skipping text extraction');
-    return '';
-  }
-
-  try {
-    console.log('🔍 Extracting text from image using Google Vision API...');
-    
-    const visionApiUrl = `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_API_KEY}`;
-    
-    const requestBody = {
-      requests: [
-        {
-          image: {
-            content: imageBase64
-          },
-          features: [
-            {
-              type: 'TEXT_DETECTION',
-              maxResults: 1
-            }
-          ]
-        }
-      ]
-    };
-
-    const response = await fetch(visionApiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Vision API Error:', errorText);
-      return '';
-    }
-
-    const data = await response.json();
-    
-    if (data.responses && data.responses[0] && data.responses[0].textAnnotations) {
-      const extractedText = data.responses[0].textAnnotations[0]?.description || '';
-      console.log(`✅ Extracted ${extractedText.length} characters from image`);
-      console.log(`📝 Extracted text preview: "${extractedText.substring(0, 200)}${extractedText.length > 200 ? '...' : ''}"`);
-      return extractedText;
-    }
-
-    console.log('ℹ️ No text detected in image');
-    return '';
-  } catch (error) {
-    console.error('Error extracting text from image:', error);
-    return '';
-  }
+  // OCR functionality removed - Gemini 2.0 can analyze image content directly
+  console.log('📷 OCR functionality removed - using Gemini for image analysis');
+  return '';
 }
 
 // Define available Gemini 2.0 models in order of preference
@@ -918,127 +864,10 @@ export async function POST(request: NextRequest) {
         analysis.isRisky !== undefined ? analysis.isRisky : false, 
         analysis.overallRiskProbability || 0
       );
-      
-      const riskSummary = getRiskSummary(
+        const riskSummary = getRiskSummary(
         analysis.overallRiskProbability || 0,
         analysis.riskCategories || []
-      );      // Perform fact-checking if enabled and content is suitable
-      let factCheckResult: FactCheckResult | null = null;
-      let credibilityAssessment = null;
-      let misinformationAnalysis = "";      try {
-        // Combine original text content, extracted image text, AND Gemini's image analysis for comprehensive fact-checking
-        const contentForFactCheck = [
-          textContent,                                                    // Original user text
-          extractedImageText,                                             // OCR-extracted text from images
-          imageBase64 ? (analysis.imageAnalysis || analysis.contentClassification?.contentExplanation) : null  // Gemini's image analysis
-        ].filter(text => text && text.trim().length > 0).join(' ');
-        
-        console.log(`🔍 Fact-check content sources:`, {
-          originalText: textContent.length,
-          ocrExtracted: extractedImageText.length,
-          geminiImageAnalysis: imageBase64 ? (analysis.imageAnalysis || analysis.contentClassification?.contentExplanation || '').length : 0,
-          totalCombined: contentForFactCheck.length
-        });
-        
-        // Use intelligent semantic analysis to determine if fact-checking should be performed
-        const factCheckDecision = await shouldPerformIntelligentFactCheck(contentForFactCheck, analysis);          console.log(`🧠 Intelligent fact-check decision:`, {
-          shouldFactCheck: factCheckDecision.shouldFactCheck,
-          confidence: factCheckDecision.confidence,
-          contentType: factCheckDecision.contentType,
-          reasons: factCheckDecision.reasons,
-          textLength: textContent.length,
-          imageTextLength: extractedImageText.length,
-          combinedTextLength: contentForFactCheck.length,
-          hasGoogleApiKey: !!process.env.GOOGLE_API_KEY,
-          hasGoogleCX: !!process.env.GOOGLE_CX
-        });
-
-        if (factCheckDecision.shouldFactCheck) {
-          if (!process.env.GOOGLE_API_KEY) {
-            console.log('⚠️ Fact-checking blocked: GOOGLE_API_KEY not found in environment variables');
-          } else if (!process.env.GOOGLE_CX) {
-            console.log('⚠️ Fact-checking blocked: GOOGLE_CX (Custom Search Engine ID) not found in environment variables');
-          } else {
-            console.log('✅ All environment variables present for fact-checking');
-          }
-        }
-
-        if (factCheckDecision.shouldFactCheck && process.env.GOOGLE_API_KEY && process.env.GOOGLE_CX) {
-          console.log('🔍 Performing intelligent fact-check analysis...');
-          console.log(`📊 Fact-check confidence: ${factCheckDecision.confidence}% | Content type: ${factCheckDecision.contentType}`);
-          console.log(`🎯 Triggered by: ${factCheckDecision.reasons.join(', ')}`);
-          if (extractedImageText) {
-            console.log(`📷 Using extracted image text for fact-checking: "${extractedImageText.substring(0, 100)}${extractedImageText.length > 100 ? '...' : ''}"`);
-          }
-            // Use the intelligent content type determination
-          const contentTypeForFactCheck = factCheckDecision.contentType;
-          
-          factCheckResult = await performFactCheckSearch(contentForFactCheck, contentTypeForFactCheck);
-            // Create credibility assessment
-          if (factCheckResult) {
-            credibilityAssessment = {
-              score: factCheckResult.credibilityScore,
-              factors: [
-                `Found ${factCheckResult.factCheckSources.length} fact-checking source(s)`,
-                `Found ${factCheckResult.supportingArticles.length} supporting article(s)`,
-                `Found ${factCheckResult.contradictingArticles.length} contradicting article(s)`,
-                `Misinformation risk: ${factCheckResult.misinformationRisk}`
-              ],              verifiedClaims: factCheckResult.supportingArticles.map(article => article.title),
-              unverifiedClaims: factCheckResult.keywords.filter(keyword => 
-                !factCheckResult!.supportingArticles.some(article => 
-                  article.snippet.toLowerCase().includes(keyword.toLowerCase())
-                )
-              ),
-              contradictedClaims: factCheckResult.contradictingArticles.map(article => article.title)
-            };
-
-            // Generate misinformation analysis
-            if (factCheckResult.misinformationRisk === 'CRITICAL') {
-              misinformationAnalysis = `🚨 CRITICAL MISINFORMATION RISK: This content contains claims that have been explicitly debunked by fact-checkers. The claims should be considered false or highly misleading.`;
-            } else if (factCheckResult.misinformationRisk === 'HIGH') {
-              misinformationAnalysis = `⚠️ HIGH MISINFORMATION RISK: Strong evidence suggests that some claims in this content may be false or misleading. Verify with multiple reliable sources before believing or sharing.`;
-            } else if (factCheckResult.misinformationRisk === 'MEDIUM') {
-              misinformationAnalysis = `⚠️ MEDIUM MISINFORMATION RISK: Mixed evidence found for claims in this content. Some aspects may be accurate while others need verification.`;
-            } else {
-              misinformationAnalysis = `✅ LOW MISINFORMATION RISK: Available evidence appears to support the main claims, but always verify important information with multiple sources.`;
-            }            console.log(`✅ Fact-check completed. Risk level: ${factCheckResult.misinformationRisk}, Credibility: ${factCheckResult.credibilityScore}`);
-          }
-        } else if (factCheckDecision.shouldFactCheck) {
-          // Fact-checking was recommended but APIs not available - provide basic assessment
-          console.log('⚠️ Fact-checking recommended but APIs not configured. Providing basic assessment based on content analysis.');
-            factCheckResult = {
-            claim: contentForFactCheck.substring(0, 100) + '...',
-            keywords: factCheckDecision.reasons,
-            supportingArticles: [],
-            contradictingArticles: [],
-            factCheckSources: [],
-            credibilityScore: factCheckDecision.confidence > 70 ? 25 : 50, // Lower score for high-confidence suspicious content
-            misinformationRisk: factCheckDecision.confidence > 80 ? 'HIGH' : 
-                              factCheckDecision.confidence > 60 ? 'MEDIUM' : 'LOW',
-            summary: `Content analysis suggests fact-checking is recommended. Confidence: ${factCheckDecision.confidence}%. Reasons: ${factCheckDecision.reasons.join(', ')}`
-          };
-
-          credibilityAssessment = {
-            score: factCheckResult.credibilityScore,
-            factors: [
-              'Fact-checking APIs not configured',
-              `AI confidence for suspicion: ${factCheckDecision.confidence}%`,
-              `Content type: ${factCheckDecision.contentType}`,
-              ...factCheckDecision.reasons
-            ],
-            verifiedClaims: [],
-            unverifiedClaims: factCheckDecision.reasons,
-            contradictedClaims: []
-          };
-
-          misinformationAnalysis = factCheckDecision.confidence > 70 
-            ? `⚠️ HIGH SUSPICION: AI analysis suggests this content may require verification. Reason: ${factCheckDecision.reasons.join(', ')}`
-            : `🔍 MODERATE SUSPICION: Content contains elements that may benefit from fact-checking. Reason: ${factCheckDecision.reasons.join(', ')}`;
-        }
-      } catch (factCheckError) {
-        console.error('Error during fact-checking:', factCheckError);
-        // Continue without fact-checking if it fails
-      }
+      );
       
       const formattedResponse = {
         // Required fields - make sure they are always present
@@ -1087,11 +916,6 @@ export async function POST(request: NextRequest) {
         audienceTarget: analysis.contentClassification?.audienceAnalysis?.targetAudience || null,        // Additional fields requested by users
         true_vs_false: analysis.contentEvaluation || analysis.contentVerification || null,
         true_vs_false_tagalog: analysis.contentEvaluationTagalog || analysis.contentVerificationTagalog || null,
-        
-        // Fact-checking and misinformation detection results
-        factCheckResult: factCheckResult,
-        misinformationAnalysis: misinformationAnalysis || undefined,
-        credibilityAssessment: credibilityAssessment,
         
         // Additional audio verification fields
         audioContentVerification: audioBase64 ? (analysis.contentVerification || analysis.contentEvaluation || null) : null,

@@ -1,6 +1,6 @@
 {
-  "name": "scam-detection-app",
-  "version": "0.1.0",
+  "name": "digital-threat-detection-system",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",

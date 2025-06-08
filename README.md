@@ -1,8 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Digital Threat Detection System
+
+A comprehensive AI-powered platform designed to help Filipinos identify, understand, and protect themselves from all types of digital threats including scams, phishing, deepfakes, social engineering, and emerging cyber threats.
+
+## Features
+
+- **Multi-Modal Threat Detection**: Analyze text, images, audio, and video content for potential threats
+- **AI-Powered Analysis**: Leverages Google's Gemini 2.0 for advanced threat detection
+- **Filipino-Focused**: Tailored for local context, languages, and common threat patterns
+- **Educational Content**: Provides detailed explanations and prevention tips
+- **Real-Time Analysis**: Instant threat assessment and risk scoring
+- **Comprehensive Coverage**: Detects scams, phishing, deepfakes, social engineering, and more
 
 ## Getting Started
 
-First, run the development server:
+First, set up your environment variables:
+```bash
+# Create a .env file in the root directory
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
