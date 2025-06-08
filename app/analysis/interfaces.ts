@@ -49,15 +49,15 @@ export interface AudioContentDetails {
   contentSummary?: string;
 }
 
-export interface ScamDetectionResult {
-  // Fields directly from API
-  isScam: boolean;
-  probability: number; // number, 0-100. Was scam_probability (string)
+export interface ThreatDetectionResult {
+  // Fields directly from API (updated for threat detection)
+  isThreat: boolean; // Changed from isScam
+  probability: number; // number, 0-100. Was threat_probability (string)
   confidence: string;  // "Low", "Medium", "High". Was ai_confidence
   explanation: string; // Was explanation_english
   riskLevel: string;   // "Low", "Medium", "High", "Very High". API provides this directly.
   advice: string;
-  tutorialsAndTips: string[]; // Was how_to_avoid_scams
+  tutorialsAndTips: string[]; // Was how_to_avoid_threats
   complaintFilingInfo: ApiComplaintFilingInfo; // New structure, replaces where_to_report
   // Enhanced contextual fields for all content types (text, image, audio)
   status?: string; // Contextual display status that includes content type

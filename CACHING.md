@@ -1,7 +1,7 @@
-# Smart AI Scam Detection - Caching System
+# Digital Threat Shield - Caching System
 
 ## Overview
-The Smart AI Scam Detection API now includes an intelligent caching system that significantly improves performance and reduces API costs by storing and reusing analysis results for identical queries.
+The Digital Threat Shield API now includes an intelligent caching system that significantly improves performance and reduces API costs by storing and reusing analysis results for identical queries.
 
 ## How It Works
 
@@ -23,7 +23,7 @@ The system generates unique cache keys based on:
 
 #### Get Cache Statistics
 ```bash
-GET /api/detect-scam?action=stats
+GET /api/detect-threat?action=stats
 ```
 Returns:
 - Current cache size
@@ -34,13 +34,13 @@ Returns:
 
 #### Clear Cache
 ```bash
-GET /api/detect-scam?action=clear
+GET /api/detect-threat?action=clear
 ```
 Clears all cached entries and resets statistics.
 
 #### Reset Statistics
 ```bash
-GET /api/detect-scam?action=reset-stats
+GET /api/detect-threat?action=reset-stats
 ```
 Resets hit/miss counters without clearing cached data.
 
@@ -61,12 +61,12 @@ Resets hit/miss counters without clearing cached data.
 #### Same Content (Cache Hit)
 ```javascript
 // First request - Cache Miss (slower)
-POST /api/detect-scam
+POST /api/detect-threat
 { "content": "You won $1M! Click here!" }
 // Response time: ~3000ms
 
 // Second request - Cache Hit (faster)
-POST /api/detect-scam  
+POST /api/detect-threat  
 { "content": "You won $1M! Click here!" }
 // Response time: ~100ms
 ```
@@ -74,11 +74,11 @@ POST /api/detect-scam
 #### Different Content (Cache Miss)
 ```javascript
 // Request 1
-POST /api/detect-scam
+POST /api/detect-threat
 { "content": "You won $1M! Click here!" }
 
 // Request 2 - Different content
-POST /api/detect-scam
+POST /api/detect-threat
 { "content": "Check this suspicious link..." }
 // Both require full analysis
 ```
@@ -86,14 +86,14 @@ POST /api/detect-scam
 #### Image/Audio Content
 ```javascript
 // Request with same text + same image = Cache Hit
-POST /api/detect-scam
+POST /api/detect-threat
 { 
   "content": "Is this legit?",
   "imageBase64": "data:image/jpeg;base64,/9j/4AAQ..." 
 }
 
 // Request with same text + different image = Cache Miss
-POST /api/detect-scam
+POST /api/detect-threat
 { 
   "content": "Is this legit?",
   "imageBase64": "data:image/jpeg;base64,/9j/4BBR..." 
@@ -129,8 +129,8 @@ Use the management endpoints for:
 ### Best Practices
 
 #### For Developers
-- Monitor cache hit rates via `/api/detect-scam?action=stats`
-- Clear cache during development: `/api/detect-scam?action=clear`
+- Monitor cache hit rates via `/api/detect-threat?action=stats`
+- Clear cache during development: `/api/detect-threat?action=clear`
 - Test identical queries to verify caching behavior
 
 #### For Production
@@ -174,4 +174,4 @@ The system tracks:
 - **Cache size** and **utilization**
 - **Automatic cleanup** operations
 
-This caching system provides significant performance improvements while maintaining the accuracy and reliability of the AI-powered scam detection analysis.
+This caching system provides significant performance improvements while maintaining the accuracy and reliability of the AI-powered threat detection analysis.

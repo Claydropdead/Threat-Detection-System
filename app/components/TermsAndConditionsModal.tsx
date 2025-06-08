@@ -75,20 +75,20 @@ export default function TermsAndConditionsModal({
         </div>
           <div className="p-6 overflow-y-auto max-h-[50vh] sm:max-h-[60vh] md:max-h-[65vh] overflow-x-hidden">
           {language === 'english' ? (            <div className="space-y-4 text-gray-700 dark:text-gray-300">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">ThreatShield AI Terms and Conditions</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Digital Threat Shield Terms and Conditions</h3>
               
-              <p>By using ThreatShield AI's scam analysis service, you agree to the following terms and conditions:</p>
+              <p>By using Digital Threat Shield's threat analysis service, you agree to the following terms and conditions:</p>
               
               <h4 className="font-semibold mt-4">1. Purpose and Limitations</h4>
-              <p>ThreatShield AI is designed to help identify potential scams in text messages, emails, and images. This service is provided for informational purposes only and should not be considered as definitive legal or financial advice.</p>
+              <p>Digital Threat Shield is designed to help identify potential threats in text messages, emails, images, and audio content. This service is provided for informational purposes only and should not be considered as definitive legal or financial advice.</p>
               
               <h4 className="font-semibold mt-4">2. No Guarantee of Accuracy</h4>
-              <p>While we strive for accuracy in our analysis, ThreatShield AI cannot guarantee 100% accuracy in scam detection. False positives and false negatives may occur. Users should exercise their own judgment when acting on the information provided.</p>
+              <p>While we strive for accuracy in our analysis, Digital Threat Shield cannot guarantee 100% accuracy in threat detection. False positives and false negatives may occur. Users should exercise their own judgment when acting on the information provided.</p>
               
               <h4 className="font-semibold mt-4">3. Data Usage</h4>
               <p>When you submit content for analysis:</p>
               <ul className="list-disc ml-5 space-y-1">
-                <li>Your text and images will be processed by our AI system to perform the analysis.</li>
+                <li>Your text, images, and audio will be processed by our AI system to perform the analysis.</li>
                 <li>We may store anonymized data to improve our service and detection capabilities.</li>
                 <li>We do not sell or share your personal data with third parties for marketing purposes.</li>
               </ul>
@@ -101,26 +101,26 @@ export default function TermsAndConditionsModal({
                 <li>Not submitting content that violates privacy rights or intellectual property laws.</li>
               </ul>
                 <h4 className="font-semibold mt-4">5. Liability Limitation</h4>
-              <p>ThreatShield AI and its operators shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our services or for the cost of procurement of substitute services.</p>
+              <p>Digital Threat Shield and its operators shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our services or for the cost of procurement of substitute services.</p>
               
               <h4 className="font-semibold mt-4">6. Changes to Terms</h4>
               <p>We reserve the right to modify these terms at any time. Continued use of the service after such modifications constitutes your acceptance of the revised terms.</p>
             </div>
           ) : (
-            <div className="space-y-4 text-gray-700 dark:text-gray-300">              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Mga Tuntunin at Kondisyon ng ThreatShield AI</h3>
+            <div className="space-y-4 text-gray-700 dark:text-gray-300">              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Mga Tuntunin at Kondisyon ng Digital Threat Shield</h3>
               
-              <p>Sa paggamit ng serbisyo ng pagsusuri ng scam ng ThreatShield AI, sumasang-ayon ka sa mga sumusunod na tuntunin at kondisyon:</p>
+              <p>Sa paggamit ng serbisyo ng pagsusuri ng threats ng Digital Threat Shield, sumasang-ayon ka sa mga sumusunod na tuntunin at kondisyon:</p>
               
               <h4 className="font-semibold mt-4">1. Layunin at Limitasyon</h4>
-              <p>Ang ThreatShield AI ay dinisenyo upang matulungan ang pagtukoy ng mga potensyal na scam sa mga text message, email, at larawan. Ang serbisyong ito ay ibinibigay para sa layuning pagbibigay-kaalaman lamang at hindi dapat ituring na tiyak na legal o pinansyal na payo.</p>
+              <p>Ang Digital Threat Shield ay dinisenyo upang matulungan ang pagtukoy ng mga potensyal na threats sa mga text message, email, larawan, at audio content. Ang serbisyong ito ay ibinibigay para sa layuning pagbibigay-kaalaman lamang at hindi dapat ituring na tiyak na legal o pinansyal na payo.</p>
               
               <h4 className="font-semibold mt-4">2. Walang Garantiya ng Katumpakan</h4>
-              <p>Bagaman nagsisikap kami para sa katumpakan sa aming pagsusuri, hindi makakagarantiya ng ThreatShield AI ang 100% na katumpakan sa pagtukoy ng scam. Maaaring mangyari ang mga maling positibo at maling negatibong resulta. Ang mga gumagamit ay dapat gamitin ang sarili nilang paghatol kapag kumikilos batay sa impormasyong ibinigay.</p>
+              <p>Bagaman nagsisikap kami para sa katumpakan sa aming pagsusuri, hindi makakagarantiya ng Digital Threat Shield ang 100% na katumpakan sa pagtukoy ng threats. Maaaring mangyari ang mga maling positibo at maling negatibong resulta. Ang mga gumagamit ay dapat gamitin ang sarili nilang paghatol kapag kumikilos batay sa impormasyong ibinigay.</p>
               
               <h4 className="font-semibold mt-4">3. Paggamit ng Data</h4>
               <p>Kapag nagsumite ka ng nilalaman para sa pagsusuri:</p>
               <ul className="list-disc ml-5 space-y-1">
-                <li>Ang iyong teksto at mga larawan ay ipoproseso ng aming AI system upang magsagawa ng pagsusuri.</li>
+                <li>Ang iyong teksto, mga larawan, at audio ay ipoproseso ng aming AI system upang magsagawa ng pagsusuri.</li>
                 <li>Maaari kaming mag-imbak ng hindi nagpapakilalang data upang mapabuti ang aming serbisyo at mga kakayahan sa pagtukoy.</li>
                 <li>Hindi namin ibinebenta o ibinabahagi ang iyong personal na data sa mga third party para sa mga layuning pang-marketing.</li>
               </ul>
@@ -133,7 +133,7 @@ export default function TermsAndConditionsModal({
                 <li>Hindi pagsumite ng nilalaman na lumalabag sa mga karapatan sa privacy o mga batas sa intellectual property.</li>
               </ul>
                 <h4 className="font-semibold mt-4">5. Limitasyon ng Pananagutan</h4>
-              <p>Ang ThreatShield AI at ang mga operator nito ay hindi mananagot para sa anumang direkta, hindi direkta, insidental, espesyal, o konsekwenteng pinsala na magreresulta mula sa paggamit o kawalan ng kakayahang gumamit ng aming mga serbisyo o para sa gastos ng pagkuha ng mga kapalit na serbisyo.</p>
+              <p>Ang Digital Threat Shield at ang mga operator nito ay hindi mananagot para sa anumang direkta, hindi direkta, insidental, espesyal, o konsekwenteng pinsala na magreresulta mula sa paggamit o kawalan ng kakayahang gumamit ng aming mga serbisyo o para sa gastos ng pagkuha ng mga kapalit na serbisyo.</p>
               
               <h4 className="font-semibold mt-4">6. Mga Pagbabago sa Tuntunin</h4>
               <p>Nakalaan ang aming karapatan na baguhin ang mga tuntuning ito anumang oras. Ang patuloy na paggamit ng serbisyo pagkatapos ng nasabing mga pagbabago ay bumubuo sa iyong pagtanggap sa mga binagong tuntunin.</p>

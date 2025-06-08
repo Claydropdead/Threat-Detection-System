@@ -1,4 +1,4 @@
-// Modern refactored landing page for ThreatShield AI with enhanced interactivity
+// Modern refactored landing page for Digital Threat Shield with enhanced interactivity
 "use client";
 import Link from 'next/link';
 import React, { useState, useEffect, useRef } from 'react';
@@ -49,11 +49,10 @@ export default function LandingPage() {
       message: "This tool saved me from a sophisticated deepfake attack! The AI detected threats I never would have spotted.",
       rating: 5,
       avatar: "👩‍🏫"
-    },
-    {
+    },    {
       name: "Juan Dela Cruz",
       role: "OFW, Dubai",
-      message: "As an OFW, I face various digital threats daily. ThreatShield AI gives me complete peace of mind.",
+      message: "As an OFW, I face various digital threats daily. Digital Threat Shield gives me complete peace of mind.",
       rating: 5,
       avatar: "👨‍💼"
     },
@@ -156,7 +155,7 @@ export default function LandingPage() {
                 </div>
               </div>              <div className="flex flex-col">
                 <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  ThreatShield AI
+                  Digital Threat Shield
                 </span>
                 <span className="text-xs text-slate-400">Powered by AI</span>
               </div>
@@ -295,7 +294,7 @@ export default function LandingPage() {
       <section id="common-threats" className="py-16 bg-slate-900/80">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold mb-3 text-center">Digital Threats Detection</h2>
-          <p className="text-center text-slate-300 mb-12 max-w-3xl mx-auto">Our AI system is trained to detect traditional scams, emerging cyber threats, and sophisticated attack vectors. Click on any card to see more details.</p>
+          <p className="text-center text-slate-300 mb-12 max-w-3xl mx-auto">Our AI system is trained to detect traditional threats, emerging cyber attacks, and sophisticated attack vectors. Click on any card to see more details.</p>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {/* Scam Type 1 */}
@@ -680,10 +679,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 relative">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 animate-fade-in">
-              Stay Protected from Scams Today
+              Stay Protected from Digital Threats Today
             </h2>
             <p className="text-white/80 text-lg mb-8 animate-fade-in delay-200">
-              Don't risk becoming a victim of fraud. Our free tool helps you verify suspicious messages and images instantly.
+              Don't risk becoming a victim of cyber attacks. Our free AI-powered tool helps you identify and avoid all types of digital threats instantly.
             </p>
           </div>
         </div>
@@ -691,9 +690,8 @@ export default function LandingPage() {
         {/* Footer */}
       <footer className="bg-slate-900 py-8">
         <div className="container mx-auto px-4">
-          {/* Removed navigation and title */}
-          <div className="text-center">
-            <p className="text-slate-400 text-sm">&copy; 2025 ThreatShield AI. All rights reserved.</p>
+          {/* Removed navigation and title */}          <div className="text-center">
+            <p className="text-slate-400 text-sm">&copy; 2025 Digital Threat Shield. All rights reserved.</p>
             <p className="text-slate-400 text-sm mt-1">Made with <span className="text-red-500">❤</span> by <a href="https://pinesprojects.hashnode.dev" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 transition-colors">Pinesprojects</a></p>
           </div>
         </div>      </footer>

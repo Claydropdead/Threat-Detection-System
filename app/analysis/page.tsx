@@ -6,12 +6,12 @@ import { useState, useEffect, useRef } from "react";
 import TermsAndConditionsModal from "../components/TermsAndConditionsModal";
 import ConsentManager from "../components/ConsentManager";
 import { hasUserConsent } from "../utils/consentManager";
-import { ScamDetectionResult } from './interfaces';
+import { ThreatDetectionResult } from './interfaces';
 import ResultsDisplay from './ResultsDisplay';
 
 export default function Home() {
   const [scamContent, setScamContent] = useState("");
-  const [analysisResult, setAnalysisResult] = useState<ScamDetectionResult | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<ThreatDetectionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -218,7 +218,7 @@ export default function Home() {
         requestBody.audioBase64 = audioBase64;
       }
 
-      const response = await fetch("/api/detect-scam", {
+      const response = await fetch("/api/detect-threat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -231,7 +231,7 @@ export default function Home() {
         throw new Error(errorData.message || "Failed to analyze content");
       }
 
-      const result: ScamDetectionResult = await response.json();
+      const result: ThreatDetectionResult = await response.json();
       setAnalysisResult(result);
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
@@ -251,7 +251,7 @@ export default function Home() {
       <nav className="w-full p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b border-gray-200/50 dark:border-gray-700/50">
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:from-blue-500 hover:to-indigo-500 transition-all duration-300">
-            🛡️ ThreatShield AI
+            🛡️ Digital Threat Shield
           </Link>
           <div className="flex items-center space-x-2 md:space-x-4">
             <Link href="/" className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800">
@@ -282,7 +282,7 @@ export default function Home() {
             <span>AI-Powered Threat Detection</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-6">
-            Smart AI Threat Detection
+            Digital Threat Shield
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
             Protect yourself from evolving digital threats with advanced AI analysis. Get instant risk assessments for trending 
@@ -670,7 +670,7 @@ export default function Home() {
         <footer className="mt-16 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-lg p-8">
           <div className="text-center">          {/* Removed shield, name and tagline */}
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              &copy; 2025 ThreatShield AI. All rights reserved.
+              &copy; 2025 Digital Threat Shield. All rights reserved.
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Made with <span className="text-red-500">❤</span> by <a href="https://pinesprojects.hashnode.dev" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 transition-colors">Pinesprojects</a>

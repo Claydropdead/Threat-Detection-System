@@ -171,7 +171,7 @@ class ResponseCache {
     this.cacheHits = 0;
     this.cacheMisses = 0;
     this.operationCount = 0;
-    console.log('Cache statistics reset');
+    console.log('Cache statistics reset successfully');
   }
 }
 
@@ -191,23 +191,23 @@ interface ContextInfo {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface ScamDetectionResponse {
+interface ThreatDetectionResponse {
   status: string; // e.g., "Low Risk Detected"
-  assessment: string; // e.g., "Likely Not a Scam"
-  scam_probability: string; // e.g., "10%"
+  assessment: string; // e.g., "Likely Not a Threat"
+  threat_probability: string; // e.g., "10%"
   ai_confidence: string; // e.g., "High"
   explanation_english: string;
   explanation_tagalog: string;
   advice: string;
-  how_to_avoid_scams: string[];
+  how_to_avoid_threats: string[];
   where_to_report: ReportAgency[];
-  what_to_do_if_scammed: string[]; // Steps to take if you've been scammed (English)
-  what_to_do_if_scammed_tagalog: string[]; // Steps to take if you've been scammed (Tagalog)
+  what_to_do_if_compromised: string[]; // Steps to take if you've been compromised (English)
+  what_to_do_if_compromised_tagalog: string[]; // Steps to take if you've been compromised (Tagalog)
   true_vs_false: string; // How to differentiate between true and false information (English)
   true_vs_false_tagalog: string; // How to differentiate between true and false information (Tagalog)
   image_analysis?: string; // Optional analysis of image content if provided
   audio_analysis?: string; // Optional analysis of audio content if provided
-  keywords?: string[]; // Key scam indicators extracted from the analysis
+  keywords?: string[]; // Key threat indicators extracted from the analysis
   content_type?: string; // Type of content analyzed (text, image, audio)
   detection_timestamp?: string; // ISO timestamp of when detection was performed
   limited_context?: ContextInfo; // Information about limited context scenarios
@@ -248,7 +248,7 @@ function mapRiskLevelToStatus(riskLevel: string): string {
     case 'low':
       return 'Low Risk Detected';
     default:
-      return 'Normal Conversation';
+      return 'Normal Content';
   }
 }
 
@@ -260,16 +260,17 @@ function extractKeywords(text: string): string[] {
   const keywords: string[] = [];
   const lowerText = text.toLowerCase();
   
-  // Common scam-related keywords
-  const scamKeywords = [
+  // Common threat-related keywords
+  const threatKeywords = [
     'urgent', 'immediate', 'verify', 'account', 'banking', 'password',
     'prize', 'winner', 'lottery', 'investment', 'bitcoin', 'cryptocurrency',
     'gift card', 'payment', 'transfer', 'hack', 'suspicious', 'government',
     'bank', 'security', 'fraud', 'alert', 'access', 'limited time',
-    'phishing', 'scam', 'warning', 'verify', 'social security', 'tax'
+    'phishing', 'scam', 'warning', 'verify', 'social security', 'tax',
+    'deepfake', 'ai-generated', 'social engineering', 'malware', 'cyber attack'
   ];
   
-  scamKeywords.forEach(keyword => {
+  threatKeywords.forEach(keyword => {
     if (lowerText.includes(keyword)) {
       keywords.push(keyword);
     }
@@ -321,7 +322,7 @@ async function analyzeWithGeminiAudioUsingModel(
   apiUrl: string,
   modelName: string
 ): Promise<any> {
-  const prompt = `You are a balanced cybersecurity and content analysis specialist with expertise in Philippine digital threats and content verification. Your task is to objectively analyze the provided audio recording to determine if it contains genuine scams, fraud, or significant security threats while distinguishing between legitimate content and actual risks.
+  const prompt = `You are a balanced cybersecurity and content analysis specialist with expertise in Philippine digital threats and content verification. Your task is to objectively analyze the provided audio recording to determine if it contains genuine threats, fraud, or significant security risks while distinguishing between legitimate content and actual dangers.
 
 ${content.trim() ? `Additional context provided by user: "${content}"` : "No additional text context provided by the user."}
 ${imageBase64 ? "An image has also been provided for analysis alongside the audio, which may provide additional context or supplementary information." : ""}
@@ -332,16 +333,16 @@ Analyze the audio content objectively to determine its nature and any genuine se
 1. Voice characteristics: natural vs. synthetic speech patterns, audio quality indicators
 2. Communication intent: legitimate information sharing vs. malicious manipulation
 3. Actual risk indicators: direct requests for money/personal data, fraudulent claims, impersonation attempts
-4. Content nature: distinguish between normal political speech, announcements, advertisements vs. actual scams
+4. Content nature: distinguish between normal political speech, announcements, advertisements vs. actual threats
 5. Cultural context: understand normal Filipino communication patterns vs. exploitation tactics
 6. Technical assessment: signs of audio manipulation or deepfake technology
 7. Voice authenticity: AI-generated speech detection, unnatural voice patterns
 
 IMPORTANT: Distinguish between normal content and genuine threats:
-- Public announcements, political speeches, news reports, and advertisements are typically LOW RISK unless they contain direct scam elements
+- Public announcements, political speeches, news reports, and advertisements are typically LOW RISK unless they contain direct threat elements
 - Normal persuasive language in legitimate contexts is NOT manipulation
 - Government or official communications about law enforcement activities are typically legitimate
-- Only flag content as HIGH RISK if it contains clear scam patterns like requests for money, personal data theft, impersonation, or fraudulent schemes
+- Only flag content as HIGH RISK if it contains clear threat patterns like requests for money, personal data theft, impersonation, or fraudulent schemes
 
 For audio content, provide a balanced risk assessment:
 - GENUINE THREAT IDENTIFICATION: Only identify actual security threats, scams, or fraud attempts
@@ -351,16 +352,16 @@ For audio content, provide a balanced risk assessment:
 
 Provide a structured JSON response with the following fields:
 
-- "isRisky": boolean (true ONLY if the content contains clear scams, fraud, or significant security threats - false for normal content including political speeches, announcements, advertisements, or general information).
-- "riskCategories": array of strings (list ONLY genuine risk categories detected: "Scam", "Phishing", "Financial Fraud", "Identity Theft", "Impersonation", "Technical Threat". Do NOT include broad categories like "Misinformation" or "Manipulation" for normal political or persuasive content. If no genuine threats, provide empty array).
+- "isRisky": boolean (true ONLY if the content contains clear threats, fraud, or significant security risks - false for normal content including political speeches, announcements, advertisements, or general information).
+- "riskCategories": array of strings (list ONLY genuine risk categories detected: "Threat", "Phishing", "Financial Fraud", "Identity Theft", "Impersonation", "Technical Threat". Do NOT include broad categories like "Misinformation" or "Manipulation" for normal political or persuasive content. If no genuine threats, provide empty array).
 - "overallRiskProbability": number (a percentage from 0 to 100 indicating the likelihood of genuine security threats - be conservative and only assign high percentages to clear threats).
-- "scamProbability": number (a percentage from 0 to 100 indicating the likelihood of it being an actual scam - most legitimate content should be 0-20%).
+- "threatProbability": number (a percentage from 0 to 100 indicating the likelihood of it being an actual threat - most legitimate content should be 0-20%).
 - "confidenceLevel": string (your confidence level in your assessment: "Low", "Medium", or "High").
 - "detailedRiskAnalysis": string (a balanced explanation of your findings in English. For legitimate content like government announcements or political speeches, acknowledge their legitimate nature while noting any specific concerns. Only highlight genuine red flags and security threats, not normal persuasive techniques).
 - "detailedRiskAnalysisTagalog": string (an accurate and natural-sounding Tagalog translation of the "detailedRiskAnalysis").
-- "overallRiskLevel": string (categorize based on genuine security threats: "Low" for most legitimate content, "Medium" for concerning but not clearly malicious content, "High" only for clear threats or scams, "Very High" or "Critical" only for immediate dangers).
+- "overallRiskLevel": string (categorize based on genuine security threats: "Low" for most legitimate content, "Medium" for concerning but not clearly malicious content, "High" only for clear threats, "Very High" or "Critical" only for immediate dangers).
 - "riskBreakdown": object with the following fields (analyze each category conservatively - only populate if genuine threats exist):
-    - "scamRisk": object with "level" (string), "probability" (number), "indicators" (array of strings) - only for actual scam attempts
+    - "threatRisk": object with "level" (string), "probability" (number), "indicators" (array of strings) - only for actual threat attempts
     - "misinformationRisk": object with "level" (string), "probability" (number), "indicators" (array of strings) - only for deliberately false information, not political opinions
     - "privacyRisk": object with "level" (string), "probability" (number), "indicators" (array of strings) - only for actual privacy violations
     - "technicalRisk": object with "level" (string), "probability" (number), "indicators" (array of strings) - only for technical threats
@@ -507,7 +508,7 @@ async function analyzeWithGeminiUsingModel(
 ): Promise<any> {
   if (!apiUrl) { // Check if the URL is empty (meaning API key was missing)
     throw new Error('Gemini API URL is not configured due to missing API key.');
-  }    const prompt = `You are an elite cybersecurity, fraud detection, and risk assessment specialist with expertise in Philippine scams, global digital threats, and potentially harmful content. Your task is to thoroughly analyze the ${content.trim() ? "following text" : "provided image"} for any signs of scam, phishing, fraudulent activity, misinformation, dangerous content, or other potential risks. The user is likely in the Philippines and needs a comprehensive assessment of all potential hazards.
+  }    const prompt = `You are an elite cybersecurity, fraud detection, and risk assessment specialist with expertise in Philippine digital threats, global cyber attacks, and potentially harmful content. Your task is to thoroughly analyze the ${content.trim() ? "following text" : "provided image"} for any signs of threats, phishing, fraudulent activity, misinformation, dangerous content, or other potential risks. The user is likely in the Philippines and needs a comprehensive assessment of all potential hazards.
 
 ${content.trim() ? `Content to analyze: "${content}"` : "No text provided for analysis."}
 ${imageBase64 ? (content.trim() ? "An image has also been provided for analysis alongside the text." : "Only an image has been provided for analysis.") : ""}
@@ -519,7 +520,7 @@ If the content appears to be a website URL or description of a website, provide 
 3. Registration information analysis - domain age, ownership transparency, registration patterns that indicate risk
 4. Content analysis - professional vs. suspicious elements, misleading information, dangerous content
 5. Security indicators - https, certificates, privacy policies, data collection practices, permissions requested
-6. Risk patterns analysis - comparison with known scam, phishing, and malicious website patterns
+6. Risk patterns analysis - comparison with known threat, phishing, and malicious website patterns
 7. Target audience vulnerability assessment - why specific demographics might be at risk and impact level
 8. Filipino-specific risk indicators - cultural, linguistic or regional factors that increase danger to local users
 9. Technical risk assessment - potential malware, phishing infrastructure, suspicious redirects, data harvesting
@@ -527,10 +528,10 @@ If the content appears to be a website URL or description of a website, provide 
 11. Content trustworthiness evaluation - accuracy, source credibility, factual consistency
 12. Potential harm classification - financial, personal data, misinformation, illegal activities, malicious software
 
-Conduct a comprehensive forensic analysis and risk assessment of the ${content.trim() ? "text" : "image"} with particular attention to all types of potential dangers including scams, misinformation, harmful content, privacy threats, technical vulnerabilities, and manipulation tactics prevalent in the Philippines and Southeast Asia. Consider language patterns, urgency indicators, request types, technical elements, contextual red flags, psychological manipulation tactics, and potential harm vectors. 
+Conduct a comprehensive forensic analysis and risk assessment of the ${content.trim() ? "text" : "image"} with particular attention to all types of potential dangers including threats, misinformation, harmful content, privacy risks, technical vulnerabilities, and manipulation tactics prevalent in the Philippines and Southeast Asia. Consider language patterns, urgency indicators, request types, technical elements, contextual red flags, psychological manipulation tactics, and potential harm vectors. 
 
 For all content, conduct a full-spectrum risk assessment:
-- RISK IDENTIFICATION: Identify ALL potential risks - scams, phishing, fraud, misinformation, dangerous advice, harmful content, malicious links/software, privacy violations, etc.
+- RISK IDENTIFICATION: Identify ALL potential risks - threats, phishing, fraud, misinformation, dangerous advice, harmful content, malicious links/software, privacy violations, etc.
 - RISK PROBABILITY: Assess the likelihood of each identified risk using multiple indicators
 - RISK SEVERITY: Evaluate the potential negative impact and consequences if the user engages with this content
 - RISK URGENCY: Determine how immediately dangerous this content might be (immediate vs. latent risks)
@@ -552,25 +553,25 @@ For URLs and website descriptions, provide comprehensive explanation of what the
 
 Provide a structured JSON response with the following fields:
 
-- "isRisky": boolean (true if the content contains ANY potential risks, scams, harmful elements, or misinformation, false only if completely safe).
-- "riskCategories": array of strings (list all risk categories detected: "Scam", "Phishing", "Misinformation", "Privacy Risk", "Malware", "Financial Risk", "Identity Theft Risk", "Manipulation", "Harmful Content", "Data Collection", etc. If none, provide empty array).
+- "isRisky": boolean (true if the content contains ANY potential risks, threats, harmful elements, or misinformation, false only if completely safe).
+- "riskCategories": array of strings (list all risk categories detected: "Threat", "Phishing", "Misinformation", "Privacy Risk", "Malware", "Financial Risk", "Identity Theft Risk", "Manipulation", "Harmful Content", "Data Collection", etc. If none, provide empty array).
 - "overallRiskProbability": number (a percentage from 0 to 100 indicating the overall likelihood of ANY risk being present, being precise in your assessment).
-- "scamProbability": number (a percentage from 0 to 100 indicating the likelihood of it being a scam specifically).
+- "threatProbability": number (a percentage from 0 to 100 indicating the likelihood of it being a threat specifically).
 - "confidenceLevel": string (your confidence level in your overall assessment: "Low", "Medium", or "High", based on the quality and quantity of indicators present).
-- "detailedRiskAnalysis": string (a comprehensive explanation of your findings in English, highlighting ALL potential risks including scams, misinformation, harmful content, technical threats, manipulation tactics, etc. Clearly identify ALL red flags, linguistic patterns, technical indicators, suspicious elements, factual inaccuracies, and potential harm vectors. Include your reasoning process for each risk identified. Format for readability with clear sections, paragraphs and bullet points as needed).
+- "detailedRiskAnalysis": string (a comprehensive explanation of your findings in English, highlighting ALL potential risks including threats, misinformation, harmful content, technical risks, manipulation tactics, etc. Clearly identify ALL red flags, linguistic patterns, technical indicators, suspicious elements, factual inaccuracies, and potential harm vectors. Include your reasoning process for each risk identified. Format for readability with clear sections, paragraphs and bullet points as needed).
 - "detailedRiskAnalysisTagalog": string (an accurate and natural-sounding Tagalog translation of the "detailedRiskAnalysis" that preserves all technical details but adapts to local context).
 - "overallRiskLevel": string (categorize the HIGHEST risk detected based on probability AND severity: "Low", "Medium", "High", "Very High", or "Critical").
 - "riskBreakdown": object with the following fields (analyze each major risk category separately):
-    - "scamRisk": object with "level" (string), "probability" (number), "indicators" (array of strings)
+    - "threatRisk": object with "level" (string), "probability" (number), "indicators" (array of strings)
     - "misinformationRisk": object with "level" (string), "probability" (number), "indicators" (array of strings)
     - "privacyRisk": object with "level" (string), "probability" (number), "indicators" (array of strings)
     - "technicalRisk": object with "level" (string), "probability" (number), "indicators" (array of strings)
     - "manipulationRisk": object with "level" (string), "probability" (number), "indicators" (array of strings)
     - "otherRisks": array of objects, each with "name" (string), "level" (string), "probability" (number), "indicators" (array of strings)
 - "safetyAdvice": string (provide detailed, actionable safety advice in English specific to ALL risks identified. For high risk scenarios, include specific protective actions the user should take immediately. For medium-low risk, provide contextual safety practices. Include both immediate steps and longer-term protective measures).
-- "safetyTutorials": array of strings (provide 6-8 detailed, actionable tutorials in English on how to identify and protect against ALL types of risks identified. Each tutorial should be comprehensive yet concise, include the reasoning behind it, examples of what to look for, and be directly relevant to the specific risks in the analyzed content. Cover different risk categories - not just scams but also misinformation, harmful content, technical threats, etc. Tailor to the Philippine context when relevant).
+- "safetyTutorials": array of strings (provide 6-8 detailed, actionable tutorials in English on how to identify and protect against ALL types of risks identified. Each tutorial should be comprehensive yet concise, include the reasoning behind it, examples of what to look for, and be directly relevant to the specific risks in the analyzed content. Cover different risk categories - not just threats but also misinformation, harmful content, technical risks, etc. Tailor to the Philippine context when relevant).
 - "preventionStrategies": object with the following fields (provide strategies for different risk types):
-    - "scamPrevention": array of strings (specific strategies for avoiding scams)
+    - "threatPrevention": array of strings (specific strategies for avoiding threats)
     - "misinformationDefense": array of strings (methods to verify information accuracy)
     - "privacyProtection": array of strings (ways to safeguard personal information)
     - "technicalSafeguards": array of strings (technical measures to protect devices/accounts)
@@ -579,10 +580,10 @@ Provide a structured JSON response with the following fields:
     - "introduction": string (A detailed introduction in English on the importance of reporting ALL types of harmful content, the impact of reporting, and the general process. Include information on what evidence to gather before reporting different types of harmful content).
     - "agencies": array of objects, where each object has:
         - "name": string (The official name of the agency or organization, prioritizing Philippine agencies followed by relevant international bodies).
-        - "riskTypes": array of strings (The types of risks this agency handles: "scams", "cybercrime", "misinformation", "harmful content", etc.)
+        - "riskTypes": array of strings (The types of risks this agency handles: "threats", "cybercrime", "misinformation", "harmful content", etc.)
         - "url": string (The direct URL to their complaint filing page or relevant information page. Verify this is a valid, working URL).
         - "description": string (A detailed description of which types of risks the agency handles, their jurisdiction, and any special reporting requirements or procedures. Prioritize agencies relevant to the Philippines).
-- "contentEvaluation": string (Provide a detailed explanation in English on how to critically evaluate content safety and truthfulness, specifically related to the analyzed content. Include verification techniques for multiple risk dimensions - not just scams but also factual accuracy, source credibility, manipulation tactics, technical threats, etc. Include warning signs, critical thinking strategies, and content verification methods tailored to the specific types of risks identified. Use concrete examples where possible).
+- "contentEvaluation": string (Provide a detailed explanation in English on how to critically evaluate content safety and truthfulness, specifically related to the analyzed content. Include verification techniques for multiple risk dimensions - not just threats but also factual accuracy, source credibility, manipulation tactics, technical risks, etc. Include warning signs, critical thinking strategies, and content verification methods tailored to the specific types of risks identified. Use concrete examples where possible).
 - "contentEvaluationTagalog": string (A natural, culturally-appropriate Tagalog translation of the "contentEvaluation" explanation that preserves all technical advice).
 - "contentClassification": object with the following fields:
     - "contentType": string (Classify what type of content this is: website URL, social media post, SMS, email, advertisement, news, etc.)
@@ -603,13 +604,13 @@ ${imageBase64 ? "When analyzing the provided image, perform a comprehensive risk
 
 Additional analysis instructions:
 1. For borderline cases, err on the side of caution and provide more detailed warnings and verification steps.
-2. If you identify a novel scam technique not widely documented, highlight this in your analysis.
-3. If the content appears to be testing your capabilities rather than a real scam, still provide a thorough analysis as if it were a genuine submission.
+2. If you identify a novel threat technique not widely documented, highlight this in your analysis.
+3. If the content appears to be testing your capabilities rather than a real threat, still provide a thorough analysis as if it were a genuine submission.
 4. If the content is extremely short or ambiguous, note the limitations in your confidence assessment but provide best-effort analysis.
 5. For content in Filipino languages/dialects other than Tagalog, identify the language if possible and include this information in your analysis.
 6. If you detect a question like "Para saan ito?" (What is this for?) or "Ano ito?" (What is this?), focus your analysis on explaining the nature and purpose of the content/website in simple, accessible language in both English and Tagalog.
 7. For website URLs, perform deeper domain analysis to determine its purpose, registration history, and security status if possible.
-8. Pay special attention to Filipino cultural context that might make certain scams more effective in the Philippines (remittance services, OFW targeting, local payment systems).
+8. Pay special attention to Filipino cultural context that might make certain threats more effective in the Philippines (remittance services, OFW targeting, local payment systems).
 9. Provide practical, step-by-step advice for typical Filipino internet users who may have varying levels of technical knowledge.
 
 Ensure your entire response is ONLY the JSON object, with no additional text, comments, or markdown formatting like \`\`\`json ... \`\`\` around it. The JSON must be properly formatted and all string values properly escaped. Each field must be present in your response even if some have minimal information due to the nature of the content.
@@ -699,13 +700,9 @@ export async function POST(request: NextRequest) {
   // Debug environment variables at runtime
   console.log('🔍 Environment Variable Debug:', {
     GEMINI_API_KEY: !!process.env.GEMINI_API_KEY ? 'Present' : 'Missing',
-    GOOGLE_API_KEY: !!process.env.GOOGLE_API_KEY ? 'Present' : 'Missing',
-    GOOGLE_CX: !!process.env.GOOGLE_CX ? 'Present' : 'Missing',
     NODE_ENV: process.env.NODE_ENV || 'Not set',
     // Show first few characters of keys if present (for debugging)
-    GEMINI_API_KEY_PREFIX: process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.substring(0, 8) + '...' : 'N/A',
-    GOOGLE_API_KEY_PREFIX: process.env.GOOGLE_API_KEY ? process.env.GOOGLE_API_KEY.substring(0, 8) + '...' : 'N/A',
-    GOOGLE_CX_PREFIX: process.env.GOOGLE_CX ? process.env.GOOGLE_CX.substring(0, 8) + '...' : 'N/A'
+    GEMINI_API_KEY_PREFIX: process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.substring(0, 8) + '...' : 'N/A'
   });
 
   if (!GEMINI_API_KEY) {
@@ -733,8 +730,8 @@ export async function POST(request: NextRequest) {
     
     console.log('🔄 Cache miss - proceeding with API analysis');
       try {      let analysis;
-      let extractedImageText = ''; // Store text extracted from image for fact-checking
-        // Extract text from image if present (for fact-checking purposes)
+      let extractedImageText = ''; // Store text extracted from image for future use
+        // Extract text from image if present
       if (imageBase64) {
         if (simulateOCR && simulatedOCRText) {
           console.log('🧪 Using simulated OCR text for testing');
@@ -838,9 +835,9 @@ export async function POST(request: NextRequest) {
         const indicators: string[] = [];
         
         // Only use indicators that Gemini actually provided in the analysis
-        if (analysis.riskBreakdown?.scamRisk?.indicators?.length > 0) {
-          const scamIndicators = analysis.riskBreakdown.scamRisk.indicators;
-          indicators.push(...scamIndicators.slice(0, 2));
+        if (analysis.riskBreakdown?.threatRisk?.indicators?.length > 0) {
+          const threatIndicators = analysis.riskBreakdown.threatRisk.indicators;
+          indicators.push(...threatIndicators.slice(0, 2));
         }
         
         // Add other risk type indicators only if Gemini provided them
@@ -870,8 +867,8 @@ export async function POST(request: NextRequest) {
       );
       
       const formattedResponse = {
-        // Required fields - make sure they are always present
-        isScam: analysis.isRisky !== undefined ? analysis.isRisky : false,
+        // Required fields - make sure they are always present (updated for threat detection)
+        isThreat: analysis.isRisky !== undefined ? analysis.isRisky : false,
         probability: analysis.overallRiskProbability !== undefined ? analysis.overallRiskProbability : 0,
         confidence: analysis.confidenceLevel || "Medium",
         explanation: analysis.detailedRiskAnalysis || "No detailed risk analysis available.",
@@ -879,7 +876,7 @@ export async function POST(request: NextRequest) {
         riskLevel: analysis.overallRiskLevel || "Low",
         advice: analysis.safetyAdvice || "No specific advice available.",
         tutorialsAndTips: analysis.safetyTutorials || 
-          (analysis.preventionStrategies?.scamPrevention || 
+          (analysis.preventionStrategies?.threatPrevention || 
            analysis.preventionStrategies?.generalSafetyPractices || []),
         // Model information
         modelInfo: {
@@ -894,7 +891,7 @@ export async function POST(request: NextRequest) {
         riskSummary: riskSummary,
         indicators: getDisplayIndicators(),
         detectedRiskCategories: riskCategories,        // Optional analysis fields - ensure audio analysis is always provided if audio was submitted
-        audioAnalysis: audioBase64 ? (analysis.audioAnalysis || analysis.mainExplanation || "Audio content analyzed for potential risks and scam patterns.") : null,
+        audioAnalysis: audioBase64 ? (analysis.audioAnalysis || analysis.mainExplanation || "Audio content analyzed for potential risks and threat patterns.") : null,
         image_analysis: imageBase64 ? (analysis.imageAnalysis || analysis.contentClassification?.contentExplanation || null) : null,
         // Audience analysis for audio content specifically
         audienceAnalysis: audioBase64 ? (analysis.contentClassification?.audienceAnalysis?.targetAudience || "General audience") : null,        // Audio-specific fields - let Gemini provide the content
@@ -930,7 +927,7 @@ export async function POST(request: NextRequest) {
               {
                 name: "Federal Trade Commission (FTC)",
                 url: "https://www.consumer.ftc.gov/features/scam-alerts",
-                description: "For reporting scams, identity theft, and fraudulent business practices in the US."
+                description: "For reporting digital threats, identity theft, and fraudulent business practices in the US."
               },
               {
                 name: "Internet Crime Complaint Center (IC3)",
@@ -957,7 +954,7 @@ export async function POST(request: NextRequest) {
                           audioBase64 ? "Audio" : "Message";
                           
       return NextResponse.json({
-        isScam: false,
+        isThreat: false,
         probability: 0,
         confidence: "Low",
         explanation: "We encountered an issue processing this content. Please try again or submit different content for analysis.",
@@ -986,7 +983,7 @@ export async function POST(request: NextRequest) {
           introduction: "Since analysis is incomplete, we can't provide specific reporting guidance.",
           agencies: [
             {
-              name: "Smart-AI-Scam-Detection Support",
+              name: "Digital Threat Shield Support",
               url: "#",
               description: "Contact our support team for assistance with content that fails to process properly."
             }
@@ -995,7 +992,7 @@ export async function POST(request: NextRequest) {
       }, { status: 200 });
     }
   } catch (error: any) {
-    console.error('Error in /api/detect-scam:', error);
+    console.error('Error in /api/detect-threat:', error);
     
     // Provide enhanced error information for model failures
     if (error.message.includes('All Gemini models failed')) {
@@ -1044,9 +1041,9 @@ export async function GET(request: NextRequest) {
         message: 'Cache management endpoint',
         availableActions: ['stats', 'clear', 'reset-stats'],
         usage: {
-          stats: '/api/detect-scam?action=stats',
-          clear: '/api/detect-scam?action=clear',
-          'reset-stats': '/api/detect-scam?action=reset-stats'
+          stats: '/api/detect-threat?action=stats',
+          clear: '/api/detect-threat?action=clear',
+          'reset-stats': '/api/detect-threat?action=reset-stats'
         }
       });
   }

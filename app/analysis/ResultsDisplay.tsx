@@ -1,12 +1,12 @@
 "use client";
 
-import { ScamDetectionResult, ApiReportAgency } from './interfaces'; // Updated import
+import { ThreatDetectionResult, ApiReportAgency } from './interfaces'; // Updated import
 import { extractScamIndicators, getColorByPercentage } from './utils';
 // Pattern-based detection disabled - now using purely Gemini-based risk assessment
 // import { getInitializedIndicators, detectIndicators, calculateRiskPercentage } from './indicators';
 
 interface ResultsDisplayProps {
-  analysisResult: ScamDetectionResult;
+  analysisResult: ThreatDetectionResult;
   scamContent: string;
 }
 
