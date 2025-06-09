@@ -863,20 +863,339 @@ export async function POST(request: NextRequest) {
         }
       } else {
         // Standard text/image analysis
-        analysis = await analyzeWithGemini(textContent, imageBase64);      }
+        analysis = await analyzeWithGemini(textContent, imageBase64);      }        // Dynamic intelligent scoring system - relies on Gemini's analysis
+        const calculateIntelligentRiskScore = (geminiAnalysis: any, userQuery: string): number => {
+          // Use Gemini's assessment as the primary score
+          let baseScore = geminiAnalysis.overallRiskProbability || 0;
+          
+          // Dynamic adjustment based on Gemini's risk breakdown analysis
+          const riskBreakdown = geminiAnalysis.riskBreakdown || {};
+          let riskIntensityMultiplier = 1.0;
+          
+          // Calculate dynamic risk intensity based on Gemini's detailed analysis
+          const riskTypes = ['threatRisk', 'misinformationRisk', 'privacyRisk', 'technicalRisk', 'manipulationRisk'];
+          let highRiskCount = 0;
+          let totalRiskProbability = 0;
+          let validRiskTypes = 0;
+          
+          riskTypes.forEach(riskType => {
+            if (riskBreakdown[riskType] && typeof riskBreakdown[riskType].probability === 'number') {
+              const probability = riskBreakdown[riskType].probability;
+              totalRiskProbability += probability;
+              validRiskTypes++;
+              
+              if (probability >= 70) {
+                highRiskCount++;
+              }
+            }
+          });
+          
+          // Adjust multiplier based on multiple high-risk areas
+          if (validRiskTypes > 0) {
+            const averageRiskProbability = totalRiskProbability / validRiskTypes;
+            riskIntensityMultiplier = 0.8 + (averageRiskProbability / 100) * 0.4; // Range: 0.8 to 1.2
+            
+            // Additional boost for multiple high-risk areas
+            if (highRiskCount >= 2) {
+              riskIntensityMultiplier += 0.1;
+            }
+          }
+          
+          // Apply Gemini's confidence level to the scoring
+          const confidenceMultiplier: { [key: string]: number } = {
+            "High": 1.0,
+            "Medium": 0.95,
+            "Low": 0.85
+          };
+          
+          const confidence = geminiAnalysis.confidenceLevel || "Medium";
+          const confidenceAdjustment = confidenceMultiplier[confidence] || 0.95;
+          
+          // Analyze user query context for minimal contextual adjustment
+          const queryContext = analyzeUserQueryContext(userQuery);
+          let contextualAdjustment = 1.0;
+          
+          // Slight adjustments based on query context and Gemini's findings
+          if (queryContext.isVerificationRequest && baseScore > 60) {
+            contextualAdjustment = 1.02; // Very slight increase for verification on risky content
+          } else if (queryContext.isIdentificationRequest && geminiAnalysis.riskCategories?.length > 0) {
+            contextualAdjustment = 1.01; // Minimal boost for identification with detected risks
+          }
+          
+          // Calculate final score using dynamic multipliers
+          let finalScore = Math.round(baseScore * riskIntensityMultiplier * confidenceAdjustment * contextualAdjustment);
+          
+          // Ensure the score stays within reasonable bounds
+          return Math.max(0, Math.min(100, finalScore));
+        };
+        
+        // Helper function to analyze user query context
+        function analyzeUserQueryContext(query: string): {
+          isVerificationRequest: boolean;
+          isIdentificationRequest: boolean;
+          isSafetyInquiry: boolean;
+          isActionRequest: boolean;
+          queryType: string;
+        } {
+          const lowerQuery = query.toLowerCase();
+          
+          return {
+            isVerificationRequest: /is this (safe|legit|real|true)|verify|check|legitimate|authentic/i.test(query),
+            isIdentificationRequest: /what is|ano ito|para saan|identify|explain|describe/i.test(query),
+            isSafetyInquiry: /safe|secure|trust|dangerous|harmful|scam|fraud/i.test(query),
+            isActionRequest: /should i|dapat ba|pwede ba|can i|mag|gawin/i.test(query),
+            queryType: lowerQuery.includes('what') ? 'identification' :
+                       lowerQuery.includes('safe') ? 'safety' :
+                       lowerQuery.includes('should') ? 'action' :
+                       lowerQuery.includes('scam') ? 'threat_assessment' : 'general'
+          };
+        }
+
         // Format the response to match the expected interface, with contextual assessment
         // Let Gemini determine content type - only use simple fallbacks if Gemini doesn't provide it
-      const contentType = analysis.contentClassification?.contentType || 
-                          (audioBase64 ? "Audio" : 
-                           imageBase64 ? "Image" : "Content");
-        // Generate assessment text based purely on Gemini's risk assessment
-      const getAssessmentText = (isRisky: boolean, riskProb: number): string => {
-        // Use simple, universal logic - let Gemini's explanation provide the details
-        if (riskProb >= 75) return "High Risk Content";
-        if (riskProb >= 50) return "Moderate Risk Content";
-        if (riskProb >= 25) return "Low-Moderate Risk Content";
-        return "Low Risk Content";
-      };
+        const contentType = analysis.contentClassification?.contentType || 
+                            (audioBase64 ? "Audio" : 
+                             imageBase64 ? "Image" : "Content");
+        
+        // Calculate intelligent risk score
+        const intelligentRiskScore = calculateIntelligentRiskScore(analysis, textContent);
+        const queryContext = analyzeUserQueryContext(textContent);
+          // Generate assessment text based on Gemini's analysis and user query context
+        const getIntelligentAssessmentText = (
+          isRisky: boolean, 
+          riskProb: number, 
+          riskCategories: string[], 
+          contentType: string,
+          userQuery: string,
+          geminiAnalysis: any
+        ): string => {
+          // Use Gemini's overall risk level if available
+          const geminiRiskLevel = geminiAnalysis.overallRiskLevel;
+          
+          // For identification requests, use Gemini's content purpose/explanation
+          if (queryContext.isIdentificationRequest) {
+            const contentPurpose = geminiAnalysis.contentClassification?.contentPurpose;
+            const contentExplanation = geminiAnalysis.contentClassification?.contentExplanation;
+            
+            if (riskProb >= 70) {
+              return contentExplanation ? 
+                `${contentType}: ${contentExplanation.split('.')[0]} - High Risk Detected` :
+                `${contentType}: High-Risk Content Identified`;
+            }
+            if (riskProb >= 40) {
+              return contentExplanation ?
+                `${contentType}: ${contentExplanation.split('.')[0]} - Some Concerns` :
+                `${contentType}: Content Identified with Concerns`;
+            }
+            return contentPurpose ?
+              `${contentType}: ${contentPurpose}` :
+              `${contentType}: Content Identified`;
+          }
+          
+          // For safety inquiries, focus on Gemini's risk assessment
+          if (queryContext.isSafetyInquiry) {
+            if (geminiRiskLevel === "Very High" || geminiRiskLevel === "Critical") {
+              return "High Risk - Not Safe";
+            }
+            if (geminiRiskLevel === "High") {
+              return "Moderate-High Risk - Exercise Caution";
+            }
+            if (geminiRiskLevel === "Medium") {
+              return "Moderate Risk - Some Concerns";
+            }
+            return "Low Risk - Generally Safe";
+          }
+          
+          // For action requests, base on Gemini's risk assessment
+          if (queryContext.isActionRequest) {
+            if (riskProb >= 70) return "Do Not Proceed - High Risk";
+            if (riskProb >= 50) return "Proceed with Extreme Caution";
+            if (riskProb >= 25) return "Verify Before Proceeding";
+            return "Safe to Proceed with Normal Precautions";
+          }
+          
+          // Default assessment based on Gemini's overall risk level
+          if (geminiRiskLevel) {
+            return `${geminiRiskLevel} Risk Content`;
+          }
+          
+          // Fallback based on probability if no risk level provided
+          if (riskProb >= 80) return "Very High Risk Content";
+          if (riskProb >= 60) return "High Risk Content";
+          if (riskProb >= 35) return "Moderate Risk Content";
+          if (riskProb >= 15) return "Low-Moderate Risk Content";
+          return "Low Risk Content";
+        };
+          // Dynamic contextual risk summary based on Gemini's analysis
+        const getContextualRiskSummary = (
+          prob: number, 
+          categories: string[], 
+          contentType: string, 
+          contentPurpose: string,
+          userQuery: string,
+          geminiAnalysis: any
+        ): string => {
+          // Analyze user's intent from their query
+          const isAskingWhatItIs = /what is|ano ito|para saan|what's this/i.test(userQuery);
+          const isAskingSafety = /safe|secure|trust|scam|legit/i.test(userQuery);
+          const isAskingAction = /should i|dapat ba|pwede ba/i.test(userQuery);
+          
+          // Use Gemini's risk summary if available
+          const geminiRiskSummary = geminiAnalysis.riskSummary;
+          if (geminiRiskSummary && geminiRiskSummary.length > 0) {
+            // Adapt Gemini's summary to user's query context
+            if (isAskingWhatItIs) {
+              return `🔍 ${geminiRiskSummary}`;
+            }
+            if (isAskingSafety) {
+              return `🔒 ${geminiRiskSummary}`;
+            }
+            if (isAskingAction) {
+              return `⚡ ${geminiRiskSummary}`;
+            }
+            return geminiRiskSummary;
+          }
+          
+          // Dynamic fallback based on Gemini's overall assessment
+          const riskLevel = geminiAnalysis.overallRiskLevel || "Low";
+          
+          if (riskLevel === "Very High" || riskLevel === "Critical") {
+            if (isAskingWhatItIs) {
+              return `🔴 This content appears to be very risky - Avoid interaction`;
+            }
+            return `🔴 Critical risk detected - Exercise extreme caution`;
+          }
+          
+          if (riskLevel === "High") {
+            if (isAskingSafety) {
+              return "🚨 Not safe - High risk indicators present";
+            }
+            if (isAskingAction) {
+              return "🚨 Recommended action: Do not proceed without verification";
+            }
+            return "🚨 High risk indicators detected - Proceed with caution";
+          }
+          
+          if (riskLevel === "Medium") {
+            if (isAskingWhatItIs && contentPurpose) {
+              return `⚠️ This appears to be ${contentPurpose.toLowerCase()} with some concerning elements`;
+            }
+            return "⚠️ Some risk factors identified - Review carefully";
+          }
+          
+          if (riskLevel === "Low") {
+            if (isAskingSafety) {
+              return "✓ Generally appears safe with minimal concerns";
+            }
+            if (isAskingWhatItIs && contentPurpose) {
+              return `✅ This appears to be ${contentPurpose.toLowerCase()} and seems safe`;
+            }
+            return "✓ Low risk based on analysis";
+          }
+          
+          // Final fallback
+          return "✅ Content appears safe based on analysis";
+        };
+          // Dynamic display status based on Gemini's analysis and user query
+        const getIntelligentDisplayStatus = (
+          contentType: string, 
+          riskLevel: string, 
+          userQuery: string,
+          riskCategories: string[],
+          geminiAnalysis: any
+        ): string => {
+          // Use Gemini's content explanation for identification queries
+          const isIdentificationQuery = /what is|ano ito|para saan|identify/i.test(userQuery);
+          
+          if (isIdentificationQuery) {
+            const contentPurpose = geminiAnalysis.contentClassification?.contentPurpose;
+            const contentExplanation = geminiAnalysis.contentClassification?.contentExplanation;
+            
+            // Use Gemini's explanation if available
+            if (contentExplanation) {
+              const shortExplanation = contentExplanation.split('.')[0];
+              if (riskLevel === "High" || riskLevel === "Very High" || riskLevel === "Critical") {
+                return `${contentType}: ${shortExplanation} - High Risk`;
+              }
+              return `${contentType}: ${shortExplanation}`;
+            }
+            
+            // Use content purpose as fallback
+            if (contentPurpose) {
+              return `${contentType}: ${contentPurpose}`;
+            }
+            
+            // Generic identification response
+            return `${contentType}: Content Identified`;
+          }
+          
+          // For safety queries, use Gemini's risk assessment
+          if (/safe|secure|trust/i.test(userQuery)) {
+            const safetyStatus = geminiAnalysis.overallRiskLevel || riskLevel;
+            return `${contentType}: Safety Assessment - ${safetyStatus} Risk`;
+          }
+          
+          // Default analysis status
+          if (contentType === "Audio") {
+            return "Voice Recording Analysis";
+          }
+          
+          return `${contentType} Analysis`;
+        };
+        
+        // Helper functions for query context
+        function generateQuerySpecificAdvice(query: string, analysis: any): string {
+          const intent = queryContext.queryType;
+          
+          switch (intent) {
+            case "identification":
+              return analysis.contentClassification?.contentExplanation || "Content has been identified and analyzed.";
+            case "safety":
+              return analysis.safetyAdvice || "Safety assessment completed.";            case "action":
+              return generateActionRecommendation(intelligentRiskScore, analysis.riskCategories || [], analysis);
+            case "threat_assessment":
+              return analysis.detailedRiskAnalysis || "Threat assessment completed.";
+            default:
+              return analysis.safetyAdvice || "Analysis completed.";
+          }
+        }        function generateActionRecommendation(riskScore: number, riskCategories: string[], geminiAnalysis: any): string {
+          // Use Gemini's safety advice if available
+          const safetyAdvice = geminiAnalysis.safetyAdvice;
+          if (safetyAdvice && safetyAdvice.length > 0) {
+            // Extract actionable parts from Gemini's advice
+            const actionableAdvice = safetyAdvice.split('.')[0];
+            if (actionableAdvice.length > 0) {
+              return actionableAdvice + ".";
+            }
+          }
+          
+          // Use Gemini's overall risk level for recommendations
+          const riskLevel = geminiAnalysis.overallRiskLevel;
+          if (riskLevel === "Very High" || riskLevel === "Critical") {
+            return "❌ Do not proceed. Critical risk detected.";
+          }
+          if (riskLevel === "High") {
+            return "⚠️ Proceed with extreme caution. Verify through other sources first.";
+          }
+          if (riskLevel === "Medium") {
+            return "⚠️ Exercise caution. Consider additional verification.";
+          }
+          if (riskLevel === "Low") {
+            return "✓ Generally safe to proceed with normal precautions.";
+          }
+          
+          // Fallback based on score
+          if (riskScore >= 70) {
+            return "❌ Do not proceed. High risk detected.";
+          }
+          if (riskScore >= 50) {
+            return "⚠️ Proceed with extreme caution. Verify through other sources first.";
+          }
+          if (riskScore >= 25) {
+            return "⚠️ Exercise caution. Consider additional verification.";
+          }
+          return "✅ Safe to proceed based on current analysis.";
+        }
         
       // Generate display status based on content type and risk level
       const getDisplayStatus = (contentType: string, overallRiskLevel: string): string => {
@@ -926,20 +1245,33 @@ export async function POST(request: NextRequest) {
         }
         
         return indicators.slice(0, 5); // Limit to 5 indicators
-      };
-        const assessmentText = getAssessmentText(
-        analysis.isRisky !== undefined ? analysis.isRisky : false, 
-        analysis.overallRiskProbability || 0
-      );
-        const riskSummary = getRiskSummary(
-        analysis.overallRiskProbability || 0,
-        analysis.riskCategories || []
-      );
-      
-      const formattedResponse = {
+      };        const assessmentText = getIntelligentAssessmentText(
+          analysis.isRisky !== undefined ? analysis.isRisky : false, 
+          intelligentRiskScore,
+          analysis.riskCategories || [],
+          contentType,
+          textContent,
+          analysis
+        );
+          const contextualRiskSummary = getContextualRiskSummary(
+          intelligentRiskScore,
+          analysis.riskCategories || [],
+          contentType,
+          analysis.contentClassification?.contentPurpose || "",
+          textContent,
+          analysis
+        );
+          const intelligentDisplayStatus = getIntelligentDisplayStatus(
+          contentType,
+          analysis.overallRiskLevel || "Low",
+          textContent,
+          analysis.riskCategories || [],
+          analysis
+        );
+        const formattedResponse = {
         // Required fields - make sure they are always present (updated for threat detection)
         isThreat: analysis.isRisky !== undefined ? analysis.isRisky : false,
-        probability: analysis.overallRiskProbability !== undefined ? analysis.overallRiskProbability : 0,
+        probability: intelligentRiskScore, // Use intelligent score instead of raw Gemini score
         confidence: analysis.confidenceLevel || "Medium",
         explanation: analysis.detailedRiskAnalysis || "No detailed risk analysis available.",
         explanationTagalog: analysis.detailedRiskAnalysisTagalog || "Hindi available ang detalyadong pagsusuri ng panganib.",
@@ -948,19 +1280,27 @@ export async function POST(request: NextRequest) {
         tutorialsAndTips: analysis.safetyTutorials || 
           (analysis.preventionStrategies?.threatPrevention || 
            analysis.preventionStrategies?.generalSafetyPractices || []),
+        
+        // Enhanced contextual fields
+        status: intelligentDisplayStatus,
+        assessment: assessmentText,
+        contentType: contentType,
+        riskSummary: contextualRiskSummary,
+        indicators: getDisplayIndicators(),
+        detectedRiskCategories: riskCategories,
+        
+        // Additional context for user query relevance
+        queryContext: {
+          userIntent: queryContext.queryType,
+          relevantAdvice: generateQuerySpecificAdvice(textContent, analysis),
+          actionRecommendation: generateActionRecommendation(intelligentRiskScore, analysis.riskCategories || [], analysis)
+        },
+        
         // Model information
         modelInfo: {
           modelName: analysis.modelUsed || GEMINI_MODELS[0],
           backupModelsAvailable: GEMINI_MODELS.length - 1
-        },
-
-        // Contextual assessment fields
-        status: getDisplayStatus(contentType, analysis.overallRiskLevel || "Low"),
-        assessment: assessmentText,
-        contentType: contentType,
-        riskSummary: riskSummary,
-        indicators: getDisplayIndicators(),
-        detectedRiskCategories: riskCategories,        // Optional analysis fields - ensure audio analysis is always provided if audio was submitted
+        },// Optional analysis fields - ensure audio analysis is always provided if audio was submitted
         audioAnalysis: audioBase64 ? (analysis.audioAnalysis || analysis.mainExplanation || "Audio content analyzed for potential risks and threat patterns.") : null,
         image_analysis: imageBase64 ? (analysis.imageAnalysis || analysis.contentClassification?.contentExplanation || null) : null,
         // Audience analysis for audio content specifically

@@ -148,7 +148,7 @@ export default function LandingPage() {
           </div>
         </div>
         <div className="flex-1 flex justify-center md:justify-end">
-          <Image src="/file.svg" alt="Cyber illustration" width={340} height={260} className="rounded-xl" />
+          <Image src="/file.jpg" alt="Cyber illustration" width={340} height={260} className="rounded-xl" />
         </div>
       </section>
 
