@@ -13,10 +13,10 @@ async function extractTextFromImage(imageBase64: string): Promise<string> {
 
 // Define available Gemini 2.0 models in order of preference
 const GEMINI_MODELS = [
-  'gemini-2.0-flash', // Primary model (fastest)
-  'gemini-2.0',       // Fallback model 1 (high quality)
-  'gemini-2.0-vision', // Fallback model 2 (for vision capabilities)
-  'gemini-1.5-pro',   // Legacy fallback if 2.0 models are unavailable
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash-exp',
+  'gemini-2.0-flash', 
+  'gemini-2.0'       
 ];
 
 // Function to get Gemini API URL with the first available model
