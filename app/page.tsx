@@ -5,7 +5,12 @@ import Image from 'next/image';
 
 export default function LandingPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);  const features = [
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [typedText, setTypedText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(true);
+  
+  const fullText = "A Safer CyberSpace for Every Filipino.";const features = [
     {
       icon: "🛡️",
       title: "AI-Powered Detection",
@@ -93,7 +98,6 @@ export default function LandingPage() {
       icon: "✅"
     }
   ];
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -105,6 +109,27 @@ export default function LandingPage() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+  // Typing animation effect with loop
+  useEffect(() => {
+    if (currentIndex < fullText.length) {
+      const timer = setTimeout(() => {
+        setTypedText(prev => prev + fullText[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 100); // Adjust typing speed here (lower = faster)
+      
+      return () => clearTimeout(timer);
+    } else {
+      // When typing is complete, wait 2 seconds then restart
+      setIsTyping(false);
+      const restartTimer = setTimeout(() => {
+        setTypedText('');
+        setCurrentIndex(0);
+        setIsTyping(true);
+      }, 2000); // Wait 2 seconds before restarting
+      
+      return () => clearTimeout(restartTimer);
+    }
+  }, [currentIndex, fullText]);
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -126,25 +151,21 @@ export default function LandingPage() {
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-base font-medium">
             <a href="#" className="hover:text-blue-600 transition-colors">Home</a>
-            <a href="#report" className="hover:text-blue-600 transition-colors">Report Cybercrime</a>
-            <a href="#tips" className="hover:text-blue-600 transition-colors">CyberTips</a>
+            <a href="#howitworks" className="hover:text-blue-600 transition-colors">How It Works</a>
             <a href="#contact" className="hover:text-blue-600 transition-colors">Contact us</a>
           </nav>
         </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-16 gap-10">
+      </header>      {/* Hero Section */}      <section className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-8 gap-6">
         <div className="flex-1 max-w-xl">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-slate-900">
-            A Safer Internet<br />for Every Filipino.
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight text-slate-900 min-h-[80px]">
+            {typedText}
+            {isTyping && <span className="animate-pulse text-blue-600">|</span>}
           </h1>
-          <p className="text-lg md:text-xl text-slate-700 mb-8">
-            CyberSafe4B is a project by RICTMD PRO 4B MiMAROPA designed to protect and empower Filipinos through cybersecurity education, alerts, and support.
+          <p className="text-lg md:text-xl text-slate-700 mb-6">
+           “Together, let’s create a secure online world where every Filipino can connect, learn, and grow without fear. Stay smart, stay safe, and protect our digital future!”
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <a href="#report" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition-all text-center">Report Cybercrime</a>
-            <a href="#tips" className="bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold px-6 py-3 rounded-lg shadow transition-all text-center">Learn CyberSafety Tips</a>
+            <a href="#report" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition-all text-center">🔍 Analyze Now</a>
           </div>
         </div>
         <div className="flex-1 flex justify-center md:justify-end">
@@ -155,33 +176,73 @@ export default function LandingPage() {
       {/* What is CyberSafe4B? */}
       <section className="bg-slate-50 py-16 border-t border-slate-100">
         <div className="container mx-auto px-6">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">What is CyberSafe4B?</h2>
-          <p className="text-slate-700 max-w-3xl mb-10">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">What is CyberSafe4B?</h2>          <p className="text-slate-700 max-w-3xl mb-10">
             CyberSafe4B is an initiative of the Regional Information and Communications Technology Management Division (RICTMD) under Police Regional Office 4B – MIMAROPA. Our mission is to help every Filipino become more aware, alert, and protected in the digital space. We provide updated, accurate, and real-time information.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-            <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm">
-              <div className="text-3xl mb-2 text-orange-500">❗</div>
-              <h3 className="font-semibold mb-1">Report a Cybercrime</h3>
-              <p className="text-slate-600 text-sm">File a report quickly and easily.</p>
+          
+          {/* Our Core Features */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+              <div className="text-4xl mb-4">🤖</div>
+              <h3 className="text-xl font-bold mb-3 text-blue-900">AI-Powered Detection</h3>
+              <p className="text-slate-700 leading-relaxed">
+                Advanced artificial intelligence that analyzes suspicious messages, emails, and content to protect Filipino communities from cyber threats in real-time.
+              </p>
             </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm">
-              <div className="text-3xl mb-2 text-blue-600">📖</div>
-              <h3 className="font-semibold mb-1">Cybersecurity Tips</h3>
-              <p className="text-slate-600 text-sm">Learn how to stay safe online.</p>
+            
+            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
+              <div className="text-4xl mb-4">⚡</div>
+              <h3 className="text-xl font-bold mb-3 text-green-900">Instant Analysis</h3>
+              <p className="text-slate-700 leading-relaxed">
+                Get immediate threat assessments and security recommendations within seconds, helping you make informed decisions about digital content safety.
+              </p>
             </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm">
-              <div className="text-3xl mb-2 text-yellow-500">⚠️</div>              <h3 className="font-semibold mb-1">Threat Alerts & Advisories</h3>
-              <p className="text-slate-600 text-sm">Get real-time updates on digital threats.</p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm">
-              <div className="text-3xl mb-2 text-blue-400">👥</div>
-              <h3 className="font-semibold mb-1">Community Seminars</h3>
-              <p className="text-slate-600 text-sm">Join local webinars and info drives.</p>
-            </div>
+            
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+              <div className="text-4xl mb-4">🇵🇭</div>
+              <h3 className="text-xl font-bold mb-3 text-purple-900">Philippine-Focused</h3>
+              <p className="text-slate-700 leading-relaxed">
+                Specially designed for Filipino communities with understanding of local languages, culture, and specific cyber threats targeting our region.
+              </p>
+            </div>          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section id="howitworks" className="py-16 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900">How It Works</h2>
+            <p className="text-slate-700 max-w-2xl mx-auto">
+              Simple, fast, and effective threat detection in just three easy steps. Protect yourself and your community from cyber threats.
+            </p>
           </div>
-          <div className="flex justify-center">
-            <a href="#advisories" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition-all">See All Advisories</a>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {howItWorksSteps.map((step, index) => (
+              <div key={index} className="text-center">
+                <div className="relative mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-3xl">{step.icon}</span>
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {step.step}
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-slate-900">{step.title}</h3>
+                <p className="text-slate-700 leading-relaxed">{step.description}</p>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <a 
+              href="/analysis" 
+              className="inline-flex items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow transition-all"
+            >
+              <span className="mr-2">🚀</span>
+              Start Analyzing Now
+            </a>
           </div>
         </div>
       </section>
@@ -208,9 +269,7 @@ export default function LandingPage() {
             <Image src="/pnp-logo.svg" alt="PNP Logo" width={60} height={60} />
           </div>
         </div>
-      </section>
-
-      {/* CTA Banner */}
+      </section>      {/* CTA Banner */}
       <section className="bg-blue-700 py-12">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join us in building a cyber-aware Philippines.</h2>
@@ -218,6 +277,72 @@ export default function LandingPage() {
           <a href="#get-involved" className="inline-block bg-white text-blue-700 font-semibold px-8 py-3 rounded-lg shadow hover:bg-blue-50 transition-all">Get Involved</a>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-900 text-white py-12">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* Logo and Description */}
+            <div className="col-span-1 md:col-span-2">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                  <Image src="/threatshield-icon.svg" alt="CyberSafe4B Logo" width={28} height={28} />
+                </div>
+                <span className="text-2xl font-bold tracking-tight">CYBERSAFE4B</span>
+              </div>
+              <p className="text-slate-300 mb-4 max-w-md">
+                An initiative of the Regional Information and Communications Technology Management Division (RICTMD) under Police Regional Office 4B – MIMAROPA.
+              </p>
+              <p className="text-slate-400 text-sm">
+                Protecting Filipino communities through advanced AI-powered threat detection and cybersecurity awareness.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-semibold mb-4 text-white">Quick Links</h4>
+              <ul className="space-y-2 text-slate-300">
+                <li><a href="#" className="hover:text-white transition-colors">Home</a></li>
+                <li><a href="#howitworks" className="hover:text-white transition-colors">How It Works</a></li>
+                <li><a href="/analysis" className="hover:text-white transition-colors">Threat Analysis</a></li>
+                <li><a href="#contact" className="hover:text-white transition-colors">Contact Us</a></li>
+              </ul>
+            </div>
+
+            {/* Contact Info */}
+            <div>
+              <h4 className="font-semibold mb-4 text-white">Contact</h4>
+              <ul className="space-y-2 text-slate-300 text-sm">
+                <li className="flex items-center space-x-2">
+                  <span>📍</span>
+                  <span>Police Regional Office 4B<br />MIMAROPA Region</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <span>📧</span>
+                  <span>cybersafe4b@pro4b.pnp.gov.ph</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <span>📞</span>
+                  <span>Emergency Hotline: 911</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-slate-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <div className="text-slate-400 text-sm mb-4 md:mb-0">
+              © 2025 CyberSafe4B - Police Regional Office 4B. All rights reserved.
+            </div>
+            <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                <Image src="/pnp-logo.svg" alt="PNP Logo" width={24} height={24} />
+                <span className="text-slate-400 text-sm">Philippine National Police</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
