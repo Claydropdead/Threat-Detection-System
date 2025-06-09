@@ -14,7 +14,7 @@ export default function LandingPage() {
         "Machine learning algorithms",
         "Pattern recognition technology", 
         "Real-time threat database",
-        "Local scam pattern analysis"
+        "Local threat pattern analysis"
       ]
     },
     {
@@ -33,7 +33,7 @@ export default function LandingPage() {
       title: "MIMAROPA-Focused",
       description: "Specially designed para sa mga cyber threats na nakakaapekto sa Region IV-B at buong Pilipinas",
       details: [
-        "Regional scam pattern recognition",
+        "Regional threat pattern recognition",
         "Tagalog/English analysis",
         "Philippine-specific threats",
         "Local context awareness"
@@ -171,9 +171,8 @@ export default function LandingPage() {
               <p className="text-slate-600 text-sm">Learn how to stay safe online.</p>
             </div>
             <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm">
-              <div className="text-3xl mb-2 text-yellow-500">⚠️</div>
-              <h3 className="font-semibold mb-1">Scam Alerts & Advisories</h3>
-              <p className="text-slate-600 text-sm">Get real-time updates on scams.</p>
+              <div className="text-3xl mb-2 text-yellow-500">⚠️</div>              <h3 className="font-semibold mb-1">Threat Alerts & Advisories</h3>
+              <p className="text-slate-600 text-sm">Get real-time updates on digital threats.</p>
             </div>
             <div className="bg-white rounded-xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm">
               <div className="text-3xl mb-2 text-blue-400">👥</div>
@@ -215,7 +214,7 @@ export default function LandingPage() {
       <section className="bg-blue-700 py-12">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join us in building a cyber-aware Philippines.</h2>
-          <p className="text-white/90 text-lg mb-6">Together, we can fight misinformation, scams, and digital crime.</p>
+          <p className="text-white/90 text-lg mb-6">Together, we can fight misinformation, digital threats, and cybercrime.</p>
           <a href="#get-involved" className="inline-block bg-white text-blue-700 font-semibold px-8 py-3 rounded-lg shadow hover:bg-blue-50 transition-all">Get Involved</a>
         </div>
       </section>

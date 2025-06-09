@@ -10,7 +10,7 @@ import { ThreatDetectionResult } from './interfaces';
 import ResultsDisplay from './ResultsDisplay';
 
 export default function Home() {
-  const [scamContent, setScamContent] = useState("");
+  const [threatContent, setThreatContent] = useState("");
   const [analysisResult, setAnalysisResult] = useState<ThreatDetectionResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -191,7 +191,7 @@ export default function Home() {
     try {
       // Prepare request body with text content (can be empty if image or audio is provided)
       const requestBody: { content: string; imageBase64?: string; audioBase64?: string } = {
-        content: scamContent.trim(),
+        content: threatContent.trim(),
       };
 
       // If an image is selected, add its base64 data
@@ -310,7 +310,7 @@ export default function Home() {
                 {/* Text Input Section */}
                 <div className="space-y-4">
                   <label
-                    htmlFor="scamContent"
+                    htmlFor="threatContent"
                     className="block text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3"
                   >
                     📝 Enter content to analyze
@@ -320,8 +320,8 @@ export default function Home() {
                   
                   <div className="relative">
                     <textarea
-                      id="scamContent"
-                      name="scamContent"
+                      id="threatContent"
+                      name="threatContent"
                       rows={7}
                       className={`w-full p-4 border-2 ${
                         !hasAcceptedTerms 
@@ -333,8 +333,8 @@ export default function Home() {
                           ? "💡 Optional: Add text for analysis alongside the image..." 
                           : "📱 Paste suspicious text here (SMS, email, message, etc.)...\n\nExample:\n'ALERT: New login detected from unknown location. Secure your account: unknown-security.com'"
                         )}
-                      value={scamContent}
-                      onChange={(e) => setScamContent(e.target.value)}
+                      value={threatContent}
+                      onChange={(e) => setThreatContent(e.target.value)}
                       disabled={isLoading || !hasAcceptedTerms}
                       onClick={!hasAcceptedTerms ? () => setShowTermsModal(true) : undefined}
                       maxLength={5000}
@@ -343,7 +343,7 @@ export default function Home() {
                     
                     {/* Character Counter */}
                     <div className="absolute bottom-3 right-3 text-xs text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-800/80 px-2 py-1 rounded">
-                      {scamContent.length}/5000
+                      {threatContent.length}/5000
                     </div>
                   </div>
                   
@@ -575,9 +575,9 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={hasAcceptedTerms ? handleDetectScam : () => setShowTermsModal(true)}
-                  disabled={isLoading || (!scamContent.trim() && !imagePreview && !audioBlob) || !hasAcceptedTerms}
+                  disabled={isLoading || (!threatContent.trim() && !imagePreview && !audioBlob) || !hasAcceptedTerms}
                   className={`w-full font-bold py-4 px-6 rounded-xl shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 text-lg ${
-                    hasAcceptedTerms && (scamContent.trim() || imagePreview || audioBlob) && !isLoading
+                    hasAcceptedTerms && (threatContent.trim() || imagePreview || audioBlob) && !isLoading
                       ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transform hover:scale-[1.02] focus:ring-blue-300 dark:focus:ring-blue-900/50'
                       : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
@@ -638,7 +638,7 @@ export default function Home() {
                 {analysisResult && !error && (
                   <ResultsDisplay 
                     analysisResult={analysisResult} 
-                    scamContent={scamContent} 
+                    threatContent={threatContent} 
                   />
                 )}                {/* Awaiting Analysis State */}
                 {!isLoading && !analysisResult && !error && (
@@ -650,10 +650,10 @@ export default function Home() {
                         </svg>
                       </div>
                       <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                        {scamContent.trim() || imagePreview || audioBlob ? "Ready to Analyze" : "Upload Content to Start"}
+                        {threatContent.trim() || imagePreview || audioBlob ? "Ready to Analyze" : "Upload Content to Start"}
                       </h3>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {scamContent.trim() || imagePreview || audioBlob 
+                        {threatContent.trim() || imagePreview || audioBlob 
                           ? "Click the analyze button to start AI-powered scam detection" 
                           : "Add text, upload an image, or record a voice message to begin scam analysis"
                         }

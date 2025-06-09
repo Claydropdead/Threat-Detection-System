@@ -32,7 +32,7 @@ export const getUserConsents = () => {
     // Try the new key first, then fall back to the old key for backward compatibility
     let consentsStr = localStorage.getItem('threatShieldConsents');
     if (!consentsStr) {
-      consentsStr = localStorage.getItem('scamDetectConsents');
+      consentsStr = localStorage.getItem('scamDetectConsents'); // Legacy fallback
     }
     return consentsStr ? JSON.parse(consentsStr) : {};
   } catch (error) {
@@ -47,7 +47,7 @@ export const hasUserConsent = (consentType: string) => {
     // First check the legacy simple flags (more reliable)
     if (consentType === 'termsAndConditions') {
       if (localStorage.getItem('threatShieldTermsAccepted') === 'true' || 
-          localStorage.getItem('scamDetectTermsAccepted') === 'true') {
+          localStorage.getItem('scamDetectTermsAccepted') === 'true') { // Legacy fallback
         return true;
       }
     }
@@ -81,9 +81,9 @@ export const clearAllConsents = () => {
   try {
     // Clear all possible consent storage locations
     localStorage.removeItem('threatShieldConsents');
-    localStorage.removeItem('scamDetectConsents'); // Clear old format
+    localStorage.removeItem('scamDetectConsents'); // Legacy fallback cleanup
     localStorage.removeItem('threatShieldTermsAccepted'); // Clear simple flag
-    localStorage.removeItem('scamDetectTermsAccepted'); // Clear legacy format
+    localStorage.removeItem('scamDetectTermsAccepted'); // Legacy fallback cleanup
     return true;
   } catch (error) {
     console.error('Error clearing all user consents:', error);

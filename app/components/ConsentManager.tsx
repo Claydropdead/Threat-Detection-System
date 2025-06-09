@@ -42,11 +42,11 @@ export default function ConsentManager() {
       setConsents({});
       window.location.reload(); // Reload to show terms again
     }
-  };// Legacy format support
+  };  // Legacy format support
   useEffect(() => {
     const legacyTermsAccepted = 
       localStorage.getItem('threatShieldTermsAccepted') === 'true' || 
-      localStorage.getItem('scamDetectTermsAccepted') === 'true';
+      localStorage.getItem('scamDetectTermsAccepted') === 'true'; // Legacy fallback
     
     if (legacyTermsAccepted && !consents?.termsAndConditions) {
       // We have a legacy consent but no new format - update display only

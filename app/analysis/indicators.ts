@@ -2,7 +2,7 @@
 
 import { CommonIndicators, IndicatorMatch } from './interfaces';
 
-// Comprehensive scam indicators organized by category
+// Comprehensive digital threat indicators organized by category
 export const commonIndicators: CommonIndicators = {
   // Urgency Tactics
   "Urgent action required": {
@@ -204,7 +204,7 @@ export function getInitializedIndicators(): CommonIndicators {
 }
 
 /**
- * Process content to detect scam indicators
+ * Process content to detect digital threat indicators
  * @param content - The content to analyze (can be text, image analysis text, or audio transcription)
  * @param indicatorsObj - The indicators object to update
  * @returns Object with detection results

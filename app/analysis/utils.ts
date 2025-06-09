@@ -1,18 +1,18 @@
 "use client";
 
 /**
- * Extract potential scam indicators from explanation text
+ * Extract potential threat indicators from explanation text
  * @param explanationText - The text to analyze for indicators
  * @returns Array of identified indicator strings
  */
-export const extractScamIndicators = (explanationText: string): string[] => {
+export const extractThreatIndicators = (explanationText: string): string[] => {
   if (!explanationText) return [];
   
   // Common phrases that introduce lists of indicators in AI explanations
   const introductionPhrases = [
     "indicators include:", "red flags include:", "suspicious elements include:",
     "warning signs include:", "suspicious indicators include:", "concerning elements include:",
-    "signs of a scam:", "scam indicators:", "suspicious patterns:", "red flags:",
+    "signs of a threat:", "threat indicators:", "suspicious patterns:", "red flags:",
     "concerning aspects:", "alarm bells include:", "suspicious factors:", "signs include:"
   ];
   

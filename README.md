@@ -1,6 +1,6 @@
 # Digital Threat Detection System
 
-A comprehensive AI-powered platform designed to help Filipinos identify, understand, and protect themselves from all types of digital threats including scams, phishing, deepfakes, social engineering, and emerging cyber threats.
+A comprehensive AI-powered cybersecurity digital threats analysis platform designed to help Filipinos identify, understand, and protect themselves from all types of digital threats including phishing, deepfakes, social engineering, financial fraud, and emerging cyber threats.
 
 ## Features
 
@@ -9,7 +9,7 @@ A comprehensive AI-powered platform designed to help Filipinos identify, underst
 - **Filipino-Focused**: Tailored for local context, languages, and common threat patterns
 - **Educational Content**: Provides detailed explanations and prevention tips
 - **Real-Time Analysis**: Instant threat assessment and risk scoring
-- **Comprehensive Coverage**: Detects scams, phishing, deepfakes, social engineering, and more
+- **Comprehensive Coverage**: Detects phishing, deepfakes, social engineering, financial fraud, and more
 
 ## Getting Started
 

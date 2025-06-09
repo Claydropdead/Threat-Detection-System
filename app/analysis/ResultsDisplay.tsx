@@ -1,17 +1,17 @@
 "use client";
 
 import { ThreatDetectionResult, ApiReportAgency } from './interfaces'; // Updated import
-import { extractScamIndicators, getColorByPercentage } from './utils';
+import { extractThreatIndicators, getColorByPercentage } from './utils';
 // Pattern-based detection disabled - now using purely Gemini-based risk assessment
 // import { getInitializedIndicators, detectIndicators, calculateRiskPercentage } from './indicators';
 
 interface ResultsDisplayProps {
   analysisResult: ThreatDetectionResult;
-  scamContent: string;
+  threatContent: string;
 }
 
 // Separate component for results display to improve code organization
-export default function ResultsDisplay({ analysisResult, scamContent }: ResultsDisplayProps) {
+export default function ResultsDisplay({ analysisResult, threatContent }: ResultsDisplayProps) {
   const apiPercent = analysisResult.probability;
 
   // Helper function to check if risk summary is inconsistent with calculated risk percentage
@@ -123,10 +123,9 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
   // Clean up structured formatting from the explanation
   displayExplanation = cleanupStructuredFormatting(displayExplanation);
   
-  
-  // Extract indicators from Gemini's analysis instead of pattern matching
+    // Extract indicators from Gemini's analysis instead of pattern matching
   const originalExplanationForIndicators = analysisResult.explanation || "";
-  const extractedIndicators = extractScamIndicators(originalExplanationForIndicators);
+  const extractedIndicators = extractThreatIndicators(originalExplanationForIndicators);
   
   // Use indicators extracted from Gemini's analysis
   const detectedIndicators = extractedIndicators.slice(0, 5); // Limit to top 5 for display
@@ -170,9 +169,7 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
   const getAssessmentText = (): string => {
     const contentType = (analysisResult.contentType || "").toLowerCase();    const contentPurpose = (analysisResult.contentPurpose || "").toLowerCase();
     const audienceTarget = (analysisResult.audienceTarget || "").toLowerCase();
-    // Removed unused audioAnalysisText variable as it's no longer needed with unified audio handling
-
-    // Check for API assessment, but NEVER use it if it mentions "scam"
+    // Removed unused audioAnalysisText variable as it's no longer needed with unified audio handling    // Check for API assessment, but NEVER use it if it mentions overly generic threat classification
     const apiAssessmentHasScam = analysisResult.assessment && 
                               analysisResult.assessment.toLowerCase().includes("scam");    // Audio content assessment uses EXACTLY the same assessment text as other content types
     // We don't need special handling for audio content anymore - it uses the same detection system
@@ -213,9 +210,7 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
       // Check for health-related content
       if (contentPurpose.match(/health|medical|treatment|cure|medicine|weight|diet|supplement/i)) {
         return "health";
-      }
-
-      // Check for audio content (if not caught by the specific scam override above)
+      }      // Check for audio content (general audio category)
       if (contentType.includes("audio")) {
         return "audio"; 
       }
@@ -231,8 +226,7 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
     
     // Get the content category
     const category = getContentCategory();
-    
-    // If API assessment exists but contains "scam", or no API assessment, override/provide our content-specific assessment
+      // If API assessment exists but contains generic classification, or no API assessment, override/provide our content-specific assessment
     if (apiAssessmentHasScam || !analysisResult.assessment) {
       // Provide assessments based on content category and risk level
       switch (category) {
@@ -291,8 +285,7 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
           return "Content With Minimal Risk Factors";
       }
     }
-    
-    // Use API's assessment only if it doesn't contain "scam"
+      // Use API's assessment only if it doesn't contain generic classification
     if (analysisResult.assessment && !apiAssessmentHasScam) {
       return analysisResult.assessment;
     }
@@ -354,24 +347,17 @@ export default function ResultsDisplay({ analysisResult, scamContent }: ResultsD
   if (!displayAdvice) {
     displayAdvice = "No specific advice available. Always exercise caution online.";
   }
-
   // --- Enhanced Safety & Security Tips ---
+  // Let Gemini AI decide on safety tips based on actual content analysis
+  // Remove predefined patterns and rely entirely on AI-generated advice
   let displayTutorialsAndTips: string[] = analysisResult.tutorialsAndTips || [];
-  const audioScamSafetyTip = "Be especially cautious with voice messages asking for urgent action, payments, or personal information. Always verify such requests through an official, independent channel before responding.";
-  const defaultSafetyTips = [
-      "Verify the identity of anyone contacting you, especially if unsolicited, before sharing personal information.",
-      "Be wary of requests for money, gift cards, or financial details, particularly if they create urgency or fear.",
-      "Use strong, unique passwords for all your accounts and enable two-factor authentication wherever possible.",
-      "Keep your software, operating system, and antivirus programs updated to protect against known vulnerabilities.",
-      "Think before you click on links or download attachments, especially from unknown or unverified sources."
-  ];
-
-  if (!displayTutorialsAndTips.length || (displayTutorialsAndTips.length === 1 && displayTutorialsAndTips[0].toLowerCase().includes("verify the identity"))) {
-    displayTutorialsAndTips = [...defaultSafetyTips];
-  }
   
-  if (isAudioClearlyScam && !displayTutorialsAndTips.some(tip => tip.toLowerCase().includes("voice message"))) {
-    displayTutorialsAndTips.push(audioScamSafetyTip);
+  // Only provide minimal fallback if Gemini didn't generate any tips
+  if (!displayTutorialsAndTips.length) {
+    displayTutorialsAndTips = [
+      "Always verify information from multiple reliable sources before taking action.",
+      "Be cautious when sharing personal information or making financial decisions based on online content."
+    ];
   }
 
 

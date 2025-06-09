@@ -252,31 +252,13 @@ function mapRiskLevelToStatus(riskLevel: string): string {
   }
 }
 
-// Extract keywords from text
+// Smart Content Analysis - Let Gemini determine what the content is
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function extractKeywords(text: string): string[] {
-  if (!text) return [];
-  
-  const keywords: string[] = [];
-  const lowerText = text.toLowerCase();
-  
-  // Common threat-related keywords
-  const threatKeywords = [
-    'urgent', 'immediate', 'verify', 'account', 'banking', 'password',
-    'prize', 'winner', 'lottery', 'investment', 'bitcoin', 'cryptocurrency',
-    'gift card', 'payment', 'transfer', 'hack', 'suspicious', 'government',
-    'bank', 'security', 'fraud', 'alert', 'access', 'limited time',
-    'phishing', 'scam', 'warning', 'verify', 'social security', 'tax',
-    'deepfake', 'ai-generated', 'social engineering', 'malware', 'cyber attack'
-  ];
-  
-  threatKeywords.forEach(keyword => {
-    if (lowerText.includes(keyword)) {
-      keywords.push(keyword);
-    }
-  });
-  
-  return keywords;
+  // Remove predefined patterns - let Gemini AI decide what the content is
+  // This function is kept for backward compatibility but returns empty array
+  // All keyword extraction is now handled by Gemini AI in the analysis
+  return [];
 }
 
 // Function to add model information to analysis results
@@ -321,15 +303,44 @@ async function analyzeWithGeminiAudioUsingModel(
   imageBase64: string | undefined, 
   apiUrl: string,
   modelName: string
-): Promise<any> {
-  const prompt = `You are a balanced cybersecurity and content analysis specialist with expertise in Philippine digital threats and content verification. Your task is to objectively analyze the provided audio recording to determine if it contains genuine threats, fraud, or significant security risks while distinguishing between legitimate content and actual dangers.
+): Promise<any> {  const prompt = `You are a balanced cybersecurity and content analysis specialist with expertise in Philippine digital threats and content verification. Your task is to intelligently analyze the provided audio recording by first determining what it actually is, then objectively assessing any genuine threats, fraud, or significant security risks while distinguishing between legitimate content and actual dangers.
 
-${content.trim() ? `Additional context provided by user: "${content}"` : "No additional text context provided by the user."}
+IMPORTANT: When providing safety advice and recommendations, they must be DIRECTLY RELATED to the user's specific query and the actual audio content being analyzed. Do not provide generic security advice - instead, focus on actionable recommendations that address the specific type of content, the actual risks identified, and the user's apparent concerns or questions.
+
+${content.trim() ? `User's audio content/query to analyze: "${content}"` : "No additional text context provided by the user."}
 ${imageBase64 ? "An image has also been provided for analysis alongside the audio, which may provide additional context or supplementary information." : ""}
 
-INSTRUCTIONS FOR BALANCED AUDIO ANALYSIS:
-Analyze the audio content objectively to determine its nature and any genuine security risks. Consider:
+INTELLIGENT AUDIO CONTENT ANALYSIS APPROACH:
+Be smart in analyzing and determining what this audio content actually is. Do not rely on predefined patterns or assumptions. Instead:
 
+1. AUDIO CONTENT IDENTIFICATION: First, intelligently determine what this audio actually is:
+   - What type of audio communication is this? (phone call, voice message, announcement, speech, etc.)
+   - What is the apparent context and setting?
+   - What is the primary purpose and intent of the communication?
+   - Who appears to be speaking and to whom?
+   - What language(s) and communication style are being used?
+
+2. CONTENT UNDERSTANDING: Deeply analyze what the audio is actually conveying:
+   - What is the speaker actually trying to communicate or accomplish?
+   - What explicit and implicit messages are being delivered?
+   - Are there cultural, linguistic, or regional context factors?
+   - What is the tone, urgency level, and communication approach?
+
+3. BALANCED RISK ASSESSMENT: Only after understanding what the audio actually is, assess potential risks:
+   - Based on what this audio actually is, what genuine risks might exist?
+   - Are there indicators of deception, manipulation, or malicious intent?
+   - What specific vulnerabilities or harm vectors are present?
+   - How might different audiences be affected?
+
+SMART ANALYSIS PRINCIPLES FOR AUDIO:
+- Do not assume content is malicious based on keywords or surface patterns
+- Consider legitimate uses and contexts for the type of audio identified
+- Distinguish between normal persuasive communication and actual manipulation
+- Recognize cultural and linguistic differences in Filipino communication styles
+- Assess actual intent rather than assumed intent based on predefined categories
+- Consider the full context and purpose of the audio communication
+
+OBJECTIVE AUDIO ANALYSIS CONSIDERATIONS:
 1. Voice characteristics: natural vs. synthetic speech patterns, audio quality indicators
 2. Communication intent: legitimate information sharing vs. malicious manipulation
 3. Actual risk indicators: direct requests for money/personal data, fraudulent claims, impersonation attempts
@@ -344,8 +355,20 @@ IMPORTANT: Distinguish between normal content and genuine threats:
 - Government or official communications about law enforcement activities are typically legitimate
 - Only flag content as HIGH RISK if it contains clear threat patterns like requests for money, personal data theft, impersonation, or fraudulent schemes
 
+INTELLIGENT SAFETY ADVICE GENERATION:
+When providing safety advice and recommendations, be smart and context-specific:
+- ANALYZE THE USER'S QUERY: Understand what the user is specifically asking about or concerned with
+- QUERY-SPECIFIC RECOMMENDATIONS: Provide advice that directly addresses the user's apparent question or concern
+- CONTENT-SPECIFIC GUIDANCE: Generate advice based on what the audio content actually IS and what the user seems to want to know about it
+- USER INTENT CONSIDERATION: If the user is asking "What is this?", "Is this safe?", "Should I trust this?", etc., tailor your advice to answer their specific question
+- CONTEXTUAL RELEVANCE: For legitimate content (government announcements, news, advertisements), provide digital literacy advice appropriate to that content type AND the user's apparent concern
+- THREAT-SPECIFIC ACTIONS: For actual threats, provide specific protective actions relevant to the particular threat identified AND the user's situation
+- FILIPINO CONTEXT: Consider local digital habits, common services (GCash, Maya, remittances), cultural communication patterns
+- AVOID GENERIC ADVICE: Do not use predefined safety tips - instead generate advice that directly addresses both the specific audio content analyzed AND the user's apparent query or concern
+- ACTIONABLE RECOMMENDATIONS: Provide clear, specific steps the user should take based on their query and the audio content analysis
+
 For audio content, provide a balanced risk assessment:
-- GENUINE THREAT IDENTIFICATION: Only identify actual security threats, scams, or fraud attempts
+- GENUINE THREAT IDENTIFICATION: Only identify actual security threats, fraud attempts, or digital risks
 - RISK PROBABILITY: Be conservative - only assign high risk percentages to clear threats
 - CONTENT CLASSIFICATION: Properly categorize legitimate content types (announcements, speeches, news, etc.)
 - BALANCED ASSESSMENT: Recognize that most content is not malicious
@@ -367,7 +390,12 @@ Provide a structured JSON response with the following fields:
     - "technicalRisk": object with "level" (string), "probability" (number), "indicators" (array of strings) - only for technical threats
     - "manipulationRisk": object with "level" (string), "probability" (number), "indicators" (array of strings) - only for malicious manipulation, not normal persuasion
     - "otherRisks": array of objects, each with "name" (string), "level" (string), "probability" (number), "indicators" (array of strings)
-- "safetyAdvice": string (provide balanced safety advice in English. For legitimate content, acknowledge its nature and provide general digital literacy advice rather than treating it as a threat).
+- "safetyAdvice": string (provide intelligent, context-specific safety advice in English based on what this audio content actually is and the specific risks you identified. DO NOT use generic predefined safety tips. Instead, generate advice that directly addresses: 1) the actual type of audio content (call, announcement, speech, etc.), 2) the genuine risks detected, 3) the apparent audience and context, 4) the user's specific query or concern, and 5) the Filipino digital and communication landscape. For legitimate content like government announcements, provide appropriate digital literacy guidance rather than treating it as a threat).
+- "safetyTutorials": array of strings (provide 6-8 intelligent, context-specific tutorials in English that directly relate to the actual audio content analyzed and risks identified. DO NOT use generic predefined tips. Each tutorial should be tailored to: 1) the specific type of audio content analyzed, 2) the actual risks detected, 3) the apparent target audience, 4) the user's specific query or concern, and 5) the Filipino audio/voice communication context. Focus on teaching users how to recognize similar audio content in the future and make informed decisions. Include practical examples relevant to the analyzed audio).
+- "preventionStrategies": object with the following fields (provide intelligent strategies based on actual audio content analysis, not predefined patterns):
+    - "threatPrevention": array of strings (intelligent strategies specifically for avoiding the types of threats identified in this audio content, not generic advice)
+    - "generalSafetyPractices": array of strings (practical safety measures for audio/voice communications relevant to the content type analyzed)
+    - "verificationMethods": array of strings (specific methods to verify or fact-check similar audio content in the future)
 - "contentClassification": object with the following fields:
     - "contentType": string (Classify what type of audio this is: public announcement, government speech, political statement, news report, advertisement, phone call, voice message, etc.)
     - "contentPurpose": string (Objective explanation of what this audio is trying to accomplish - focus on its apparent legitimate purpose)
@@ -508,27 +536,58 @@ async function analyzeWithGeminiUsingModel(
 ): Promise<any> {
   if (!apiUrl) { // Check if the URL is empty (meaning API key was missing)
     throw new Error('Gemini API URL is not configured due to missing API key.');
-  }    const prompt = `You are an elite cybersecurity, fraud detection, and risk assessment specialist with expertise in Philippine digital threats, global cyber attacks, and potentially harmful content. Your task is to thoroughly analyze the ${content.trim() ? "following text" : "provided image"} for any signs of threats, phishing, fraudulent activity, misinformation, dangerous content, or other potential risks. The user is likely in the Philippines and needs a comprehensive assessment of all potential hazards.
+  }  const prompt = `You are an elite cybersecurity, fraud detection, and risk assessment specialist with expertise in Philippine digital threats, global cyber attacks, and potentially harmful content. Your task is to intelligently analyze and thoroughly understand the nature of the ${content.trim() ? "following text" : "provided image"} by first determining what it actually is, then conducting a comprehensive assessment of all potential risks and threats.
 
-${content.trim() ? `Content to analyze: "${content}"` : "No text provided for analysis."}
+IMPORTANT: When providing safety advice and recommendations, they must be DIRECTLY RELATED to the user's specific query and the actual content being analyzed. Do not provide generic security advice - instead, focus on actionable recommendations that address the specific type of content, the actual risks identified, and the user's apparent concerns or questions.
+
+${content.trim() ? `User's content/query to analyze: "${content}"` : "No text provided for analysis."}
 ${imageBase64 ? (content.trim() ? "An image has also been provided for analysis alongside the text." : "Only an image has been provided for analysis.") : ""}
 
-SPECIAL INSTRUCTIONS FOR WEBSITE ANALYSIS AND RISK ASSESSMENT:
-If the content appears to be a website URL or description of a website, provide an in-depth analysis including:
-1. Website purpose identification - what the site claims to be for and its potential risks
-2. Website legitimacy assessment - whether it appears to be what it claims with multiple verification points
-3. Registration information analysis - domain age, ownership transparency, registration patterns that indicate risk
-4. Content analysis - professional vs. suspicious elements, misleading information, dangerous content
-5. Security indicators - https, certificates, privacy policies, data collection practices, permissions requested
-6. Risk patterns analysis - comparison with known threat, phishing, and malicious website patterns
-7. Target audience vulnerability assessment - why specific demographics might be at risk and impact level
-8. Filipino-specific risk indicators - cultural, linguistic or regional factors that increase danger to local users
-9. Technical risk assessment - potential malware, phishing infrastructure, suspicious redirects, data harvesting
-10. Safe browsing recommendations specific to the identified risks
-11. Content trustworthiness evaluation - accuracy, source credibility, factual consistency
-12. Potential harm classification - financial, personal data, misinformation, illegal activities, malicious software
+INTELLIGENT CONTENT ANALYSIS APPROACH:
+Be smart in analyzing and determining what this content actually is. Do not rely on predefined patterns or categories. Instead:
 
-Conduct a comprehensive forensic analysis and risk assessment of the ${content.trim() ? "text" : "image"} with particular attention to all types of potential dangers including threats, misinformation, harmful content, privacy risks, technical vulnerabilities, and manipulation tactics prevalent in the Philippines and Southeast Asia. Consider language patterns, urgency indicators, request types, technical elements, contextual red flags, psychological manipulation tactics, and potential harm vectors. 
+1. CONTENT IDENTIFICATION: First, intelligently determine what this content actually is:
+   - What type of communication is this? (message, email, website, document, advertisement, announcement, etc.)
+   - What is the source or apparent origin?
+   - What is the primary purpose and intent?
+   - Who appears to be the intended audience?
+   - What context clues help identify the content nature?
+
+2. CONTENT UNDERSTANDING: Deeply analyze the content's actual meaning:
+   - What is this content actually trying to communicate or accomplish?
+   - What explicit and implicit messages are being conveyed?
+   - Are there cultural, linguistic, or regional context factors?
+   - What technical elements or communication methods are being used?
+
+3. RISK ASSESSMENT: Only after understanding what the content actually is, assess potential risks:
+   - Based on what this content actually is, what genuine risks might exist?
+   - Are there indicators of deception, manipulation, or malicious intent?
+   - What specific vulnerabilities or harm vectors are present?
+   - How might different audiences be affected differently?
+
+SMART ANALYSIS PRINCIPLES:
+- Do not assume content is malicious based on keywords or surface patterns
+- Consider legitimate uses and contexts for the type of content identified  
+- Distinguish between normal persuasive communication and actual manipulation
+- Recognize cultural and linguistic differences in communication styles
+- Assess actual intent rather than assumed intent based on predefined categories
+- Consider the full context and purpose of the communication
+
+WEBSITE AND URL ANALYSIS:
+If the content contains URLs or describes websites, provide intelligent analysis:
+- Purpose identification: What the site/service actually does and why it exists
+- Legitimacy assessment: Multiple verification approaches and credibility indicators
+- Risk evaluation: Actual security concerns vs. assumed risks
+- User guidance: Specific, actionable advice based on what the site actually is
+
+PHILIPPINE CONTEXT AWARENESS:
+Consider Filipino cultural and linguistic context intelligently:
+- Normal communication patterns vs. exploitation tactics
+- Legitimate local services, businesses, and government communications
+- Cultural factors that might affect interpretation
+- Regional communication styles and preferences
+
+Conduct a comprehensive forensic analysis with particular attention to accurately identifying what the content is before assessing potential dangers. Be precise in distinguishing between legitimate content and actual threats, misinformation, harmful content, privacy risks, technical vulnerabilities, and manipulation tactics.
 
 For all content, conduct a full-spectrum risk assessment:
 - RISK IDENTIFICATION: Identify ALL potential risks - threats, phishing, fraud, misinformation, dangerous advice, harmful content, malicious links/software, privacy violations, etc.
@@ -549,6 +608,18 @@ For text content, especially analyze:
 - MANIPULATION TACTICS: Identify psychological tactics like urgency, authority abuse, scarcity, social proof, reciprocity
 - THREAT MODELING: What would happen if a user fully trusted and acted on this content? Map potential harm vectors
 
+INTELLIGENT SAFETY ADVICE GENERATION:
+When providing safety advice and recommendations, be smart and context-specific:
+- ANALYZE THE USER'S QUERY: Understand what the user is specifically asking about or concerned with
+- QUERY-SPECIFIC RECOMMENDATIONS: Provide advice that directly addresses the user's apparent question or concern
+- CONTENT-SPECIFIC GUIDANCE: Generate advice based on what the content actually IS and what the user seems to want to know about it
+- USER INTENT CONSIDERATION: If the user is asking "What is this?", "Is this safe?", "Should I trust this?", etc., tailor your advice to answer their specific question
+- CONTEXTUAL RELEVANCE: For legitimate content (news articles, business websites, government communications), provide digital literacy advice appropriate to that content type AND the user's apparent concern
+- THREAT-SPECIFIC ACTIONS: For actual threats, provide specific protective actions relevant to the particular threat identified AND the user's situation
+- FILIPINO CONTEXT: Consider local digital habits, common services (GCash, Maya, banking, e-commerce), cultural communication patterns
+- AVOID GENERIC ADVICE: Do not use predefined safety tips - instead generate advice that directly addresses both the specific content analyzed AND the user's apparent query or concern
+- ACTIONABLE RECOMMENDATIONS: Provide clear, specific steps the user should take based on their query and the content analysis
+
 For URLs and website descriptions, provide comprehensive explanation of what the website is for, whether it's legitimate, and what users should know about it in both English and Tagalog.
 
 Provide a structured JSON response with the following fields:
@@ -568,14 +639,13 @@ Provide a structured JSON response with the following fields:
     - "technicalRisk": object with "level" (string), "probability" (number), "indicators" (array of strings)
     - "manipulationRisk": object with "level" (string), "probability" (number), "indicators" (array of strings)
     - "otherRisks": array of objects, each with "name" (string), "level" (string), "probability" (number), "indicators" (array of strings)
-- "safetyAdvice": string (provide detailed, actionable safety advice in English specific to ALL risks identified. For high risk scenarios, include specific protective actions the user should take immediately. For medium-low risk, provide contextual safety practices. Include both immediate steps and longer-term protective measures).
-- "safetyTutorials": array of strings (provide 6-8 detailed, actionable tutorials in English on how to identify and protect against ALL types of risks identified. Each tutorial should be comprehensive yet concise, include the reasoning behind it, examples of what to look for, and be directly relevant to the specific risks in the analyzed content. Cover different risk categories - not just threats but also misinformation, harmful content, technical risks, etc. Tailor to the Philippine context when relevant).
-- "preventionStrategies": object with the following fields (provide strategies for different risk types):
-    - "threatPrevention": array of strings (specific strategies for avoiding threats)
-    - "misinformationDefense": array of strings (methods to verify information accuracy)
-    - "privacyProtection": array of strings (ways to safeguard personal information)
-    - "technicalSafeguards": array of strings (technical measures to protect devices/accounts)
-    - "generalSafetyPractices": array of strings (broader digital safety practices)
+- "safetyAdvice": string (provide intelligent, context-specific safety advice in English based on what this content actually is and the specific risks you identified. DO NOT use generic predefined safety tips. Instead, generate advice that directly addresses the actual content type, purpose, and genuine risks detected. For legitimate content, provide appropriate digital literacy guidance. For actual threats, provide specific protective actions. Tailor your advice to the Filipino context when relevant, considering local digital habits, services, and threat landscape).
+- "safetyTutorials": array of strings (provide 6-8 intelligent, context-specific tutorials in English that directly relate to the actual content analyzed and risks identified. DO NOT use generic predefined tips. Each tutorial should be tailored to: 1) the specific type of content analyzed, 2) the actual risks detected, 3) the apparent target audience, and 4) the Filipino digital context. Focus on teaching users how to recognize similar content in the future and make informed decisions. Include practical examples relevant to the analyzed content).
+- "preventionStrategies": object with the following fields (provide intelligent strategies based on actual content analysis, not predefined patterns):    - "threatPrevention": array of strings (intelligent strategies specifically for avoiding the types of threats identified in this content, not generic advice)
+    - "misinformationDefense": array of strings (specific methods to verify the type of information presented in this content, tailored to its source and claims)
+    - "privacyProtection": array of strings (contextual ways to safeguard personal information based on the specific privacy risks identified in this content)
+    - "technicalSafeguards": array of strings (relevant technical measures based on the actual technical risks detected, not generic security advice)
+    - "generalSafetyPractices": array of strings (broader digital safety practices that directly relate to the content type and context analyzed)
 - "reportingInfo": object with the following fields:
     - "introduction": string (A detailed introduction in English on the importance of reporting ALL types of harmful content, the impact of reporting, and the general process. Include information on what evidence to gather before reporting different types of harmful content).
     - "agencies": array of objects, where each object has:
