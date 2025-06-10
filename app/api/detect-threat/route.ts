@@ -303,12 +303,74 @@ async function analyzeWithGeminiAudioUsingModel(
   imageBase64: string | undefined, 
   apiUrl: string,
   modelName: string
-): Promise<any> {  const prompt = `You are a balanced cybersecurity and content analysis specialist with expertise in Philippine digital threats and content verification. Your task is to intelligently analyze the provided audio recording by first determining what it actually is, then objectively assessing any genuine threats, fraud, or significant security risks while distinguishing between legitimate content and actual dangers.
+): Promise<any> {  const prompt = `You are an intelligent cybersecurity analyst with deep knowledge of Philippine digital threats and global online safety. Your PRIMARY MISSION is to understand WHY the user is asking about this audio content and WHAT the content actually is, rather than making assumptions based on surface patterns.
 
-IMPORTANT: When providing safety advice and recommendations, they must be DIRECTLY RELATED to the user's specific query and the actual audio content being analyzed. Do not provide generic security advice - instead, focus on actionable recommendations that address the specific type of content, the actual risks identified, and the user's apparent concerns or questions.
+CRITICAL ANALYSIS FRAMEWORK:
 
-${content.trim() ? `User's audio content/query to analyze: "${content}"` : "No additional text context provided by the user."}
+STEP 1: USER INTENT UNDERSTANDING
+First, analyze the user's submission to understand:
+- WHY is the user asking about this audio content? (Are they suspicious? Curious? Seeking verification? Received it from someone?)
+- WHAT is the user's relationship to this content? (Did they receive it, encounter it, or are they considering trusting it?)
+- WHAT outcome is the user seeking? (Safety verification, explanation, identification, actionable advice?)
+- WHAT is the user's apparent concern or question? (Is it safe? What is it? Should I trust it? Is this legitimate?)
+
+STEP 2: ACTUAL AUDIO CONTENT IDENTIFICATION
+Before making ANY risk assessments, thoroughly understand what this audio content ACTUALLY is:
+- What type of audio communication is this really? (legitimate announcement, personal call, news report, etc.)
+- What is the actual source and context?
+- What legitimate purpose might this audio serve?
+- NEVER judge audio content solely by keywords, voice characteristics, or surface patterns
+- Research beyond first impressions to understand the true nature and purpose
+
+STEP 3: PURPOSE-BASED RISK ASSESSMENT
+Only after understanding both user intent AND actual audio content purpose:
+- Assess risks based on what the audio ACTUALLY is and does
+- Consider how the user's specific situation affects risk levels
+- Distinguish between legitimate communications and actual threats
+- Focus on real security risks rather than assumed dangers
+
+USER AUDIO QUERY ANALYSIS:
+User submitted: "${content.trim() ? content : "Audio content for analysis"}"
+
+${content.trim() ? `Analyze this user input to understand:
+1. What is the user asking about or concerned with regarding this audio?
+2. What appears to be their intent or goal?
+3. Are they seeking verification, explanation, or safety guidance about this audio?` : "No additional text context provided by the user."}
+
 ${imageBase64 ? "An image has also been provided for analysis alongside the audio, which may provide additional context or supplementary information." : ""}
+
+COMPREHENSIVE CONTEXT AWARENESS ANALYSIS FOR AUDIO:
+Before conducting your threat assessment, establish comprehensive contextual understanding by analyzing all available contextual dimensions:
+
+1. TEMPORAL CONTEXT ANALYSIS:
+   - Current date/time: ${new Date().toISOString()} (Philippine Time Zone)
+   - Time-sensitive elements: Are there urgency indicators, deadlines, or references to current events in the audio?
+   - Seasonal relevance: Does the audio relate to holidays, events, or time-specific periods in the Philippines?
+   - Timing patterns: When was this audio likely recorded and distributed? Does the timing suggest legitimate or suspicious intent?
+
+2. SITUATIONAL CONTEXT ANALYSIS:
+   - Current events context: How does this audio relate to ongoing news, political situations, or social issues in the Philippines?
+   - Economic context: Does this relate to current economic conditions or financial pressures affecting Filipinos?
+   - Social context: Are there cultural events, social movements, or community issues that provide context?
+   - Technology context: Does this leverage current voice technology trends or platform changes?
+
+3. AUDIO-SPECIFIC CONTEXT ANALYSIS:
+   - Recording quality: Professional vs. amateur recording, background noise, audio artifacts
+   - Voice characteristics: Natural speech patterns, accent analysis, emotional state indicators
+   - Communication setting: Private conversation, public announcement, broadcast, phone call context
+   - Audio authenticity: Signs of editing, splicing, or artificial generation
+
+4. COMMUNICATION CONTEXT ANALYSIS:
+   - Speaker-listener relationship: What relationship does the audio imply between speaker and listener?
+   - Communication purpose: Information sharing, persuasion, instruction, entertainment, or manipulation?
+   - Response expectations: What actions or responses does the audio expect from listeners?
+   - Channel appropriateness: Is the audio format appropriate for the claimed purpose?
+
+5. CULTURAL AND LINGUISTIC CONTEXT ANALYSIS:
+   - Philippine-specific elements: Local references, cultural practices, regional dialects
+   - Language patterns: Filipino/Tagalog usage, code-switching, communication styles
+   - Cultural vulnerabilities: Filipino cultural values or social dynamics being exploited
+   - Local threat relevance: How this fits into known audio-based threats targeting Filipinos
 
 INTELLIGENT AUDIO CONTENT ANALYSIS APPROACH:
 Be smart in analyzing and determining what this audio content actually is. Do not rely on predefined patterns or assumptions. Instead:
@@ -339,6 +401,17 @@ SMART ANALYSIS PRINCIPLES FOR AUDIO:
 - Recognize cultural and linguistic differences in Filipino communication styles
 - Assess actual intent rather than assumed intent based on predefined categories
 - Consider the full context and purpose of the audio communication
+
+CONTEXT-AWARE AUDIO ANALYSIS METHODOLOGY:
+Apply contextual intelligence throughout your audio analysis:
+- Cross-reference audio content against multiple contextual dimensions simultaneously
+- Identify context-specific risk factors unique to audio communications
+- Assess how contextual factors affect audio authenticity and speaker credibility
+- Consider context-dependent vulnerabilities specific to audio-based threats
+- Evaluate audio legitimacy within its proper contextual framework
+- Generate context-specific recommendations for audio content verification
+- Account for contextual factors that affect voice-based threat probability and impact
+- Recognize when limited audio context affects confidence levels and analysis quality
 
 OBJECTIVE AUDIO ANALYSIS CONSIDERATIONS:
 1. Voice characteristics: natural vs. synthetic speech patterns, audio quality indicators
@@ -536,42 +609,163 @@ async function analyzeWithGeminiUsingModel(
 ): Promise<any> {
   if (!apiUrl) { // Check if the URL is empty (meaning API key was missing)
     throw new Error('Gemini API URL is not configured due to missing API key.');
-  }  const prompt = `You are an elite cybersecurity, fraud detection, and risk assessment specialist with expertise in Philippine digital threats, global cyber attacks, and potentially harmful content. Your task is to intelligently analyze and thoroughly understand the nature of the ${content.trim() ? "following text" : "provided image"} by first determining what it actually is, then conducting a comprehensive assessment of all potential risks and threats.
+  }  const prompt = `You are an intelligent cybersecurity analyst with deep knowledge of Philippine digital threats and global online safety. Your PRIMARY MISSION is to understand WHY the user is asking about this content and WHAT the content actually is, rather than making assumptions based on surface patterns.
 
-IMPORTANT: When providing safety advice and recommendations, they must be DIRECTLY RELATED to the user's specific query and the actual content being analyzed. Do not provide generic security advice - instead, focus on actionable recommendations that address the specific type of content, the actual risks identified, and the user's apparent concerns or questions.
+CRITICAL ANALYSIS FRAMEWORK:
 
-${content.trim() ? `User's content/query to analyze: "${content}"` : "No text provided for analysis."}
+STEP 1: USER INTENT UNDERSTANDING
+First, analyze the user's submission to understand:
+- WHY is the user asking about this content? (Are they suspicious? Curious? Seeking verification? Received it from someone?)
+- WHAT is the user's relationship to this content? (Did they find it, receive it, encounter it, or are they considering using it?)
+- WHAT outcome is the user seeking? (Safety verification, explanation, identification, actionable advice?)
+- WHAT is the user's apparent concern or question? (Is it safe? What is it? Should I trust it? Is this legitimate?)
+
+STEP 2: ACTUAL CONTENT IDENTIFICATION
+Before making ANY risk assessments, thoroughly research and identify what this content ACTUALLY is:
+- For URLs/domains: Research the actual purpose, legitimate uses, and reputation of the website/service
+- For messages/text: Understand the actual context, source, and legitimate purpose
+- For images: Analyze what is actually shown and its real-world context
+- NEVER judge content solely by names, keywords, or surface appearance
+- Research beyond first impressions to understand the true nature and purpose
+
+STEP 3: PURPOSE-BASED RISK ASSESSMENT
+Only after understanding both user intent AND actual content purpose:
+- Assess risks based on what the content ACTUALLY is and does
+- Consider how the user's specific situation affects risk levels
+- Distinguish between legitimate tools/content and actual threats
+- Focus on real security risks rather than assumed dangers
+
+USER QUERY ANALYSIS:
+User submitted: "${content.trim() ? content : "Image/media content"}"
+
+${content.trim() ? `Analyze this user input to understand:
+1. What is the user asking about or concerned with?
+2. What appears to be their intent or goal?
+3. What is their apparent technical knowledge level?
+4. Are they seeking verification, explanation, or safety guidance?` : "No text provided for analysis."}
+
 ${imageBase64 ? (content.trim() ? "An image has also been provided for analysis alongside the text." : "Only an image has been provided for analysis.") : ""}
 
+INTELLIGENT CONTENT RESEARCH AND ANALYSIS:
+Before conducting your threat assessment, establish comprehensive contextual understanding by analyzing all available contextual dimensions:
+
+1. TEMPORAL CONTEXT ANALYSIS:
+   - Current date/time: ${new Date().toISOString()} (Philippine Time Zone)
+   - Time-sensitive elements: Are there urgency indicators, deadlines, time-limited offers, or references to current events?
+   - Seasonal relevance: Does the content relate to holidays, school years, tax seasons, or other time-specific periods in the Philippines?
+   - Timing patterns: When was this content likely created and distributed? Does the timing suggest legitimate or suspicious intent?
+
+2. SITUATIONAL CONTEXT ANALYSIS:
+   - Current events context: How does this content relate to ongoing news, political situations, natural disasters, or social issues in the Philippines?
+   - Economic context: Does this relate to current economic conditions, employment trends, or financial pressures affecting Filipinos?
+   - Social context: Are there cultural events, social movements, or community issues that provide context for this content?
+   - Technology context: Does this leverage current technology trends, app popularity, or digital platform changes?
+
+3. USER BEHAVIORAL CONTEXT ANALYSIS:
+   - Query intent analysis: What is the user trying to accomplish by submitting this content?
+   - Information-seeking patterns: Is the user asking for verification, explanation, safety assessment, or something else?
+   - Risk awareness level: Based on the query style, what appears to be the user's current cybersecurity awareness level?
+   - Decision context: Is the user facing a time-sensitive decision about this content?
+
+4. CONTENT DELIVERY CONTEXT ANALYSIS:
+   - Platform indicators: What platform or medium was this content likely delivered through? (SMS, email, social media, website, etc.)
+   - Distribution patterns: How is this type of content typically shared? (viral, targeted, mass distribution, etc.)
+   - Audience targeting: Who is this content designed to reach and through what channels?
+   - Engagement mechanisms: How does the content encourage user interaction or response?
+
+5. GEOGRAPHICAL AND CULTURAL CONTEXT ANALYSIS:
+   - Philippine-specific elements: References to local places, services, government agencies, cultural practices, or events
+   - Language context: Filipino/Tagalog usage patterns, code-switching, regional dialects, or translation quality indicators
+   - Local threat landscape: How does this content fit into known threat patterns targeting Filipinos?
+   - Cultural vulnerabilities: Does this exploit Filipino cultural values, social dynamics, or community structures?
+
+6. TECHNICAL CONTEXT ANALYSIS:
+   - Device/platform context: What devices or platforms is this content optimized for?
+   - Technical sophistication: What level of technical knowledge does creating/distributing this content require?
+   - Infrastructure dependencies: What technical infrastructure or services does this content rely on?
+   - Technical threat vectors: What technical risks are present based on the content format and delivery method?
+
+7. PSYCHOLOGICAL CONTEXT ANALYSIS:
+   - Emotional triggers: What emotions is this content designed to evoke? (fear, urgency, greed, curiosity, trust, etc.)
+   - Cognitive biases exploited: Does this leverage authority bias, social proof, scarcity, reciprocity, or other psychological principles?
+   - Vulnerability targeting: Does this specifically target psychological vulnerabilities common in certain demographics?
+   - Persuasion techniques: What persuasion or influence methods are being employed?
+
+8. COMMUNICATION CONTEXT ANALYSIS:
+   - Sender-receiver relationship: What relationship does the content imply between sender and recipient?
+   - Communication channel appropriateness: Is the channel used appropriate for the claimed purpose?
+   - Message authenticity indicators: Are there signs of impersonation, spoofing, or false identity?
+   - Response expectations: What actions or responses does the content expect from recipients?
+
 INTELLIGENT CONTENT ANALYSIS APPROACH:
-Be smart in analyzing and determining what this content actually is. Do not rely on predefined patterns or categories. Instead:
+NEVER make assumptions based on surface patterns, names, or keywords. Instead, conduct intelligent research:
 
-1. CONTENT IDENTIFICATION: First, intelligently determine what this content actually is:
-   - What type of communication is this? (message, email, website, document, advertisement, announcement, etc.)
-   - What is the source or apparent origin?
-   - What is the primary purpose and intent?
-   - Who appears to be the intended audience?
-   - What context clues help identify the content nature?
+1. CONTENT IDENTIFICATION AND RESEARCH: First, intelligently determine what this content actually is:
+   - For domain names/URLs: What is the actual purpose and function of this website/service?
+   - What legitimate use cases exist for this type of content?
+   - What is the source, origin, and intended purpose?
+   - Who is the target audience and why?
+   - What context clues help identify the true content nature?
 
-2. CONTENT UNDERSTANDING: Deeply analyze the content's actual meaning:
+2. EVIDENCE-BASED UNDERSTANDING: Deeply analyze the content's actual meaning and purpose:
    - What is this content actually trying to communicate or accomplish?
    - What explicit and implicit messages are being conveyed?
    - Are there cultural, linguistic, or regional context factors?
    - What technical elements or communication methods are being used?
+   - How does this content function in its intended context?
 
-3. RISK ASSESSMENT: Only after understanding what the content actually is, assess potential risks:
-   - Based on what this content actually is, what genuine risks might exist?
+3. INFORMED RISK ASSESSMENT: Only after understanding what the content actually IS and DOES:
+   - Based on the ACTUAL purpose and function, what genuine risks might exist?
    - Are there indicators of deception, manipulation, or malicious intent?
    - What specific vulnerabilities or harm vectors are present?
    - How might different audiences be affected differently?
+   - Does the content pose risks in its legitimate use or only when misused?
+
+RESEARCH-BASED ANALYSIS PRINCIPLES:
+- Research the actual purpose and function before assessing risk
+- Consider legitimate uses and contexts for the type of content identified
+- Distinguish between controversial/gray-area content and actual malicious threats
+- Recognize that names, appearances, or keywords can be misleading
+- Assess actual intent and function rather than assumed intent based on surface patterns
+- Consider the full context and legitimate purpose of the communication/tool/service
+- Understand that some legitimate tools may have controversial or dual-use purposes
+
+EXAMPLE ANALYSIS APPROACH:
+For a domain like "massgrave.dev":
+- Research: What does this website actually do? What is its stated purpose?
+- Context: Is this a known tool/service in certain communities?
+- Function: What actual functionality does it provide?
+- Legitimacy: Is this a legitimate tool that serves a real purpose?
+- Risk Assessment: Based on what it ACTUALLY is, not what the name suggests
 
 SMART ANALYSIS PRINCIPLES:
-- Do not assume content is malicious based on keywords or surface patterns
-- Consider legitimate uses and contexts for the type of content identified  
-- Distinguish between normal persuasive communication and actual manipulation
-- Recognize cultural and linguistic differences in communication styles
-- Assess actual intent rather than assumed intent based on predefined categories
-- Consider the full context and purpose of the communication
+- Research the actual purpose and function before assessing risk
+- Consider legitimate uses and contexts for the type of content identified
+- Distinguish between controversial/gray-area content and actual malicious threats
+- Recognize that names, appearances, or keywords can be misleading
+- Assess actual intent and function rather than assumed intent based on surface patterns
+- Consider the full context and legitimate purpose of the communication/tool/service
+- Understand that some legitimate tools may have controversial or dual-use purposes
+
+CONTEXT-AWARE ANALYSIS METHODOLOGY:
+Apply contextual intelligence throughout your analysis:
+- Cross-reference content against multiple contextual dimensions simultaneously
+- Identify context-specific risk factors that may not be apparent without situational awareness
+- Assess how contextual factors amplify or mitigate potential risks
+- Consider context-dependent user vulnerabilities and appropriate protective measures
+- Evaluate content legitimacy within its proper contextual framework
+- Generate context-specific recommendations rather than generic advice
+- Account for contextual factors that affect threat probability and impact severity
+- Recognize when limited context affects confidence levels and analysis quality
+
+CONTEXTUAL RISK ASSESSMENT FRAMEWORK:
+When evaluating risks, consider how context affects:
+- Threat likelihood: How contextual factors increase or decrease probability of actual threats
+- Impact severity: How contextual factors affect potential harm to users
+- User vulnerability: How contextual factors create or reduce user susceptibility
+- Mitigation effectiveness: How contextual factors affect the success of protective measures
+- Response urgency: How contextual factors affect the time-sensitivity of user actions
+- Verification complexity: How contextual factors affect the difficulty of content verification
 
 WEBSITE AND URL ANALYSIS:
 If the content contains URLs or describes websites, provide intelligent analysis:
@@ -610,15 +804,52 @@ For text content, especially analyze:
 
 INTELLIGENT SAFETY ADVICE GENERATION:
 When providing safety advice and recommendations, be smart and context-specific:
-- ANALYZE THE USER'S QUERY: Understand what the user is specifically asking about or concerned with
-- QUERY-SPECIFIC RECOMMENDATIONS: Provide advice that directly addresses the user's apparent question or concern
-- CONTENT-SPECIFIC GUIDANCE: Generate advice based on what the content actually IS and what the user seems to want to know about it
-- USER INTENT CONSIDERATION: If the user is asking "What is this?", "Is this safe?", "Should I trust this?", etc., tailor your advice to answer their specific question
-- CONTEXTUAL RELEVANCE: For legitimate content (news articles, business websites, government communications), provide digital literacy advice appropriate to that content type AND the user's apparent concern
-- THREAT-SPECIFIC ACTIONS: For actual threats, provide specific protective actions relevant to the particular threat identified AND the user's situation
-- FILIPINO CONTEXT: Consider local digital habits, common services (GCash, Maya, banking, e-commerce), cultural communication patterns
-- AVOID GENERIC ADVICE: Do not use predefined safety tips - instead generate advice that directly addresses both the specific content analyzed AND the user's apparent query or concern
-- ACTIONABLE RECOMMENDATIONS: Provide clear, specific steps the user should take based on their query and the content analysis
+- UNDERSTAND THE USER'S ACTUAL QUESTION: What is the user really asking? Do they want to know what something is, whether it's safe, or how to use it?
+- RESEARCH-BASED RECOMMENDATIONS: Base your advice on what the content ACTUALLY is, not assumptions
+- PURPOSE-AWARE GUIDANCE: For legitimate tools/services, explain their actual purpose and proper usage rather than treating them as threats
+- USER-INTENT MATCHING: If the user is asking "What is this?", focus on explaining what it actually is and does
+- CONTEXTUAL SAFETY: For legitimate but controversial tools, provide appropriate safety guidance about proper usage
+- THREAT-SPECIFIC ACTIONS: For actual threats, provide specific protective actions
+- FILIPINO CONTEXT: Consider local digital habits and services when relevant
+- AVOID ASSUMPTION-BASED ADVICE: Don't provide warnings based on names or surface patterns alone
+- RESEARCH-INFORMED RECOMMENDATIONS: Base all advice on understanding the actual content and user intent
+
+USER INTENT RECOGNITION PATTERNS:
+- "What is this?" / "Ano ito?" = User wants identification and explanation
+- "Is this safe?" / "Safe ba ito?" = User wants safety assessment
+- "Should I use this?" / "Dapat ba gamitin?" = User wants usage guidance  
+- "Is this legitimate?" / "Totoo ba ito?" = User wants legitimacy verification
+- "What does this do?" / "Ano ginagawa nito?" = User wants functionality explanation
+
+CONTENT PURPOSE UNDERSTANDING MANDATE:
+Before conducting ANY risk assessment, you MUST first understand what the content actually is:
+
+1. DOMAIN/URL ANALYSIS PROTOCOL:
+   - Research the actual website purpose and function
+   - Identify legitimate use cases and user communities
+   - Understand the service's actual business model and purpose
+   - Consider the difference between controversial tools and malicious sites
+   - Example: "massgrave.dev" is a Microsoft activation toolkit repository, not a malicious site despite the name
+
+2. TEXT/MESSAGE ANALYSIS PROTOCOL:
+   - Identify the actual source and context of the message
+   - Understand the legitimate purpose behind the communication
+   - Distinguish between normal business communications and actual threats
+   - Consider cultural and linguistic context factors
+
+3. IMAGE ANALYSIS PROTOCOL:
+   - Understand what is actually depicted in the image
+   - Consider the legitimate context where such images might appear
+   - Distinguish between legitimate screenshots and manipulated content
+   - Analyze the actual purpose of visual elements
+
+MANDATORY PRE-ASSESSMENT QUESTIONS:
+Before labeling ANY content as risky, ask yourself:
+1. What is this content's ACTUAL purpose and function?
+2. Who legitimately uses this type of content and why?
+3. What would happen if this content is exactly what it appears to be?
+4. Am I making assumptions based on names, keywords, or surface patterns?
+5. What evidence do I have that this is actually malicious vs. simply unfamiliar?
 
 For URLs and website descriptions, provide comprehensive explanation of what the website is for, whether it's legitimate, and what users should know about it in both English and Tagalog.
 
@@ -658,16 +889,43 @@ Provide a structured JSON response with the following fields:
 - "contentClassification": object with the following fields:
     - "contentType": string (Classify what type of content this is: website URL, social media post, SMS, email, advertisement, news, etc.)
     - "contentPurpose": string (Detailed explanation of what this content is trying to accomplish, including potential hidden purposes)
+    - "contextualFactors": object with the following fields:
+        - "temporalContext": object with the following fields:
+            - "timeSensitivity": string (How time-sensitive is this content: "Critical", "Urgent", "Moderate", "Low", "None")
+            - "timingAnalysis": string (Analysis of timing patterns and their significance)
+            - "seasonalRelevance": array of strings (Seasonal or periodic factors that provide context)
+        - "situationalContext": object with the following fields:
+            - "currentEventsRelevance": string (How this content relates to current events or news)
+            - "economicFactors": array of strings (Economic conditions or trends that provide context)
+            - "socialFactors": array of strings (Social or cultural factors that provide context)
+            - "technologyFactors": array of strings (Technology trends or platform changes that provide context)
+        - "geographicalContext": object with the following fields:
+            - "philippineSpecificElements": array of strings (Filipino cultural, linguistic, or regional elements identified)
+            - "localThreatRelevance": string (How this fits into the Philippine threat landscape)
+            - "culturalVulnerabilities": array of strings (Filipino cultural aspects that may be exploited)
+        - "psychologicalContext": object with the following fields:
+            - "emotionalTriggers": array of strings (Emotions this content is designed to evoke)
+            - "cognitiveBiasesTargeted": array of strings (Psychological biases being exploited)
+            - "persuasionTechniques": array of strings (Influence methods being employed)
+        - "communicationContext": object with the following fields:
+            - "deliveryChannel": string (Likely platform or medium used for distribution)
+            - "relationshipImplied": string (Implied relationship between sender and recipient)
+            - "authenticityIndicators": array of strings (Signs of genuine vs. impersonation)
+        - "contextualRiskFactors": array of strings (Risk factors that emerge from contextual analysis)
+        - "contextualProtectiveFactors": array of strings (Contextual factors that reduce risk or provide protection)
     - "audienceAnalysis": object with the following fields:
         - "targetAudience": string (Who is the target audience for this content)
         - "vulnerabilityFactors": array of strings (Specific factors that might make the target audience vulnerable)
         - "potentialImpact": string (The potential effect or harm this content could have on its audience)
+        - "contextualVulnerabilities": array of strings (Additional vulnerabilities that emerge from contextual analysis)
     - "trustworthinessIndicators": object with the following fields:
         - "positiveIndicators": array of strings (Elements that suggest the content may be legitimate or trustworthy)
         - "negativeIndicators": array of strings (Elements that raise concerns about trustworthiness)
+        - "contextualCredibilityFactors": array of strings (Credibility factors that emerge from contextual analysis)
         - "overallAssessment": string (Final evaluation of content trustworthiness)
     - "contentExplanation": string (A concise yet thorough explanation of what this content is, its purpose, legitimacy concerns, and ALL potential risks in plain language that non-technical users will understand. For websites, include what the site is for and potential dangers)
     - "contentExplanationTagalog": string (A natural Tagalog translation of the content explanation that ordinary Filipino users can easily understand)
+    - "contextualAnalysisSummary": string (A comprehensive summary of how contextual factors affect the interpretation and risk assessment of this content)
     - "riskSummary": string (A brief, clear summary of ALL risks identified that a user should be aware of before engaging with this content)
 
 ${imageBase64 ? "When analyzing the provided image, perform a comprehensive risk assessment including: digital manipulation indicators, inconsistent lighting/shadows, misaligned text elements, false/edited logos, suspicious QR codes, harmful URLs, malicious instructions, dangerous advice, manipulated documents, false health claims, misleading statistics/charts, hidden data, steganography, malicious code embedding attempts, tracking pixels, inappropriate material, personal data exposure, confidential information, and visual persuasion techniques. Pay special attention to text in the image for risk indicators in both English and Filipino/Tagalog." : ""}
@@ -682,6 +940,11 @@ Additional analysis instructions:
 7. For website URLs, perform deeper domain analysis to determine its purpose, registration history, and security status if possible.
 8. Pay special attention to Filipino cultural context that might make certain threats more effective in the Philippines (remittance services, OFW targeting, local payment systems).
 9. Provide practical, step-by-step advice for typical Filipino internet users who may have varying levels of technical knowledge.
+10. CONTEXT-AWARE ANALYSIS: Always consider how contextual factors (temporal, situational, cultural, psychological, technical) affect your risk assessment and recommendations.
+11. CONTEXTUAL CONFIDENCE: Explicitly state when contextual limitations affect your analysis confidence and what additional context would improve assessment accuracy.
+12. CONTEXTUAL RECOMMENDATIONS: Ensure all safety advice and recommendations are tailored to the specific contextual factors identified in your analysis.
+13. CONTEXTUAL VERIFICATION: Provide context-specific verification methods that account for the particular circumstances and characteristics of the content analyzed.
+14. CONTEXTUAL IMPACT ASSESSMENT: Consider how contextual factors amplify or mitigate potential risks and adjust your risk probability and severity assessments accordingly.
 
 Ensure your entire response is ONLY the JSON object, with no additional text, comments, or markdown formatting like \`\`\`json ... \`\`\` around it. The JSON must be properly formatted and all string values properly escaped. Each field must be present in your response even if some have minimal information due to the nature of the content.
 
