@@ -178,6 +178,263 @@ class ResponseCache {
 // Global cache instance
 const responseCache = new ResponseCache();
 
+// Rate Limiting System for Gemini Models
+interface RateLimitEntry {
+  requests: number;
+  windowStart: number;
+}
+
+interface ModelRateLimit {
+  requestsPerMinute: number;
+  requestsPerDay: number;
+  burstLimit: number; // Maximum requests in a 10-second burst
+}
+
+// Rate limits for different Gemini 2.0 models (based on Google's official limits)
+const MODEL_RATE_LIMITS: Record<string, ModelRateLimit> = {
+  'gemini-2.0-flash-lite': {
+    requestsPerMinute: 15,    // Conservative limit for free tier
+    requestsPerDay: 1500,     // Daily limit for free tier
+    burstLimit: 5             // Burst protection
+  },
+  'gemini-2.0-flash-exp': {
+    requestsPerMinute: 10,    // More conservative for experimental model
+    requestsPerDay: 1000,     // Lower daily limit
+    burstLimit: 3             // Stricter burst control
+  },
+  'gemini-2.0-flash': {
+    requestsPerMinute: 15,    // Standard limit
+    requestsPerDay: 1500,     // Standard daily limit
+    burstLimit: 5             // Standard burst limit
+  },
+  'gemini-2.0': {
+    requestsPerMinute: 10,    // More conservative for base model
+    requestsPerDay: 1000,     // Lower daily limit
+    burstLimit: 3             // Stricter burst control
+  }
+};
+
+class RateLimiter {
+  private perMinuteRequests = new Map<string, RateLimitEntry>();
+  private perDayRequests = new Map<string, RateLimitEntry>();
+  private burstRequests = new Map<string, RateLimitEntry>();
+  private globalMinuteRequests = new Map<string, RateLimitEntry>();
+  
+  // Cleanup interval for old entries
+  private cleanupInterval: NodeJS.Timeout;
+
+  constructor() {
+    // Clean up old entries every 5 minutes
+    this.cleanupInterval = setInterval(() => {
+      this.cleanup();
+    }, 5 * 60 * 1000);
+  }
+
+  private cleanup(): void {
+    const now = Date.now();
+    const oneMinute = 60 * 1000;
+    const oneDay = 24 * 60 * 60 * 1000;
+    const tenSeconds = 10 * 1000;
+
+    // Clean up per-minute entries older than 1 minute
+    for (const [key, entry] of this.perMinuteRequests.entries()) {
+      if (now - entry.windowStart > oneMinute) {
+        this.perMinuteRequests.delete(key);
+      }
+    }
+
+    // Clean up per-day entries older than 1 day
+    for (const [key, entry] of this.perDayRequests.entries()) {
+      if (now - entry.windowStart > oneDay) {
+        this.perDayRequests.delete(key);
+      }
+    }
+
+    // Clean up burst entries older than 10 seconds
+    for (const [key, entry] of this.burstRequests.entries()) {
+      if (now - entry.windowStart > tenSeconds) {
+        this.burstRequests.delete(key);
+      }
+    }
+
+    // Clean up global minute entries
+    for (const [key, entry] of this.globalMinuteRequests.entries()) {
+      if (now - entry.windowStart > oneMinute) {
+        this.globalMinuteRequests.delete(key);
+      }
+    }
+  }
+
+  private getClientIdentifier(request: NextRequest): string {
+    // Try to get the most reliable client identifier
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const realIp = request.headers.get('x-real-ip');
+    const clientIp = forwardedFor?.split(',')[0] || realIp || 'unknown';
+    
+    // Add user agent for additional uniqueness (but hash it for privacy)
+    const userAgent = request.headers.get('user-agent') || '';
+    const userAgentHash = crypto.createHash('sha256').update(userAgent).digest('hex').substring(0, 8);
+    
+    return `${clientIp}_${userAgentHash}`;
+  }
+
+  private updateCounter(map: Map<string, RateLimitEntry>, key: string, windowSize: number): number {
+    const now = Date.now();
+    const entry = map.get(key);
+
+    if (!entry || now - entry.windowStart > windowSize) {
+      // Start new window
+      map.set(key, { requests: 1, windowStart: now });
+      return 1;
+    } else {
+      // Increment existing window
+      entry.requests++;
+      return entry.requests;
+    }
+  }
+
+  public async checkRateLimit(request: NextRequest, modelName: string): Promise<{
+    allowed: boolean;
+    remainingRequests: number;
+    resetTime: number;
+    limitType: string;
+    retryAfter?: number;
+  }> {
+    const clientId = this.getClientIdentifier(request);
+    const limits = MODEL_RATE_LIMITS[modelName];
+    
+    if (!limits) {
+      console.warn(`⚠️ No rate limits defined for model: ${modelName}`);
+      return { allowed: true, remainingRequests: 100, resetTime: Date.now() + 60000, limitType: 'none' };
+    }
+
+    const now = Date.now();
+    
+    // Check burst limit (10 seconds)
+    const burstKey = `${clientId}_${modelName}_burst`;
+    const burstRequests = this.updateCounter(this.burstRequests, burstKey, 10 * 1000);
+    
+    if (burstRequests > limits.burstLimit) {
+      const entry = this.burstRequests.get(burstKey)!;
+      const resetTime = entry.windowStart + 10 * 1000;
+      return {
+        allowed: false,
+        remainingRequests: 0,
+        resetTime,
+        limitType: 'burst',
+        retryAfter: Math.ceil((resetTime - now) / 1000)
+      };
+    }
+
+    // Check per-minute limit
+    const minuteKey = `${clientId}_${modelName}_minute`;
+    const minuteRequests = this.updateCounter(this.perMinuteRequests, minuteKey, 60 * 1000);
+    
+    if (minuteRequests > limits.requestsPerMinute) {
+      const entry = this.perMinuteRequests.get(minuteKey)!;
+      const resetTime = entry.windowStart + 60 * 1000;
+      return {
+        allowed: false,
+        remainingRequests: 0,
+        resetTime,
+        limitType: 'minute',
+        retryAfter: Math.ceil((resetTime - now) / 1000)
+      };
+    }
+
+    // Check per-day limit
+    const dayKey = `${clientId}_${modelName}_day`;
+    const dayRequests = this.updateCounter(this.perDayRequests, dayKey, 24 * 60 * 60 * 1000);
+    
+    if (dayRequests > limits.requestsPerDay) {
+      const entry = this.perDayRequests.get(dayKey)!;
+      const resetTime = entry.windowStart + 24 * 60 * 60 * 1000;
+      return {
+        allowed: false,
+        remainingRequests: 0,
+        resetTime,
+        limitType: 'daily',
+        retryAfter: Math.ceil((resetTime - now) / 1000)
+      };
+    }
+
+    // Check global rate limiting (prevent system overload)
+    const globalKey = `global_${modelName}_minute`;
+    const globalRequests = this.updateCounter(this.globalMinuteRequests, globalKey, 60 * 1000);
+    const globalLimit = limits.requestsPerMinute * 10; // Allow 10x individual limit globally
+    
+    if (globalRequests > globalLimit) {
+      const entry = this.globalMinuteRequests.get(globalKey)!;
+      const resetTime = entry.windowStart + 60 * 1000;
+      return {
+        allowed: false,
+        remainingRequests: 0,
+        resetTime,
+        limitType: 'global',
+        retryAfter: Math.ceil((resetTime - now) / 1000)
+      };
+    }
+
+    // Calculate remaining requests (use the most restrictive limit)
+    const remainingMinute = Math.max(0, limits.requestsPerMinute - minuteRequests);
+    const remainingDay = Math.max(0, limits.requestsPerDay - dayRequests);
+    const remainingBurst = Math.max(0, limits.burstLimit - burstRequests);
+    
+    const remainingRequests = Math.min(remainingMinute, remainingDay, remainingBurst);
+    const resetTime = now + 60 * 1000; // Next minute for rate limit reset
+
+    return {
+      allowed: true,
+      remainingRequests,
+      resetTime,
+      limitType: 'allowed'
+    };
+  }
+
+  public getRateLimitStatus(request: NextRequest, modelName: string): {
+    currentUsage: {
+      perMinute: number;
+      perDay: number;
+      burst: number;
+    };
+    limits: ModelRateLimit;
+  } {
+    const clientId = this.getClientIdentifier(request);
+    const limits = MODEL_RATE_LIMITS[modelName] || MODEL_RATE_LIMITS['gemini-2.0-flash-lite'];
+
+    const minuteKey = `${clientId}_${modelName}_minute`;
+    const dayKey = `${clientId}_${modelName}_day`;
+    const burstKey = `${clientId}_${modelName}_burst`;
+
+    return {
+      currentUsage: {
+        perMinute: this.perMinuteRequests.get(minuteKey)?.requests || 0,
+        perDay: this.perDayRequests.get(dayKey)?.requests || 0,
+        burst: this.burstRequests.get(burstKey)?.requests || 0
+      },
+      limits
+    };
+  }
+
+  public destroy(): void {
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+    }
+  }
+}
+
+// Global rate limiter instance
+const rateLimiter = new RateLimiter();
+
+// Graceful shutdown cleanup
+process.on('SIGTERM', () => {
+  rateLimiter.destroy();
+});
+
+process.on('SIGINT', () => {
+  rateLimiter.destroy();
+});
+
 interface ReportAgency {
   name: string;
   link: string;
@@ -1041,24 +1298,73 @@ export async function POST(request: NextRequest) {
   if (!GEMINI_API_KEY) {
     console.error('Gemini API key is not configured. Please set GEMINI_API_KEY environment variable.');
     return NextResponse.json({ message: 'API key not configured. Please contact support.' }, { status: 500 });
-  }  try {
-    const body = await request.json();
-    const { content, imageBase64, audioBase64, simulateOCR, simulatedOCRText } = body;  // Accept optional image and audio data    
+  }
+  // Parse request body first
+  const body = await request.json();
+  const { content, imageBase64, audioBase64, simulateOCR, simulatedOCRText } = body;  // Accept optional image and audio data    
+  
+  // Allow content to be empty if an image or audio is provided
+  if ((!content || typeof content !== 'string') && !imageBase64 && !audioBase64) {
+    return NextResponse.json({ message: 'Either text content, image, or audio recording is required' }, { status: 400 });
+  }
+
+  // Determine which model will be used (first available model) for rate limiting
+  const modelToUse = GEMINI_MODELS[0]; // Primary model for rate limiting check
+  
+  // Apply rate limiting before processing
+  console.log(`🛡️ Checking rate limits for model: ${modelToUse}`);
+  const rateLimitResult = await rateLimiter.checkRateLimit(request, modelToUse);
+  
+  // Define rate limit headers function for use throughout the function
+  const getRateLimitHeaders = () => ({
+    'X-RateLimit-Limit': MODEL_RATE_LIMITS[modelToUse]?.requestsPerMinute.toString() || '15',
+    'X-RateLimit-Remaining': rateLimitResult.remainingRequests.toString(),
+    'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+  });
+  
+  if (!rateLimitResult.allowed) {
+    console.warn(`⚠️ Rate limit exceeded for ${modelToUse}: ${rateLimitResult.limitType} limit`);
     
-    // Allow content to be empty if an image or audio is provided
-    if ((!content || typeof content !== 'string') && !imageBase64 && !audioBase64) {
-      return NextResponse.json({ message: 'Either text content, image, or audio recording is required' }, { status: 400 });
-    }
+    // Return rate limit response with appropriate headers
+    const response = NextResponse.json({
+      message: `Rate limit exceeded. You have made too many requests.`,
+      error: `Rate limit exceeded: ${rateLimitResult.limitType}`,
+      limitType: rateLimitResult.limitType,
+      retryAfter: rateLimitResult.retryAfter,
+      resetTime: new Date(rateLimitResult.resetTime).toISOString(),
+      modelUsed: modelToUse
+    }, { status: 429 }); // Too Many Requests
     
-    console.log(`🚀 Starting analysis with Gemini model fallback system (${GEMINI_MODELS.length} models available)`);
+    // Add rate limit headers
+    response.headers.set('X-RateLimit-Limit', MODEL_RATE_LIMITS[modelToUse]?.requestsPerMinute.toString() || '15');
+    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remainingRequests.toString());
+    response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString());
+    response.headers.set('Retry-After', rateLimitResult.retryAfter?.toString() || '60');
     
-    // Use empty string if content is not provided but image/audio is
-    const textContent = content || '';
-      // Check cache first
+    return response;
+  }
+  
+  console.log(`✅ Rate limit check passed. Remaining requests: ${rateLimitResult.remainingRequests}`);
+  
+  console.log(`🚀 Starting analysis with Gemini model fallback system (${GEMINI_MODELS.length} models available)`);
+  
+  // Use empty string if content is not provided but image/audio is
+  const textContent = content || '';
+
+  try {// Check cache first
     const cachedResponse = responseCache.get(textContent, imageBase64, audioBase64);
     if (cachedResponse) {
       console.log('✅ Returning cached response - skipping API call');
-      return NextResponse.json(cachedResponse);
+      const response = NextResponse.json(cachedResponse);
+      
+      // Add rate limit headers even for cached responses
+      const rateLimitHeaders = getRateLimitHeaders();
+      response.headers.set('X-RateLimit-Limit', rateLimitHeaders['X-RateLimit-Limit']);
+      response.headers.set('X-RateLimit-Remaining', rateLimitHeaders['X-RateLimit-Remaining']);
+      response.headers.set('X-RateLimit-Reset', rateLimitHeaders['X-RateLimit-Reset']);
+      response.headers.set('X-Cache-Status', 'HIT');
+      
+      return response;
     }
     
     console.log('🔄 Cache miss - proceeding with API analysis');
@@ -1127,9 +1433,8 @@ export async function POST(request: NextRequest) {
       } else {
         // Standard text/image analysis
         analysis = await analyzeWithGemini(textContent, imageBase64);      }        // Dynamic intelligent scoring system - relies on Gemini's analysis
-        const calculateIntelligentRiskScore = (geminiAnalysis: any, userQuery: string): number => {
-          // Use Gemini's assessment as the primary score
-          let baseScore = geminiAnalysis.overallRiskProbability || 0;
+        const calculateIntelligentRiskScore = (geminiAnalysis: any, userQuery: string): number => {          // Use Gemini's assessment as the primary score
+          const baseScore = geminiAnalysis.overallRiskProbability || 0;
           
           // Dynamic adjustment based on Gemini's risk breakdown analysis
           const riskBreakdown = geminiAnalysis.riskBreakdown || {};
@@ -1184,9 +1489,8 @@ export async function POST(request: NextRequest) {
           } else if (queryContext.isIdentificationRequest && geminiAnalysis.riskCategories?.length > 0) {
             contextualAdjustment = 1.01; // Minimal boost for identification with detected risks
           }
-          
-          // Calculate final score using dynamic multipliers
-          let finalScore = Math.round(baseScore * riskIntensityMultiplier * confidenceAdjustment * contextualAdjustment);
+            // Calculate final score using dynamic multipliers
+          const finalScore = Math.round(baseScore * riskIntensityMultiplier * confidenceAdjustment * contextualAdjustment);
           
           // Ensure the score stays within reasonable bounds
           return Math.max(0, Math.min(100, finalScore));
@@ -1615,18 +1919,25 @@ export async function POST(request: NextRequest) {
         modelName: analysis.modelUsed || GEMINI_MODELS[0], // Use the model that was actually used
         backupModelsAvailable: GEMINI_MODELS.length - 1
       };
-      
-      // Cache the successful response before returning
+        // Cache the successful response before returning
       responseCache.set(textContent, formattedResponse, imageBase64, audioBase64);
+        // Create response with rate limit headers
+      const response = NextResponse.json(formattedResponse, { status: 200 });
       
-      return NextResponse.json(formattedResponse, { status: 200 });
-    } catch (processingError: any) {
+      // Add rate limit headers
+      const rateLimitHeaders = getRateLimitHeaders();
+      response.headers.set('X-RateLimit-Limit', rateLimitHeaders['X-RateLimit-Limit']);
+      response.headers.set('X-RateLimit-Remaining', rateLimitHeaders['X-RateLimit-Remaining']);
+      response.headers.set('X-RateLimit-Reset', rateLimitHeaders['X-RateLimit-Reset']);
+      response.headers.set('X-Cache-Status', 'MISS');
+      
+      return response;} catch (processingError: any) {
       console.error('Error processing API response:', processingError);      // Provide a fallback response when the API call succeeds but formatting fails
       const contentType = content.includes("http") ? "Website" : 
                           imageBase64 ? "Image" : 
                           audioBase64 ? "Audio" : "Message";
                           
-      return NextResponse.json({
+      const fallbackResponse = NextResponse.json({
         isThreat: false,
         probability: 0,
         confidence: "Low",
@@ -1660,23 +1971,45 @@ export async function POST(request: NextRequest) {
               url: "#",
               description: "Contact our support team for assistance with content that fails to process properly."
             }
-          ]
-        }
+          ]        }
       }, { status: 200 });
+        // Add rate limit headers even for processing error responses
+      const rateLimitHeaders = getRateLimitHeaders();
+      fallbackResponse.headers.set('X-RateLimit-Limit', rateLimitHeaders['X-RateLimit-Limit']);
+      fallbackResponse.headers.set('X-RateLimit-Remaining', rateLimitHeaders['X-RateLimit-Remaining']);
+      fallbackResponse.headers.set('X-RateLimit-Reset', rateLimitHeaders['X-RateLimit-Reset']);
+      fallbackResponse.headers.set('X-Cache-Status', 'ERROR');
+      
+      return fallbackResponse;
     }
   } catch (error: any) {
     console.error('Error in /api/detect-threat:', error);
     
     // Provide enhanced error information for model failures
     if (error.message.includes('All Gemini models failed')) {
-      return NextResponse.json({ 
+      const response = NextResponse.json({ 
         message: `All Gemini models failed. We tried: ${GEMINI_MODELS.join(', ')}. Please try again later or contact support.`,
         modelsFailed: GEMINI_MODELS,
         originalError: error.message || 'Unknown error'
       }, { status: 503 }); // Service Unavailable
+        // Add rate limit headers even for error responses
+      const rateLimitHeaders = getRateLimitHeaders();
+      response.headers.set('X-RateLimit-Limit', rateLimitHeaders['X-RateLimit-Limit']);
+      response.headers.set('X-RateLimit-Remaining', rateLimitHeaders['X-RateLimit-Remaining']);
+      response.headers.set('X-RateLimit-Reset', rateLimitHeaders['X-RateLimit-Reset']);
+      
+      return response;
     }
     
-    return NextResponse.json({ message: error.message || 'Internal Server Error' }, { status: 500 });
+    const response = NextResponse.json({ message: error.message || 'Internal Server Error' }, { status: 500 });
+    
+    // Add rate limit headers even for error responses
+    const rateLimitHeaders = getRateLimitHeaders();
+    response.headers.set('X-RateLimit-Limit', rateLimitHeaders['X-RateLimit-Limit']);
+    response.headers.set('X-RateLimit-Remaining', rateLimitHeaders['X-RateLimit-Remaining']);
+    response.headers.set('X-RateLimit-Reset', rateLimitHeaders['X-RateLimit-Reset']);
+    
+    return response;
   }
 }
 

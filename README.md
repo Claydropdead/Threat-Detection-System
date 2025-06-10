@@ -6,10 +6,13 @@ A comprehensive AI-powered cybersecurity digital threats analysis platform desig
 
 - **Multi-Modal Threat Detection**: Analyze text, images, audio, and video content for potential threats
 - **AI-Powered Analysis**: Leverages Google's Gemini 2.0 for advanced threat detection
+- **Comprehensive Rate Limiting**: Multi-layer protection with per-minute, per-day, and burst limiting
 - **Filipino-Focused**: Tailored for local context, languages, and common threat patterns
 - **Educational Content**: Provides detailed explanations and prevention tips
 - **Real-Time Analysis**: Instant threat assessment and risk scoring
 - **Comprehensive Coverage**: Detects phishing, deepfakes, social engineering, financial fraud, and more
+- **Smart Caching**: Intelligent response caching for improved performance
+- **Robust Error Handling**: Graceful fallbacks and comprehensive error management
 
 ## Getting Started
 
@@ -32,6 +35,27 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## Rate Limiting
+
+The system implements comprehensive rate limiting for all Gemini 2.0 models:
+
+- **Per-minute limits**: 10-15 requests depending on model
+- **Per-day limits**: 1,000-1,500 requests depending on model  
+- **Burst protection**: 3-5 requests per 10-second window
+- **Global system limits**: 10x individual limits for system protection
+
+Rate limiting includes proper HTTP headers (`X-RateLimit-*`) and graceful error handling. See [RATE_LIMITING.md](./RATE_LIMITING.md) for detailed documentation.
+
+### Testing Rate Limits
+
+```bash
+node test-rate-limiting.js
+```
+
+## Caching System
+
+Smart response caching reduces API calls and improves performance. See [CACHING.md](./CACHING.md) for details.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
