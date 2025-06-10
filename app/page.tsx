@@ -77,24 +77,23 @@ export default function LandingPage() {
         "Public-private partnership"
       ]
     }
-  ];
-  const howItWorksSteps = [
+  ];  const howItWorksSteps = [
     {
       step: "1",
-      title: "Mag-Upload o Mag-Paste",
-      description: "I-upload ang screenshot o i-paste ang suspicious message na na-receive ninyo",
+      title: "Upload or Paste Content",
+      description: "Upload a screenshot or paste the suspicious message, email, or content you've received for analysis",
       icon: "📱"
     },
     {
       step: "2", 
       title: "AI Analysis",
-      description: "Ang aming advanced AI system ay mag-aanalyze ng content para sa mga threat indicators",
+      description: "Our advanced AI system analyzes the content for threat indicators, malicious patterns, and security risks",
       icon: "🧠"
     },
     {
       step: "3",
-      title: "Makakuha ng Results",
-      description: "Instant risk assessment at detailed recommendations para sa inyong kaligtasan",
+      title: "Get Results",
+      description: "Receive instant risk assessment and detailed security recommendations to protect yourself",
       icon: "✅"
     }
   ];
@@ -140,14 +139,18 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col">
-      {/* Header */}
-      <header className="w-full border-b border-slate-100 bg-white sticky top-0 z-50">
+      {/* Header */}      <header className="w-full border-b border-slate-100 bg-white sticky top-0 z-50">
         <div className="container mx-auto flex items-center justify-between px-6 py-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Image src="/threatshield-icon.svg" alt="CyberSafe4B Logo" width={28} height={28} />
-            </div>
-            <span className="text-2xl font-bold tracking-tight text-blue-900">CYBERSAFE4B</span>
+          <div className="flex items-center space-x-4">
+            <Image 
+              src="/banner.jpg" 
+              alt="MIMAROPA Regional Logos" 
+              width={200} 
+              height={60} 
+              className="h-14 w-auto object-contain"
+            />
+            <span className="text-gray-400 text-3xl font-light">|</span>
+            <span className="text-3xl font-bold tracking-tight text-blue-900">CYBERSAFE4B</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-base font-medium">
             <a href="#" className="hover:text-blue-600 transition-colors">Home</a>
@@ -283,12 +286,16 @@ export default function LandingPage() {
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Logo and Description */}
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <Image src="/threatshield-icon.svg" alt="CyberSafe4B Logo" width={28} height={28} />
-                </div>
-                <span className="text-2xl font-bold tracking-tight">CYBERSAFE4B</span>
+            <div className="col-span-1 md:col-span-2">            <div className="flex items-center space-x-4 mb-4">
+                <Image 
+                  src="/banner.jpg" 
+                  alt="MIMAROPA Regional Logos" 
+                  width={180} 
+                  height={55} 
+                  className="h-12 w-auto object-contain"
+                />
+                <span className="text-gray-400 text-3xl font-light">|</span>
+                <span className="text-3xl font-bold tracking-tight">CYBERSAFE4B</span>
               </div>
               <p className="text-slate-300 mb-4 max-w-md">
                 An initiative of the Regional Information and Communications Technology Management Division (RICTMD) under Police Regional Office 4B – MIMAROPA.
