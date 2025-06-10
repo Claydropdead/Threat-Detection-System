@@ -248,31 +248,147 @@ export default function LandingPage() {
             </a>
           </div>
         </div>
-      </section>
+      </section>      {/* Featured Cyber Safety Posts */}
+      <section className="container mx-auto px-6 py-16">
+        <div className="max-w-4xl mx-auto">
+          <h3 className="text-2xl font-bold mb-8 text-center">Featured Cyber Safety Posts</h3>
+          
+          {/* Facebook Post Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Sample Facebook Post Card 1 */}
+            <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">f</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-slate-800">RICTMD MIMAROPA</h4>
+                  <p className="text-xs text-slate-500">Password security tips</p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-700 mb-3">
+                🔐 Password Security: Use strong, unique passwords for each account. Enable two-factor authentication whenever possible to add an extra layer of protection.
+              </p>
+              <a href="https://www.facebook.com/rictmd.mimaropa" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="text-blue-600 text-xs hover:underline">
+                View on Facebook →
+              </a>
+            </div>
 
-      {/* Latest Cyber Alerts & Partners */}
-      <section className="container mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-2 gap-10">
-        <div>
-          <h3 className="text-xl font-bold mb-4">Latest Cyber Alerts</h3>
-          <ul className="list-disc pl-5 text-slate-700 space-y-2">
-            <li>Be informed on CyberSafe4B (PRO 4B, RICTMD)</li>
-            <li>Police Regional Office 4B</li>
-            <li>Department of Information and Communications Technology</li>
-          </ul>
-        </div>
-        <div>
-          <h3 className="text-xl font-bold mb-4">Partners & Support</h3>
-          <ul className="list-disc pl-5 text-slate-700 space-y-2">
-            <li>Police Regional Office 4B</li>
-            <li>RICTMD</li>
-            <li>Philippine National Police</li>
-            <li>Local Government Units across MIMAROPA</li>
-          </ul>
-          <div className="mt-4">
-            <Image src="/pnp-logo.svg" alt="PNP Logo" width={60} height={60} />
+            {/* Sample Facebook Post Card 2 */}
+            <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">f</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-slate-800">RACU MIMAROPA</h4>
+                  <p className="text-xs text-slate-500">Online shopping safety</p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-700 mb-3">
+                🛒 Safe Online Shopping: Only buy from reputable websites with secure payment methods. Look for HTTPS and verified seller badges before making purchases.
+              </p>
+              <a href="https://www.facebook.com/racu.mimaropa" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="text-blue-600 text-xs hover:underline">
+                View on Facebook →
+              </a>
+            </div>
+
+            {/* Sample Facebook Post Card 3 */}
+            <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">f</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-slate-800">Police Regional Office Mimaropa</h4>
+                  <p className="text-xs text-slate-500">Social media protection</p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-700 mb-3">
+                📲 Social Media Safety: Be cautious about friend requests from strangers. Limit personal information sharing and review your privacy settings regularly.
+              </p>
+              <a href="https://www.facebook.com/homeofecowarriors" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="text-blue-600 text-xs hover:underline">
+                View on Facebook →
+              </a>
+            </div>
+
+            {/* Sample Facebook Post Card 4 */}
+            <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">f</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-slate-800">RICTMD MIMAROPA</h4>
+                  <p className="text-xs text-slate-500">Phishing awareness</p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-700 mb-3">
+                ⚠️ Phishing Alert: Never click suspicious links or download attachments from unknown senders. Always verify the sender's identity before taking any action.
+              </p>
+              <a href="https://www.facebook.com/rictmd.mimaropa" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="text-blue-600 text-xs hover:underline">
+                View on Facebook →
+              </a>
+            </div>
+
+            {/* Sample Facebook Post Card 5 */}
+            <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">f</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-slate-800">RACU MIMAROPA</h4>
+                  <p className="text-xs text-slate-500">Banking security</p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-700 mb-3">
+                💳 Banking Safety: Never share your OTP, PIN, or banking credentials with anyone. Banks will never ask for these details via email or phone.
+              </p>
+              <a href="https://www.facebook.com/racu.mimaropa" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="text-blue-600 text-xs hover:underline">
+                View on Facebook →
+              </a>
+            </div>
+
+            {/* Sample Facebook Post Card 6 */}
+            <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center space-x-2 mb-3">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-bold">f</span>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm text-slate-800">Police Regional Office Mimaropa</h4>
+                  <p className="text-xs text-slate-500">WiFi security</p>
+                </div>
+              </div>
+              <p className="text-sm text-slate-700 mb-3">
+                📶 WiFi Safety: Avoid using public WiFi for sensitive activities like online banking. Use a VPN when connecting to unsecured networks.
+              </p>
+              <a href="https://www.facebook.com/homeofecowarriors" 
+                 target="_blank" 
+                 rel="noopener noreferrer"
+                 className="text-blue-600 text-xs hover:underline">
+                View on Facebook →
+              </a>
+            </div>
           </div>
         </div>
-      </section>      {/* CTA Banner */}
+      </section>{/* CTA Banner */}
       <section className="bg-blue-700 py-12">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join us in building a cyber-aware Philippines.</h2>
@@ -314,9 +430,7 @@ export default function LandingPage() {
                 <li><a href="/analysis" className="hover:text-white transition-colors">Threat Analysis</a></li>
                 <li><a href="#contact" className="hover:text-white transition-colors">Contact Us</a></li>
               </ul>
-            </div>
-
-            {/* Contact Info */}
+            </div>            {/* Contact Info */}
             <div>
               <h4 className="font-semibold mb-4 text-white">Contact</h4>
               <ul className="space-y-2 text-slate-300 text-sm">
@@ -332,14 +446,51 @@ export default function LandingPage() {
                   <span>📞</span>
                   <span>Emergency Hotline: 911</span>
                 </li>
-              </ul>
+              </ul>              {/* Official Facebook Pages */}
+              <div className="mt-6">
+                <h5 className="font-semibold mb-3 text-white">Official Facebook Pages</h5>
+                <ul className="space-y-2 text-slate-300 text-sm">
+                  <li className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">f</span>
+                    </div>
+                    <a href="https://www.facebook.com/rictmd.mimaropa" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="hover:text-blue-400 transition-colors">
+                      RICTMD MIMAROPA
+                    </a>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">f</span>
+                    </div>
+                    <a href="https://www.facebook.com/racu.mimaropa" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="hover:text-blue-400 transition-colors">
+                      RACU MIMAROPA
+                    </a>
+                  </li>                  <li className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-600 rounded-sm flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">f</span>
+                    </div>
+                    <a href="https://www.facebook.com/homeofecowarriors" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       className="hover:text-blue-400 transition-colors">
+                      Police Regional Office Mimaropa
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
           {/* Bottom Bar */}
           <div className="border-t border-slate-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-slate-400 text-sm mb-4 md:mb-0">
-              © 2025 CyberSafe4B - Police Regional Office 4B. All rights reserved.
+              © 2025 CyberSafe4B - Police Regional Office Mimaropa. All rights reserved.
             </div>
             <div className="flex items-center space-x-6">
               <div className="flex items-center space-x-2">
