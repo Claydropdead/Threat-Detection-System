@@ -168,7 +168,7 @@ export default function LandingPage() {
            “Together, let’s create a secure online world where every Filipino can connect, learn, and grow without fear. Stay smart, stay safe, and protect our digital future!”
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <a href="#report" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition-all text-center">🔍 Analyze Now</a>
+            <a href="/analysis" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition-all text-center">🔍 Analyze Now</a>
           </div>
         </div>
         <div className="flex-1 flex justify-center md:justify-end">
@@ -251,7 +251,7 @@ export default function LandingPage() {
       </section>      {/* Featured Cyber Safety Posts */}
       <section className="container mx-auto px-6 py-16">
         <div className="max-w-4xl mx-auto">
-          <h3 className="text-2xl font-bold mb-8 text-center">Featured Cyber Safety Posts</h3>
+          <h3 className="text-2xl font-bold mb-8 text-center">Facebook Cyber Security Advisories</h3>
           
           {/* Facebook Post Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -388,12 +388,17 @@ export default function LandingPage() {
             </div>
           </div>
         </div>
-      </section>{/* CTA Banner */}
-      <section className="bg-blue-700 py-12">
+      </section>      {/* Mission Statement Banner */}
+      <section className="bg-gradient-to-r from-blue-700 to-blue-800 py-16">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Join us in building a cyber-aware Philippines.</h2>
-          <p className="text-white/90 text-lg mb-6">Together, we can fight misinformation, digital threats, and cybercrime.</p>
-          <a href="#get-involved" className="inline-block bg-white text-blue-700 font-semibold px-8 py-3 rounded-lg shadow hover:bg-blue-50 transition-all">Get Involved</a>
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
+              Empowering Every Filipino with AI-Driven Cybersecurity
+            </h2>
+            <p className="text-blue-100 text-lg md:text-xl mb-4 leading-relaxed">
+              CyberSafe4B stands as your digital guardian, utilizing cutting-edge artificial intelligence to detect threats, educate communities, and strengthen our nation's cyber resilience.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -485,18 +490,22 @@ export default function LandingPage() {
                 </ul>
               </div>
             </div>
-          </div>
-
-          {/* Bottom Bar */}
+          </div>          {/* Bottom Bar */}
           <div className="border-t border-slate-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-slate-400 text-sm mb-4 md:mb-0">
               © 2025 CyberSafe4B - Police Regional Office Mimaropa. All rights reserved.
+            <p className="text-sm text-slate-600 mb-4">
+              Made with <span className="text-red-500">❤</span> by <a href="https://pinesprojects.hashnode.dev" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">Pinesprojects</a>
+            </p>
             </div>
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Image src="/pnp-logo.svg" alt="PNP Logo" width={24} height={24} />
-                <span className="text-slate-400 text-sm">Philippine National Police</span>
-              </div>
+            <div className="flex items-center">
+              <Image 
+                src="/banner.jpg" 
+                alt="MIMAROPA Regional Logos" 
+                width={120} 
+                height={36} 
+                className="h-8 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
+              />
             </div>
           </div>
         </div>
