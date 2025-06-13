@@ -1967,7 +1967,7 @@ export async function POST(request: NextRequest) {
           introduction: "Since analysis is incomplete, we can't provide specific reporting guidance.",
           agencies: [
             {
-              name: "Digital Threat Shield Support",
+              name: "CyberSafe 4B Support",
               url: "#",
               description: "Contact our support team for assistance with content that fails to process properly."
             }

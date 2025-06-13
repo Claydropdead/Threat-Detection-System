@@ -150,7 +150,7 @@ export default function LandingPage() {
               className="h-14 w-auto object-contain"
             />
             <span className="text-gray-400 text-3xl font-light">|</span>
-            <span className="text-3xl font-bold tracking-tight text-blue-900">CYBERSAFE4B</span>
+            <span className="text-3xl font-bold tracking-tight text-blue-900">CyberSafe 4B</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8 text-base font-medium">
             <a href="#" className="hover:text-blue-600 transition-colors">Home</a>
@@ -174,13 +174,11 @@ export default function LandingPage() {
         <div className="flex-1 flex justify-center md:justify-end">
           <Image src="/file.jpg" alt="Cyber illustration" width={340} height={260} className="rounded-xl" />
         </div>
-      </section>
-
-      {/* What is CyberSafe4B? */}
+      </section>      {/* What is CyberSafe 4B? */}
       <section className="bg-slate-50 py-16 border-t border-slate-100">
         <div className="container mx-auto px-6">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">What is CyberSafe4B?</h2>          <p className="text-slate-700 max-w-3xl mb-10">
-            CyberSafe4B is an initiative of the Regional Information and Communications Technology Management Division (RICTMD) under Police Regional Office 4B – MIMAROPA. Our mission is to help every Filipino become more aware, alert, and protected in the digital space. We provide updated, accurate, and real-time information.
+          <h2 className="text-2xl md:text-3xl font-bold mb-4">What is CyberSafe 4B?</h2>          <p className="text-slate-700 max-w-3xl mb-10">
+            CyberSafe 4B is an initiative of the Regional Information and Communications Technology Management Division (RICTMD) under Police Regional Office 4B – MIMAROPA. Our mission is to help every Filipino become more aware, alert, and protected in the digital space. We provide updated, accurate, and real-time information.
           </p>
           
           {/* Our Core Features */}
@@ -394,9 +392,8 @@ export default function LandingPage() {
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
               Empowering Every Filipino with AI-Driven Cybersecurity
-            </h2>
-            <p className="text-blue-100 text-lg md:text-xl mb-4 leading-relaxed">
-              CyberSafe4B stands as your digital guardian, utilizing cutting-edge artificial intelligence to detect threats, educate communities, and strengthen our nation's cyber resilience.
+            </h2>            <p className="text-blue-100 text-lg md:text-xl mb-4 leading-relaxed">
+              CyberSafe 4B stands as your digital guardian, utilizing cutting-edge artificial intelligence to detect threats, educate communities, and strengthen our nation's cyber resilience.
             </p>
           </div>
         </div>
@@ -415,10 +412,8 @@ export default function LandingPage() {
                   height={55} 
                   className="h-12 w-auto object-contain"
                 />
-                <span className="text-gray-400 text-3xl font-light">|</span>
-                <span className="text-3xl font-bold tracking-tight">CYBERSAFE4B</span>
-              </div>
-              <p className="text-slate-300 mb-4 max-w-md">
+                <span className="text-gray-400 text-3xl font-light">|</span>                <span className="text-3xl font-bold tracking-tight">CyberSafe 4B</span>
+              </div>              <p className="text-slate-300 mb-4 max-w-md">
                 An initiative of the Regional Information and Communications Technology Management Division (RICTMD) under Police Regional Office 4B – MIMAROPA.
               </p>
               <p className="text-slate-400 text-sm">
@@ -491,9 +486,8 @@ export default function LandingPage() {
               </div>
             </div>
           </div>          {/* Bottom Bar */}
-          <div className="border-t border-slate-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <div className="text-slate-400 text-sm mb-4 md:mb-0">
-              © 2025 CyberSafe4B - Police Regional Office Mimaropa. All rights reserved.
+          <div className="border-t border-slate-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">            <div className="text-slate-400 text-sm mb-4 md:mb-0">
+              © 2025 CyberSafe 4B - Police Regional Office Mimaropa. All rights reserved.
             <p className="text-sm text-slate-600 mb-4">
               Made with <span className="text-red-500">❤</span> by <a href="https://pinesprojects.hashnode.dev" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">Pinesprojects</a>
             </p>

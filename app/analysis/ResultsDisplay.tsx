@@ -132,14 +132,13 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
   
   // Final indicators for display (use Gemini-extracted indicators)
   const finalIndicators = detectedIndicators;
-    
-  // Get badge color based on risk percentage - matches the risk thresholds exactly
+    // Get badge color based on risk percentage - matches the risk thresholds exactly
   const getBadgeColorClass = () => {
-    if (finalRiskPercentage >= 75) return 'bg-red-900 border-red-700 text-white';
-    if (finalRiskPercentage >= 50) return 'bg-orange-800 border-orange-700 text-white';
-    if (finalRiskPercentage >= 25) return 'bg-yellow-700 border-yellow-600 text-white';
-    return 'bg-green-700 border-green-600 text-white';
-  };  // Generate a consistent status based on the calculated risk percentage
+    if (finalRiskPercentage >= 75) return 'bg-red-600/80 border-red-500/60 text-white';
+    if (finalRiskPercentage >= 50) return 'bg-orange-600/80 border-orange-500/60 text-white';
+    if (finalRiskPercentage >= 25) return 'bg-yellow-600/80 border-yellow-500/60 text-white';
+    return 'bg-green-600/80 border-green-500/60 text-white';
+  };// Generate a consistent status based on the calculated risk percentage
   const getConsistentRiskStatus = (percentage: number): string => {
     // Using strict thresholds to ensure UI consistency
     if (percentage >= 75) return "Very High Risk Content";
@@ -392,7 +391,7 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
     return (
     <div className="space-y-6">
       {/* Main Results Card - Landing page style */}
-      <div className={`p-8 rounded-2xl border ${statusStyles.containerClasses} shadow-xl bg-white`}>
+      <div className={`p-8 rounded-2xl border ${statusStyles.containerClasses} shadow-lg bg-white`}>
         <div className="flex items-center justify-between mb-6">
           <h2 className={`text-3xl font-bold ${statusStyles.textClasses} flex items-center`}>
             <span className="mr-3 text-4xl">{analysisResult.contentType?.toLowerCase() === 'audio' ? '🎤' : statusStyles.icon}</span>
@@ -499,7 +498,7 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
       </div>
         {/* Detected Indicators Section */}
       {finalRiskPercentage > 15 && (
-        <div className={`p-6 rounded-2xl border ${statusStyles.containerClasses} shadow-xl bg-white`}>
+        <div className={`p-6 rounded-2xl border ${statusStyles.containerClasses} shadow-lg bg-white`}>
           <h3 className={`text-2xl font-bold mb-6 ${statusStyles.textClasses} flex items-center`}>
             <span className="mr-3">🔎</span>
             Content Analysis Factors
@@ -792,10 +791,8 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
         <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
           <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{displayExplanation}</p>
         </div>
-      </div>
-
-      {/* Advice Section */}
-      <div className={`p-6 rounded-2xl border ${statusStyles.containerClasses} shadow-xl bg-white`}>
+      </div>      {/* Advice Section */}
+      <div className={`p-6 rounded-2xl border ${statusStyles.containerClasses} shadow-lg bg-white`}>
         <h3 className={`text-2xl font-bold mb-6 ${statusStyles.textClasses} flex items-center`}>
           <span className="mr-3">💡</span>
           Recommended Actions
@@ -804,7 +801,7 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
           <p className="text-sm whitespace-pre-wrap leading-relaxed">{displayAdvice}</p>
         </div>
       </div>      {/* How to Avoid Scams (Tutorials and Tips) */}
-      <div className={`p-6 rounded-2xl border ${statusStyles.containerClasses} shadow-xl bg-white`}>
+      <div className={`p-6 rounded-2xl border ${statusStyles.containerClasses} shadow-lg bg-white`}>
         <h3 className={`text-2xl font-bold mb-6 ${statusStyles.textClasses} flex items-center`}>
           <span className="mr-3">🛡️</span>
           Safety & Security Tips
@@ -867,20 +864,19 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
 
       {/* Audio Content Verification Section - Enhanced */}
       {analysisResult.audioContentVerification && (
-        <div className="p-6 rounded-2xl bg-cyan-50 border border-cyan-200 shadow-xl">
-          <h3 className="text-2xl font-bold mb-6 text-cyan-800 flex items-center">
+        <div className="p-6 rounded-2xl bg-slate-50/50 border border-slate-200/60 shadow-lg">
+          <h3 className="text-2xl font-bold mb-6 text-slate-700 flex items-center">
             <span className="mr-3">🗣️</span>
             Audio Content Verification
           </h3>
-          <div className="bg-white rounded-lg p-6 border border-cyan-200">
-            {/* Add a verification status indicator based on risk percentage */}
-            <div className="mb-6 flex items-center">
+          <div className="bg-white rounded-lg p-6 border border-slate-200/60">
+            {/* Add a verification status indicator based on risk percentage */}            <div className="mb-6 flex items-center">
               <div className={`w-5 h-5 rounded-full mr-3 ${
-                finalRiskPercentage >= 75 ? 'bg-red-500' : 
-                finalRiskPercentage >= 50 ? 'bg-orange-500' : 
-                finalRiskPercentage >= 25 ? 'bg-yellow-500' : 'bg-green-500'
+                finalRiskPercentage >= 75 ? 'bg-red-400/70' : 
+                finalRiskPercentage >= 50 ? 'bg-orange-400/70' : 
+                finalRiskPercentage >= 25 ? 'bg-yellow-400/70' : 'bg-green-400/70'
               }`}></div>
-              <span className="text-sm font-medium text-cyan-800">
+              <span className="text-sm font-medium text-slate-700">
                 {finalRiskPercentage >= 75 ? 'Highly Suspicious Content' : 
                  finalRiskPercentage >= 50 ? 'Potentially Misleading Content' : 
                  finalRiskPercentage >= 25 ? 'Content With Minor Concerns' : 'Likely Legitimate Content'}
@@ -913,19 +909,18 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
       {/* Content Authenticity Check (formerly True vs. False Analysis Section) - Enhanced */}
       {(analysisResult.true_vs_false || isAudioClearlyScam) && (
         <div className="p-6 rounded-xl bg-green-50 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-700 shadow-lg">
-          <h3 className="text-xl font-bold mb-3 text-green-800 dark:text-green-200 flex items-center">
+          <h3 className="text-xl font-bold mb-3 text-slate-700 dark:text-slate-300 flex items-center">
             <span className="mr-2">✅</span>
             Content Authenticity Check
           </h3>
           <div className="bg-white dark:bg-green-950/50 rounded-lg p-4 border border-green-200 dark:border-green-600">
-            {/* Authenticity Rating */}
-            <div className="mb-4 flex items-center">
+            {/* Authenticity Rating */}            <div className="mb-4 flex items-center">
               <div className={`w-4 h-4 rounded-full mr-2 ${
-                finalRiskPercentage >= 75 ? 'bg-red-500' : 
-                finalRiskPercentage >= 50 ? 'bg-orange-500' : 
-                finalRiskPercentage >= 25 ? 'bg-yellow-500' : 'bg-green-500'
+                finalRiskPercentage >= 75 ? 'bg-red-400/70' : 
+                finalRiskPercentage >= 50 ? 'bg-orange-400/70' : 
+                finalRiskPercentage >= 25 ? 'bg-yellow-400/70' : 'bg-green-400/70'
               }`}></div>
-              <span className="text-sm font-medium text-green-800 dark:text-green-200">
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 {finalRiskPercentage >= 75 ? 'Very Low Authenticity Rating' : 
                  finalRiskPercentage >= 50 ? 'Low Authenticity Rating' : 
                  finalRiskPercentage >= 25 ? 'Medium Authenticity Rating' : 'High Authenticity Rating'}

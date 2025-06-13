@@ -261,7 +261,7 @@ export default function Home() {
               className="h-14 w-auto object-contain"
             />
             <span className="text-gray-400 text-3xl font-light">|</span>
-            <span className="text-3xl font-bold tracking-tight text-blue-900">CYBERSAFE4B</span>
+            <span className="text-3xl font-bold tracking-tight text-blue-900">CyberSafe 4B</span>
           </Link>
           <nav className="hidden md:flex items-center space-x-8 text-base font-medium">
             <Link href="/" className="hover:text-blue-600 transition-colors">
@@ -289,11 +289,11 @@ export default function Home() {
         {/* Hero Section - Aligned with landing page */}
         <section className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight text-slate-900">
-            Digital Threat Shield
+            CyberSafe 4B Analysis
           </h1>
           <p className="text-lg md:text-xl text-slate-700 max-w-3xl mx-auto mb-8 leading-relaxed">
             Protect yourself from evolving digital threats with advanced AI analysis. Get instant risk assessments for trending 
-            attacks in messages, emails, websites, and voice communications with real-time threat intelligence.
+            attacks in messages, emails, websites, and voice communications.
           </p>
         </section>
 
@@ -606,7 +606,7 @@ export default function Home() {
                   ) : hasAcceptedTerms ? (
                     <div className="flex items-center justify-center">
                       <span className="mr-2">🔍</span>
-                      Analyze for Scams
+                      Analyze
                     </div>
                   ) : (
                     <div className="flex items-center justify-center">
@@ -693,10 +693,10 @@ export default function Home() {
                 className="h-12 w-auto object-contain"
               />
               <span className="text-gray-400 text-2xl font-light">|</span>
-              <span className="text-2xl font-bold text-blue-900">CYBERSAFE4B</span>
+              <span className="text-2xl font-bold text-blue-900">CyberSafe 4B</span>
             </div>
             <p className="text-sm text-slate-600 mb-2">
-              &copy; 2025 Digital Threat Shield. All rights reserved.
+              &copy; 2025 CyberSafe 4B. All rights reserved.
             </p>
             <p className="text-sm text-slate-600 mb-4">
               Made with <span className="text-red-500">❤</span> by <a href="https://pinesprojects.hashnode.dev" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">Pinesprojects</a>

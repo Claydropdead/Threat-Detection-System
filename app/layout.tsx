@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Digital Threat Shield",
+  title: "CyberSafe 4B",
   description: "AI-powered cybersecurity digital threats analysis for phishing, deepfakes, and emerging cyber risks",
   icons: {
     icon: [

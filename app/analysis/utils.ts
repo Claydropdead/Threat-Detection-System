@@ -149,37 +149,37 @@ export const getColorByPercentage = (percent: number) => {
   // Ensure we use consistent risk level thresholds everywhere in the app
   if (percent >= 75) return {
     color: 'red',
-    containerClasses: 'bg-red-50 dark:bg-red-900/30 border-red-300 dark:border-red-700',
-    textClasses: 'text-red-700 dark:text-red-300',
-    badgeClasses: 'bg-red-500 text-white',
-    barColor: 'bg-red-500',
+    containerClasses: 'bg-red-50/60 dark:bg-red-950/20 border-red-200/70 dark:border-red-800/50',
+    textClasses: 'text-red-700/90 dark:text-red-300/90',
+    badgeClasses: 'bg-red-500/80 text-white',
+    barColor: 'bg-red-400/70',
     icon: '🚨',
     label: 'Very High Risk'
   };
   if (percent >= 50) return {
     color: 'orange',
-    containerClasses: 'bg-orange-50 dark:bg-orange-900/30 border-orange-300 dark:border-orange-700',
-    textClasses: 'text-orange-700 dark:text-orange-300',
-    badgeClasses: 'bg-orange-500 text-white',
-    barColor: 'bg-orange-500',
+    containerClasses: 'bg-orange-50/60 dark:bg-orange-950/20 border-orange-200/70 dark:border-orange-800/50',
+    textClasses: 'text-orange-700/90 dark:text-orange-300/90',
+    badgeClasses: 'bg-orange-500/80 text-white',
+    barColor: 'bg-orange-400/70',
     icon: '⚠️',
     label: 'High Risk'
   };
   if (percent >= 25) return {
     color: 'yellow',
-    containerClasses: 'bg-yellow-50 dark:bg-yellow-900/30 border-yellow-300 dark:border-yellow-700',
-    textClasses: 'text-yellow-700 dark:text-yellow-300',
-    badgeClasses: 'bg-yellow-500 text-white',
-    barColor: 'bg-yellow-500',
+    containerClasses: 'bg-yellow-50/60 dark:bg-yellow-950/20 border-yellow-200/70 dark:border-yellow-800/50',
+    textClasses: 'text-yellow-800/90 dark:text-yellow-200/90',
+    badgeClasses: 'bg-yellow-500/80 text-white',
+    barColor: 'bg-yellow-400/70',
     icon: '⚠️',
     label: 'Moderate Risk'
   };
   return {
     color: 'green',
-    containerClasses: 'bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700',
-    textClasses: 'text-green-700 dark:text-green-300',
-    badgeClasses: 'bg-green-500 text-white',
-    barColor: 'bg-green-500', 
+    containerClasses: 'bg-green-50/60 dark:bg-green-950/20 border-green-200/70 dark:border-green-800/50',
+    textClasses: 'text-green-700/90 dark:text-green-300/90',
+    badgeClasses: 'bg-green-500/80 text-white',
+    barColor: 'bg-green-400/70', 
     icon: '✅',
     label: 'Low Risk'
   };
