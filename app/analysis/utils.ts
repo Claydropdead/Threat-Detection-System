@@ -149,37 +149,37 @@ export const getColorByPercentage = (percent: number) => {
   // Ensure we use consistent risk level thresholds everywhere in the app
   if (percent >= 75) return {
     color: 'red',
-    containerClasses: 'bg-red-50/60 dark:bg-red-950/20 border-red-200/70 dark:border-red-800/50',
-    textClasses: 'text-red-700/90 dark:text-red-300/90',
-    badgeClasses: 'bg-red-500/80 text-white',
-    barColor: 'bg-red-400/70',
+    containerClasses: 'bg-gradient-to-br from-rose-100 via-red-100 to-pink-100 border-rose-300',
+    textClasses: 'text-slate-800',
+    badgeClasses: 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg',
+    barColor: 'bg-gradient-to-r from-red-400 to-rose-500',
     icon: '🚨',
     label: 'Very High Risk'
   };
   if (percent >= 50) return {
     color: 'orange',
-    containerClasses: 'bg-orange-50/60 dark:bg-orange-950/20 border-orange-200/70 dark:border-orange-800/50',
-    textClasses: 'text-orange-700/90 dark:text-orange-300/90',
-    badgeClasses: 'bg-orange-500/80 text-white',
-    barColor: 'bg-orange-400/70',
+    containerClasses: 'bg-gradient-to-br from-orange-100 via-amber-100 to-yellow-100 border-orange-300',
+    textClasses: 'text-slate-800',
+    badgeClasses: 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg',
+    barColor: 'bg-gradient-to-r from-orange-400 to-amber-400',
     icon: '⚠️',
     label: 'High Risk'
   };
   if (percent >= 25) return {
     color: 'yellow',
-    containerClasses: 'bg-yellow-50/60 dark:bg-yellow-950/20 border-yellow-200/70 dark:border-yellow-800/50',
-    textClasses: 'text-yellow-800/90 dark:text-yellow-200/90',
-    badgeClasses: 'bg-yellow-500/80 text-white',
-    barColor: 'bg-yellow-400/70',
+    containerClasses: 'bg-gradient-to-br from-yellow-100 via-amber-100 to-lime-100 border-yellow-300',
+    textClasses: 'text-slate-800',
+    badgeClasses: 'bg-gradient-to-r from-yellow-500 to-amber-500 text-white shadow-lg',
+    barColor: 'bg-gradient-to-r from-yellow-400 to-amber-400',
     icon: '⚠️',
     label: 'Moderate Risk'
   };
   return {
     color: 'green',
-    containerClasses: 'bg-green-50/60 dark:bg-green-950/20 border-green-200/70 dark:border-green-800/50',
-    textClasses: 'text-green-700/90 dark:text-green-300/90',
-    badgeClasses: 'bg-green-500/80 text-white',
-    barColor: 'bg-green-400/70', 
+    containerClasses: 'bg-gradient-to-br from-green-100 via-emerald-100 to-teal-100 border-green-300',
+    textClasses: 'text-slate-800',
+    badgeClasses: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg',
+    barColor: 'bg-gradient-to-r from-green-400 to-emerald-400',
     icon: '✅',
     label: 'Low Risk'
   };
@@ -208,11 +208,10 @@ export const getStatusStyles = (status: string | undefined, scamProbability?: st
   } else if (lowerStatus.includes('moderate risk') || lowerStatus.includes('medium risk')) {
     return getColorByPercentage(25); // Use consistent threshold for moderate risk
   } else if (lowerStatus.includes('low risk')) {
-    return getColorByPercentage(10); // Use consistent threshold for low risk
-  } else if (lowerStatus.includes('normal conversation')) {
+    return getColorByPercentage(10); // Use consistent threshold for low risk  } else if (lowerStatus.includes('normal conversation')) {
     return {
-      containerClasses: 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700',
-      textClasses: 'text-blue-700 dark:text-blue-300',
+      containerClasses: 'bg-gradient-to-br from-blue-100 via-sky-100 to-cyan-100 border-blue-300',
+      textClasses: 'text-slate-800',
       badgeClasses: 'bg-blue-500 text-white',
       barColor: 'bg-blue-500',
       icon: '💬',
@@ -220,8 +219,8 @@ export const getStatusStyles = (status: string | undefined, scamProbability?: st
     };
   }
   return { // Default / Fallback
-    containerClasses: 'bg-gray-50 dark:bg-gray-700/30 border-gray-200 dark:border-gray-600',
-    textClasses: 'text-gray-700 dark:text-gray-300',
+    containerClasses: 'bg-gradient-to-br from-gray-100 via-slate-100 to-zinc-100 border-gray-300',
+    textClasses: 'text-slate-800',
     badgeClasses: 'bg-gray-500 text-white',
     barColor: 'bg-gray-500',
     icon: 'ℹ️',

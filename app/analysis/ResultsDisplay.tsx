@@ -422,27 +422,26 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
               </span>
             )}
           </div>
-            
-          <div className="grid grid-cols-4 text-sm mt-3 font-medium">
-            <div className="text-green-600 flex flex-col items-center">
+              <div className="grid grid-cols-4 text-sm mt-3 font-medium">
+            <div className="text-green-700 flex flex-col items-center">
               <span className={finalRiskPercentage < 25 ? 'font-bold' : ''}>
                 {finalRiskPercentage < 25 ? `${Math.round(finalRiskPercentage)}%` : '0-24%'}
               </span>
               <span>Low Risk</span>
             </div>
-            <div className="text-yellow-600 flex flex-col items-center">
+            <div className="text-yellow-700 flex flex-col items-center">
               <span className={finalRiskPercentage >= 25 && finalRiskPercentage < 50 ? 'font-bold' : ''}>
                 {finalRiskPercentage >= 25 && finalRiskPercentage < 50 ? `${Math.round(finalRiskPercentage)}%` : '25-49%'}
               </span>
               <span>Moderate Risk</span>
             </div>
-            <div className="text-orange-600 flex flex-col items-center">
+            <div className="text-orange-700 flex flex-col items-center">
               <span className={finalRiskPercentage >= 50 && finalRiskPercentage < 75 ? 'font-bold' : ''}>
                 {finalRiskPercentage >= 50 && finalRiskPercentage < 75 ? `${Math.round(finalRiskPercentage)}%` : '50-74%'}
               </span>
               <span>High Risk</span>
             </div>
-            <div className="text-red-600 flex flex-col items-center">
+            <div className="text-red-700 flex flex-col items-center">
               <span className={finalRiskPercentage >= 75 ? 'font-bold' : ''}>
                 {finalRiskPercentage >= 75 ? `${Math.round(finalRiskPercentage)}%` : '75-100%'}
               </span>
@@ -541,30 +540,28 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
             </div>
           )}
         </div>
-      )}      {/* Image Analysis Section */}
-      {analysisResult.image_analysis && (
-        <div className="p-6 rounded-2xl bg-blue-50 border border-blue-200 shadow-xl">
-          <h3 className="text-2xl font-bold mb-4 text-blue-800 flex items-center">
+      )}      {/* Image Analysis Section */}      {analysisResult.image_analysis && (
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-50 via-gray-50 to-blue-50 border border-slate-200 shadow-xl">
+          <h3 className="text-2xl font-bold mb-4 text-slate-800 flex items-center">
             <span className="mr-3">🖼️</span>
             Image Analysis Results
           </h3>
-          <div className="bg-white rounded-lg p-6 border border-blue-200 shadow-sm">
-            <p className="text-sm text-blue-900 whitespace-pre-wrap leading-relaxed">{analysisResult.image_analysis || "No image analysis available."}</p>
+          <div className="bg-white/70 rounded-lg p-6 border border-slate-200 shadow-sm">
+            <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{analysisResult.image_analysis || "No image analysis available."}</p>
           </div>
         </div>
-      )}        {/* Audio Analysis Section */}
-      {analysisResult.audioAnalysis && ( 
-        <div className="p-6 rounded-2xl bg-purple-50 border border-purple-200 shadow-xl">
-          <h3 className="text-2xl font-bold mb-4 text-purple-800 flex items-center">
+      )}{/* Audio Analysis Section */}      {analysisResult.audioAnalysis && ( 
+        <div className="p-6 rounded-2xl bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 border border-slate-200 shadow-xl">
+          <h3 className="text-2xl font-bold mb-4 text-slate-800 flex items-center">
             <span className="mr-3">🎤</span>
             Voice Recording Analysis
           </h3>
-          <div className="bg-white rounded-lg p-6 border border-purple-200 shadow-sm">
+          <div className="bg-white/70 rounded-lg p-6 border border-slate-200 shadow-sm">
             {/* Unified format that matches text analysis results */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               <div className="space-y-4">
-                <p className="text-sm"><strong className="text-purple-800">Content Type:</strong> Voice Recording</p>
-                <p className="text-sm"><strong className="text-purple-800">Assessment:</strong> {assessmentText || 
+                <p className="text-sm"><strong className="text-slate-800">Content Type:</strong> Voice Recording</p>
+                <p className="text-sm"><strong className="text-slate-800">Assessment:</strong> {assessmentText || 
                   (finalRiskPercentage >= 75 
                     ? "High Risk Voice Message" 
                     : finalRiskPercentage >= 50 
@@ -573,13 +570,12 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
                         ? "Voice Recording with Some Concerns"
                         : "Normal Voice Communication"
                   )}
-                </p>
-                <p className="text-sm"><strong className="text-purple-800">AI Confidence:</strong> {
+                </p>                <p className="text-sm"><strong className="text-slate-800">AI Confidence:</strong> {
                   analysisResult.confidence || 
                   (audioAnalysisContent && audioAnalysisContent.length > 100 ? "High" : 
                    audioAnalysisContent && audioAnalysisContent.length > 50 ? "Medium" : "Low")
                 }</p>
-                <p className="text-sm"><strong className="text-purple-800">Content Purpose:</strong> {
+                <p className="text-sm"><strong className="text-slate-800">Content Purpose:</strong> {
                   analysisResult.contentPurpose || 
                   (analysisResult.contentDetails?.contentSummary || 
                    (hasContentCharacteristic("urgent") || hasContentCharacteristic("financial")
@@ -594,7 +590,7 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
                         ? "Personal communication or message"
                         : "General communication or content"))
                 }</p>
-                <p className="text-sm"><strong className="text-purple-800">Target Audience:</strong> {
+                <p className="text-sm"><strong className="text-slate-800">Target Audience:</strong> {
                   analysisResult.audienceTarget || 
                   analysisResult.audienceAnalysis || 
                   (hasContentCharacteristic("investment") && (hasContentCharacteristic("filipino") || hasContentCharacteristic("tagalog"))
@@ -610,13 +606,13 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
                       : "General audience")
                 }</p>                {/* Add voice authenticity indicator if detected */}
                 {hasContentCharacteristic("synthetic") || hasContentCharacteristic("artificial") || hasContentCharacteristic("generated") && (
-                  <p className="text-sm mt-2 text-red-700 dark:text-red-400 font-medium">
+                  <p className="text-sm mt-2 text-red-700 font-medium">
                     ⚠️ <strong>Voice Authenticity Alert:</strong> This recording may contain synthetic or artificially generated speech.
                   </p>
                 )}
               </div>
-              <div className="p-3 bg-purple-100/50 dark:bg-purple-900/30 rounded-lg">
-                <p className="font-bold text-lg text-purple-800 dark:text-purple-200">
+              <div className="p-3 bg-white/50 rounded-lg border border-slate-200">
+                <p className="font-bold text-lg text-slate-800">
                   {finalRiskPercentage >= 75 
                     ? '🚨 Very High Risk Content' 
                     : finalRiskPercentage >= 50 
@@ -639,30 +635,27 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
                   }
                 </p>
               </div>
-            </div>
-              {/* Main audio analysis content */}
-            <div className="mb-4 border-t border-purple-200 dark:border-purple-700 pt-4">
-              <h4 className="text-md font-semibold mb-2 text-purple-700 dark:text-purple-300">Voice Recording Analysis:</h4>
-              <p className="text-sm text-purple-900 dark:text-purple-100 whitespace-pre-wrap leading-relaxed">{analysisResult.audioAnalysis || "No audio analysis available."}</p>
+            </div>              {/* Main audio analysis content */}
+            <div className="mb-4 border-t border-slate-200 pt-4">
+              <h4 className="text-md font-semibold mb-2 text-slate-800">Voice Recording Analysis:</h4>
+              <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">{analysisResult.audioAnalysis || "No audio analysis available."}</p>
             </div>
             
             {/* Display indicators specific to audio if available */}
             {analysisResult.indicators && analysisResult.indicators.length > 0 && (
               <div className="mb-4">
-                <h4 className="text-md font-semibold mb-2 text-purple-700 dark:text-purple-300">Detected Factors:</h4>
+                <h4 className="text-md font-semibold mb-2 text-slate-800">Detected Factors:</h4>
                 <div className="flex flex-wrap gap-2">
                   {analysisResult.indicators.map((indicator, idx) => (
-                    <span key={`ind-audio-${idx}`} className="px-3 py-1 bg-purple-200 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full text-xs">{indicator}</span>
+                    <span key={`ind-audio-${idx}`} className="px-3 py-1 bg-slate-200 text-slate-800 rounded-full text-xs shadow-sm">{indicator}</span>
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* Voice characteristics section based on detector results */}
-            <div className="mb-4 border-t border-purple-200 dark:border-purple-700 pt-4">
-              <h4 className="text-md font-semibold mb-2 text-purple-700 dark:text-purple-300">Voice Characteristics:</h4>
+            )}            {/* Voice characteristics section based on detector results */}
+            <div className="mb-4 border-t border-slate-200 pt-4">
+              <h4 className="text-md font-semibold mb-2 text-slate-800">Voice Characteristics:</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">                {/* Voice authenticity */}
-                <div className="p-2 rounded bg-purple-100/40 dark:bg-purple-900/30">
+                <div className="p-2 rounded bg-white/60 border border-slate-200">
                   <span className="font-medium">Voice Authenticity:</span>{" "}
                   {hasContentCharacteristic("synthetic") || hasContentCharacteristic("artificial") 
                     ? "⚠️ Potential synthetic or artificially generated speech detected" 
@@ -707,18 +700,17 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
               </div>
             </div>            {/* If audio has keyPoints, display them */}
             {analysisResult.keyPoints && analysisResult.keyPoints.length > 0 && (
-              <div className="mb-6">
-                <h4 className="text-lg font-semibold mb-3 text-purple-700">Key Points (from audio transcript):</h4>
+              <div className="mb-6">                <h4 className="text-lg font-semibold mb-3 text-slate-800">Key Points (from audio transcript):</h4>
                 <ul className="list-disc list-inside space-y-2">
                   {analysisResult.keyPoints.map((point, idx) => (
-                    <li key={`kp-audio-${idx}`} className="text-sm text-purple-900 pl-3">{point}</li>
+                    <li key={`kp-audio-${idx}`} className="text-sm text-slate-700 pl-3">{point}</li>
                   ))}
                 </ul>
               </div>
             )}            {/* Display content-specific detail fields from audio analysis if available*/}
             {analysisResult.contentDetails && (
-              <div className="mt-6 border-t border-purple-200 pt-6">
-                <h4 className="text-lg font-semibold mb-4 text-purple-700">Audio Details:</h4>
+              <div className="mt-6 border-t border-slate-200 pt-6">
+                <h4 className="text-lg font-semibold mb-4 text-slate-800">Audio Details:</h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   {analysisResult.contentDetails.format && (
                     <div><span className="font-medium">Format:</span> {analysisResult.contentDetails.format}</div>
@@ -744,7 +736,7 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
             
             {/* Audio verification guidance section */}
             <div className="mt-6 border-t border-purple-200 pt-6">
-              <h4 className="text-lg font-semibold mb-4 text-purple-700">Verification Steps:</h4>
+              <h4 className="text-lg font-semibold mb-4 text-slate-800">Verification Steps:</h4>
               <ul className="list-disc list-inside space-y-3 text-sm">
                 <li>
                   <strong>Verify Speaker Identity:</strong> If the speaker claims to be someone you know, call them back on a known number (not a number provided in the message).
@@ -904,23 +896,20 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
               </div>            )}
           </div>
         </div>
-      )}
-
-      {/* Content Authenticity Check (formerly True vs. False Analysis Section) - Enhanced */}
+      )}      {/* Content Authenticity Check (formerly True vs. False Analysis Section) - Enhanced */}
       {(analysisResult.true_vs_false || isAudioClearlyScam) && (
-        <div className="p-6 rounded-xl bg-green-50 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-700 shadow-lg">
-          <h3 className="text-xl font-bold mb-3 text-slate-700 dark:text-slate-300 flex items-center">
-            <span className="mr-2">✅</span>
+        <div className={`p-6 rounded-2xl border ${statusStyles.containerClasses} shadow-lg bg-white`}>
+          <h3 className={`text-2xl font-bold mb-6 ${statusStyles.textClasses} flex items-center`}>
+            <span className="mr-3">✅</span>
             Content Authenticity Check
           </h3>
-          <div className="bg-white dark:bg-green-950/50 rounded-lg p-4 border border-green-200 dark:border-green-600">
+          <div className="bg-slate-50 rounded-lg p-6 border border-slate-200">
             {/* Authenticity Rating */}            <div className="mb-4 flex items-center">
               <div className={`w-4 h-4 rounded-full mr-2 ${
                 finalRiskPercentage >= 75 ? 'bg-red-400/70' : 
                 finalRiskPercentage >= 50 ? 'bg-orange-400/70' : 
                 finalRiskPercentage >= 25 ? 'bg-yellow-400/70' : 'bg-green-400/70'
-              }`}></div>
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              }`}></div>              <span className="text-sm font-medium text-slate-700">
                 {finalRiskPercentage >= 75 ? 'Very Low Authenticity Rating' : 
                  finalRiskPercentage >= 50 ? 'Low Authenticity Rating' : 
                  finalRiskPercentage >= 25 ? 'Medium Authenticity Rating' : 'High Authenticity Rating'}
@@ -928,18 +917,17 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
             </div>
             
             {analysisResult.true_vs_false && (
-              <div className="mb-4">
-                <h4 className="text-md font-semibold mb-2 text-green-700 dark:text-green-300">Authenticity Analysis:</h4>
-                <p className="text-sm text-green-900 dark:text-green-100 whitespace-pre-wrap leading-relaxed">
+              <div className="mb-4">                <h4 className="text-md font-semibold mb-2 text-slate-800">Authenticity Analysis:</h4>
+                <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
                   {analysisResult.true_vs_false}
                 </p>
               </div>
             )}
               {/* For audio content specifically - enhanced with investment scam detection */}
             {analysisResult.contentType?.toLowerCase() === 'audio' && (
-              <div className="mb-4 p-3 bg-green-100/50 dark:bg-green-900/30 rounded-lg">
-                <h4 className="text-sm font-semibold mb-1 text-green-700 dark:text-green-300">Audio Authenticity Factors:</h4>
-                <ul className="list-disc list-inside text-sm text-green-900 dark:text-green-100">
+              <div className="mb-4 p-3 bg-white/60 border border-slate-200 rounded-lg">
+                <h4 className="text-sm font-semibold mb-1 text-slate-800">Audio Authenticity Factors:</h4>
+                <ul className="list-disc list-inside text-sm text-slate-700">
                   <li>Background noise consistency: {isAudioClearlyScam ? "Suspicious variations detected" : "Normal levels"}</li>
                   <li>Voice modulation: {isAudioClearlyScam ? "Potential artificial manipulation" : "Natural speaking patterns"}</li>
                   <li>Content consistency: {isAudioClearlyScam ? "Contains logical inconsistencies" : "Logically consistent"}</li>
@@ -959,7 +947,7 @@ export default function ResultsDisplay({ analysisResult, threatContent }: Result
             
             {/* Fallback message if provided fields are empty */}
             {!analysisResult.true_vs_false && !isAudioClearlyScam && (
-                <p className="text-sm text-green-900 dark:text-green-100 whitespace-pre-wrap leading-relaxed">
+                <p className="text-sm text-slate-700 whitespace-pre-wrap leading-relaxed">
                     No specific authenticity information available.
                 </p>
             )}
