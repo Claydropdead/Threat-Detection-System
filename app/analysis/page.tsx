@@ -28,7 +28,27 @@ export default function Home() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<NodeJS.Timeout | null>(null);
-    // Check if user has previously accepted terms
+  
+  // Add tab state management
+  const [activeTab, setActiveTab] = useState<'text' | 'image' | 'voice'>('text');
+
+  // Add state for form completion tracking
+  const [hasContent, setHasContent] = useState({
+    text: false,
+    image: false,
+    voice: false
+  });
+
+  // Update content tracking
+  useEffect(() => {
+    setHasContent({
+      text: threatContent.trim().length > 0,
+      image: !!imagePreview,
+      voice: !!audioBlob
+    });
+  }, [threatContent, imagePreview, audioBlob]);
+  
+  // Check if user has previously accepted terms
   useEffect(() => {
     // Check if the user has consent using our new system
     const termsAccepted = hasUserConsent('termsAndConditions');
@@ -315,367 +335,426 @@ export default function Home() {
               <ConsentManager />
               
               <div className="space-y-8">
-                {/* Text Input Section */}
-                <div className="space-y-4">
-                  <label
-                    htmlFor="threatContent"
-                    className="block text-lg font-semibold text-slate-800 mb-3"
+                {/* Tab Navigation */}
+                <div className="flex justify-center mb-6">
+                  <button
+                    onClick={() => setActiveTab('text')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2 ${
+                      activeTab === 'text' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                    disabled={isLoading}
                   >
-                    📝 Enter content to analyze
-                  </label>
-                  <p className="text-sm text-slate-600 mb-4">
-                    Paste suspicious SMS messages, emails, or any text content you want to analyze for potential threats.
-                  </p>
-                  
-                  <div className="relative">
-                    <textarea
-                      id="threatContent"
-                      name="threatContent"
-                      rows={7}
-                      className={`w-full p-4 border-2 ${
-                        !hasAcceptedTerms 
-                          ? 'border-yellow-300 bg-yellow-50' 
-                          : 'border-slate-300 focus:border-blue-500 bg-white'
-                      } rounded-xl shadow-sm transition-all duration-200 focus:ring-4 focus:ring-blue-100 text-base placeholder-slate-500 resize-none hover:shadow-md`}
-                      placeholder={!hasAcceptedTerms 
-                        ? "⚠️ Please accept the terms and conditions first..." 
-                        : (imagePreview 
-                          ? "💡 Optional: Add text for analysis alongside the image..." 
-                          : "📱 Paste suspicious text here (SMS, email, message, etc.)...\n\nExample:\n'ALERT: New login detected from unknown location. Secure your account: unknown-security.com'"
-                        )}
-                      value={threatContent}
-                      onChange={(e) => setThreatContent(e.target.value)}
-                      disabled={isLoading || !hasAcceptedTerms}
-                      onClick={!hasAcceptedTerms ? () => setShowTermsModal(true) : undefined}
-                      maxLength={5000}
-                      aria-describedby="content-help"
-                    />
-                    
-                    {/* Character Counter */}
-                    <div className="absolute bottom-3 right-3 text-xs text-slate-500 bg-white/80 px-2 py-1 rounded">
-                      {threatContent.length}/5000
-                    </div>
-                  </div>
-                  
-                  <div id="content-help" className="flex items-start space-x-2 text-sm text-slate-600">
-                    <svg className="w-4 h-4 mt-0.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2-1a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V5a1 1 0 00-1-1H4z" clipRule="evenodd" />
                     </svg>
-                    <span>
-                      Tip: The AI works best with complete messages. Include URLs, phone numbers, and any suspicious elements for accurate analysis.
-                    </span>
-                  </div>
-                </div>                {/* Image Upload Section */}
-                <div className="space-y-4">
-                  <label className="block text-lg font-semibold text-slate-800 mb-3">
-                    🖼️ Upload image for analysis (optional)
-                  </label>
-                  <p className="text-sm text-slate-600 mb-4">
-                    Upload screenshots of suspicious messages, fake websites, or any images that might contain scam content.
-                  </p>
-                  
-                  <div className="mt-1 flex flex-col space-y-4">
-                    {!imagePreview ? (
-                      <div 
-                        onClick={!hasAcceptedTerms ? () => setShowTermsModal(true) : undefined}
-                        className={`flex flex-col items-center justify-center w-full h-40 border-2 ${
-                          !hasAcceptedTerms 
-                            ? 'border-yellow-300 bg-yellow-50' 
-                            : 'border-slate-300 hover:border-blue-400 bg-white'
-                        } border-dashed rounded-xl ${hasAcceptedTerms ? 'cursor-pointer hover:bg-slate-50' : ''} transition-all duration-200 relative group`}
+                    <span>Text Analysis</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('image')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2 ${
+                      activeTab === 'image' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                    disabled={isLoading}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2-1a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V5a1 1 0 00-1-1H4z" clipRule="evenodd" />
+                    </svg>
+                    <span>Image Analysis</span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('voice')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center space-x-2 ${
+                      activeTab === 'voice' 
+                        ? 'bg-blue-600 text-white shadow-md' 
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                    disabled={isLoading}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 3a2 2 0 00-2 2v10a2 2 0 004 0V5a2 2 0 00-2-2zm-8 2a8 8 0 1116 0 8 8 0 01-16 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>Voice Analysis</span>
+                  </button>
+                </div>
+
+                {/* Active Tab Content */}
+                <div className="space-y-8">
+                  {/* Text Input Section - Active when text tab is selected */}
+                  {activeTab === 'text' && (
+                    <div className="space-y-4">
+                      <label
+                        htmlFor="threatContent"
+                        className="block text-lg font-semibold text-slate-800 mb-3"
                       >
-                        {hasAcceptedTerms ? (
-                          <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer">
+                        📝 Enter content to analyze
+                      </label>
+                      <p className="text-sm text-slate-600 mb-4">
+                        Paste suspicious SMS messages, emails, or any text content you want to analyze for potential threats.
+                      </p>
+                      
+                      <div className="relative">
+                        <textarea
+                          id="threatContent"
+                          name="threatContent"
+                          rows={7}
+                          className={`w-full p-4 border-2 ${
+                            !hasAcceptedTerms 
+                              ? 'border-yellow-300 bg-yellow-50' 
+                              : 'border-slate-300 focus:border-blue-500 bg-white'
+                          } rounded-xl shadow-sm transition-all duration-200 focus:ring-4 focus:ring-blue-100 text-base placeholder-slate-500 resize-none hover:shadow-md`}
+                          placeholder={!hasAcceptedTerms 
+                            ? "⚠️ Please accept the terms and conditions first..." 
+                            : (imagePreview 
+                              ? "💡 Optional: Add text for analysis alongside the image..." 
+                              : "📱 Paste suspicious text here (SMS, email, message, etc.)...\n\nExample:\n'ALERT: New login detected from unknown location. Secure your account: unknown-security.com'"
+                            )}
+                          value={threatContent}
+                          onChange={(e) => setThreatContent(e.target.value)}
+                          disabled={isLoading || !hasAcceptedTerms}
+                          onClick={!hasAcceptedTerms ? () => setShowTermsModal(true) : undefined}
+                          maxLength={5000}
+                          aria-describedby="content-help"
+                        />
+                        
+                        {/* Character Counter */}
+                        <div className="absolute bottom-3 right-3 text-xs text-slate-500 bg-white/80 px-2 py-1 rounded">
+                          {threatContent.length}/5000
+                        </div>
+                      </div>
+                      
+                      <div id="content-help" className="flex items-start space-x-2 text-sm text-slate-600">
+                        <svg className="w-4 h-4 mt-0.5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>
+                          Tip: The AI works best with complete messages. Include URLs, phone numbers, and any suspicious elements for accurate analysis.
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Image Upload Section - Active when image tab is selected */}
+                  {activeTab === 'image' && (
+                    <div className="space-y-4">
+                      <label className="block text-lg font-semibold text-slate-800 mb-3">
+                        🖼️ Upload image for analysis (optional)
+                      </label>
+                      <p className="text-sm text-slate-600 mb-4">
+                        Upload screenshots of suspicious messages, fake websites, or any images that might contain scam content.
+                      </p>
+                      
+                      <div className="mt-1 flex flex-col space-y-4">
+                        {!imagePreview ? (
+                          <div 
+                            onClick={!hasAcceptedTerms ? () => setShowTermsModal(true) : undefined}
+                            className={`flex flex-col items-center justify-center w-full h-40 border-2 ${
+                              !hasAcceptedTerms 
+                                ? 'border-yellow-300 bg-yellow-50' 
+                                : 'border-slate-300 hover:border-blue-400 bg-white'
+                            } border-dashed rounded-xl ${hasAcceptedTerms ? 'cursor-pointer hover:bg-slate-50' : ''} transition-all duration-200 relative group`}
+                          >
+                            {hasAcceptedTerms ? (
+                              <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                  <div className="p-3 bg-blue-100 rounded-full mb-4 group-hover:bg-blue-200 transition-colors">
+                                    <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                  </div>
+                                  <p className="mb-2 text-base font-medium text-slate-700">
+                                    <span className="font-bold text-blue-600">Click to upload</span> or drag and drop
+                                  </p>
+                                  <p className="text-sm text-slate-500">PNG, JPG, JPEG (MAX. 5MB)</p>
+                                </div>
+                                <input 
+                                  id="dropzone-file" 
+                                  type="file" 
+                                  className="hidden" 
+                                  accept="image/png,image/jpeg,image/jpg"
+                                  onChange={handleImageChange}
+                                  disabled={isLoading}
+                                />
+                              </label>
+                            ) : (
+                              <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                <div className="p-3 bg-yellow-100 rounded-full mb-4">
+                                  <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                  </svg>
+                                </div>
+                                <p className="mb-2 text-base font-medium text-yellow-700">
+                                  <span className="font-bold">Accept terms to upload images</span>
+                                </p>
+                                <p className="text-sm text-yellow-600">Terms & conditions required</p>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="relative bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <div className="relative w-full h-64 border border-slate-300 rounded-lg overflow-hidden bg-white">
+                              {/* Using img tag is acceptable for user-uploaded images with dynamic sources */}
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={imagePreview}
+                                alt="Preview"
+                                className="w-full h-full object-contain"
+                              />
+                              <button
+                                type="button"
+                                onClick={handleRemoveImage}
+                                className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                disabled={isLoading}
+                                title="Remove image"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              </button>
+                            </div>
+                            <p className="mt-3 text-sm text-slate-600 flex items-center">
+                              <span className="mr-2">✅</span>
+                              Image uploaded successfully. Add optional text above for a more comprehensive analysis.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Voice Recording Section - Active when voice tab is selected */}
+                  {activeTab === 'voice' && (
+                    <div className="space-y-4">
+                      <label className="block text-lg font-semibold text-slate-800 mb-3">
+                        🎤 Record voice for analysis (optional)
+                      </label>
+                      <p className="text-sm text-slate-600 mb-4">
+                        Record suspicious voice messages, calls, or conversations for AI-powered scam detection analysis.
+                      </p>
+                      
+                      <div className="flex flex-col space-y-4">
+                        {audioURL ? (
+                          <div className="relative bg-slate-50 rounded-xl p-4 border border-slate-200">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 mr-4">
+                                <p className="text-sm text-slate-600 mb-1 flex items-center">
+                                  <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-2"></span>
+                                  Recorded Audio
+                                </p>
+                                <audio 
+                                  controls 
+                                  className="w-full h-12 bg-white rounded-lg"
+                                  src={audioURL}
+                                />
+                                <p className="text-xs text-slate-500 mt-2">
+                                  Tap play to review before submitting
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={removeAudio}
+                                className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                disabled={isLoading}
+                                title="Remove audio"
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              </button>
+                            </div>
+                            <p className="mt-3 text-sm text-slate-600 flex items-center">
+                              <span className="mr-2">✅</span>
+                              Audio recorded successfully. You can add text or images for a comprehensive analysis.
+                            </p>
+                          </div>
+                        ) : permissionDenied ? (
+                          <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-5">
+                            <div className="flex items-start space-x-3">
+                              <div className="flex-shrink-0">
+                                <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                </svg>
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="font-medium text-yellow-800">Microphone access denied</h3>
+                                <p className="mt-1 text-sm text-yellow-700">
+                                  Please grant microphone access in your browser to use voice recording.
+                                </p>
+                                <button
+                                  onClick={startRecording}
+                                  className="mt-3 text-sm font-medium text-yellow-800 hover:text-yellow-900 underline"
+                                >
+                                  Try again
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center w-full h-44 border-2 border-slate-300 rounded-xl bg-white transition-all duration-200 relative group">
                             <div className="flex flex-col items-center justify-center pt-5 pb-6">
                               <div className="p-3 bg-blue-100 rounded-full mb-4 group-hover:bg-blue-200 transition-colors">
-                                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
                                 </svg>
                               </div>
                               <p className="mb-2 text-base font-medium text-slate-700">
-                                <span className="font-bold text-blue-600">Click to upload</span> or drag and drop
+                                <span className="font-bold text-blue-600">Click to record</span> your voice
                               </p>
-                              <p className="text-sm text-slate-500">PNG, JPG, JPEG (MAX. 5MB)</p>
+                              <p className="text-sm text-slate-500">Record up to 5 minutes</p>
                             </div>
-                            <input 
-                              id="dropzone-file" 
-                              type="file" 
-                              className="hidden" 
-                              accept="image/png,image/jpeg,image/jpg"
-                              onChange={handleImageChange}
-                              disabled={isLoading}
-                            />
-                          </label>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <div className="p-3 bg-yellow-100 rounded-full mb-4">
-                              <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                              </svg>
-                            </div>
-                            <p className="mb-2 text-base font-medium text-yellow-700">
-                              <span className="font-bold">Accept terms to upload images</span>
-                            </p>
-                            <p className="text-sm text-yellow-600">Terms & conditions required</p>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="relative bg-slate-50 rounded-xl p-4 border border-slate-200">
-                        <div className="relative w-full h-64 border border-slate-300 rounded-lg overflow-hidden bg-white">
-                          {/* Using img tag is acceptable for user-uploaded images with dynamic sources */}
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={imagePreview}
-                            alt="Preview"
-                            className="w-full h-full object-contain"
-                          />
-                          <button
-                            type="button"
-                            onClick={handleRemoveImage}
-                            className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-                            disabled={isLoading}
-                            title="Remove image"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                        </div>
-                        <p className="mt-3 text-sm text-slate-600 flex items-center">
-                          <span className="mr-2">✅</span>
-                          Image uploaded successfully. Add optional text above for a more comprehensive analysis.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>                {/* Voice Recording Section */}
-                <div className="space-y-4">
-                  <label className="block text-lg font-semibold text-slate-800 mb-3">
-                    🎤 Record voice for analysis (optional)
-                  </label>
-                  <p className="text-sm text-slate-600 mb-4">
-                    Record suspicious voice messages, calls, or conversations for AI-powered scam detection analysis.
-                  </p>
-                  
-                  <div className="flex flex-col space-y-4">
-                    {audioURL ? (
-                      <div className="relative bg-slate-50 rounded-xl p-4 border border-slate-200">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1 mr-4">
-                            <p className="text-sm text-slate-600 mb-1 flex items-center">
-                              <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-2"></span>
-                              Recorded Audio
-                            </p>
-                            <audio 
-                              controls 
-                              className="w-full h-12 bg-white rounded-lg"
-                              src={audioURL}
-                            />
-                            <p className="text-xs text-slate-500 mt-2">
-                              Tap play to review before submitting
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={removeAudio}
-                            className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
-                            disabled={isLoading}
-                            title="Remove audio"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                            </svg>
-                          </button>
-                        </div>
-                        <p className="mt-3 text-sm text-slate-600 flex items-center">
-                          <span className="mr-2">✅</span>
-                          Audio recorded successfully. You can add text or images for a comprehensive analysis.
-                        </p>
-                      </div>
-                    ) : permissionDenied ? (
-                      <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-5">
-                        <div className="flex items-start space-x-3">
-                          <div className="flex-shrink-0">
-                            <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="font-medium text-yellow-800">Microphone access denied</h3>
-                            <p className="mt-1 text-sm text-yellow-700">
-                              Please grant microphone access in your browser to use voice recording.
-                            </p>
-                            <button
-                              onClick={startRecording}
-                              className="mt-3 text-sm font-medium text-yellow-800 hover:text-yellow-900 underline"
-                            >
-                              Try again
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center w-full h-44 border-2 border-slate-300 rounded-xl bg-white transition-all duration-200 relative group">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <div className="p-3 bg-blue-100 rounded-full mb-4 group-hover:bg-blue-200 transition-colors">
-                            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                            </svg>
-                          </div>
-                          <p className="mb-2 text-base font-medium text-slate-700">
-                            <span className="font-bold text-blue-600">Click to record</span> your voice
-                          </p>
-                          <p className="text-sm text-slate-500">Record up to 5 minutes</p>
-                        </div>
-                        
-                        {/* Recording Controls */}
-                        {isRecording ? (
-                          <div className="absolute inset-0 bg-black/5 backdrop-blur-sm flex flex-col items-center justify-center p-6 rounded-xl">
-                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 animate-pulse">
-                              <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                              </svg>
-                            </div>
-                            <p className="mb-4 text-lg font-semibold text-slate-800">
-                              Recording... {formatDuration(recordingDuration)}
-                            </p>
-                            <div className="w-full bg-slate-200 rounded-full h-2.5 mb-6">
-                              <div className="bg-red-600 h-2.5 rounded-full" style={{ width: `${Math.min(recordingDuration / 300 * 100, 100)}%` }}></div>
-                            </div>
-                            <div className="flex items-center space-x-4 w-full">
+                            
+                            {/* Recording Controls */}
+                            {isRecording ? (
+                              <div className="absolute inset-0 bg-black/5 backdrop-blur-sm flex flex-col items-center justify-center p-6 rounded-xl">
+                                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4 animate-pulse">
+                                  <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                                  </svg>
+                                </div>
+                                <p className="mb-4 text-lg font-semibold text-slate-800">
+                                  Recording... {formatDuration(recordingDuration)}
+                                </p>
+                                <div className="w-full bg-slate-200 rounded-full h-2.5 mb-6">
+                                  <div className="bg-red-600 h-2.5 rounded-full" style={{ width: `${Math.min(recordingDuration / 300 * 100, 100)}%` }}></div>
+                                </div>
+                                <div className="flex items-center space-x-4 w-full">
+                                  <button
+                                    onClick={stopRecording}
+                                    className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                    disabled={isLoading}
+                                  >
+                                    <div className="flex items-center justify-center">
+                                      <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                      </svg>
+                                      Stop Recording
+                                    </div>
+                                  </button>
+                                  <button
+                                    onClick={cancelRecording}
+                                    className="flex-1 bg-slate-300 text-slate-700 font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
+                                    disabled={isLoading}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
                               <button
-                                onClick={stopRecording}
-                                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2"
+                                onClick={startRecording}
+                                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
                                 disabled={isLoading}
                               >
                                 <div className="flex items-center justify-center">
                                   <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
                                   </svg>
-                                  Stop Recording
+                                  Start Recording
                                 </div>
                               </button>
-                              <button
-                                onClick={cancelRecording}
-                                className="flex-1 bg-slate-300 text-slate-700 font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
-                                disabled={isLoading}
-                              >
-                                Cancel
-                              </button>
-                            </div>
+                            )}
                           </div>
-                        ) : (
-                          <button
-                            onClick={startRecording}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
-                            disabled={isLoading}
-                          >
-                            <div className="flex items-center justify-center">
-                              <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
-                              </svg>
-                              Start Recording
-                            </div>
-                          </button>
                         )}
                       </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="button"
-                  onClick={hasAcceptedTerms ? handleDetectScam : () => setShowTermsModal(true)}
-                  disabled={isLoading || (!threatContent.trim() && !imagePreview && !audioBlob) || !hasAcceptedTerms}
-                  className={`w-full font-bold py-4 px-6 rounded-xl shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 text-lg ${
-                    hasAcceptedTerms && (threatContent.trim() || imagePreview || audioBlob) && !isLoading
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-[1.02] focus:ring-blue-300'
-                      : 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                  }`}
-                >
-                  {isLoading ? (
-                    <div className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      {audioBlob ? 'Analyzing voice recording...' : 'Analyzing with AI...'}
-                    </div>
-                  ) : hasAcceptedTerms ? (
-                    <div className="flex items-center justify-center">
-                      <span className="mr-2">🔍</span>
-                      Analyze
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center">
-                      <span className="mr-2">⚠️</span>
-                      Accept Terms to Analyze
                     </div>
                   )}
-                </button>
-                
-                {!hasAcceptedTerms && (
-                  <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                    <p className="text-sm text-yellow-700">
-                      <span className="font-semibold">⚠️ Terms Required:</span> You must accept our terms and conditions before using this feature.{' '}
-                      <button 
-                        onClick={() => setShowTermsModal(true)} 
-                        className="font-bold text-yellow-800 hover:text-yellow-900 underline transition-colors"
-                      >
-                        View Terms & Conditions
-                      </button>
-                    </p>
-                  </div>
-                )}
 
-                {/* Error Display */}
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl p-6">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <svg className="h-6 w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  {/* Submit Button */}
+                  <button
+                    type="button"
+                    onClick={hasAcceptedTerms ? handleDetectScam : () => setShowTermsModal(true)}
+                    disabled={isLoading || (!threatContent.trim() && !imagePreview && !audioBlob) || !hasAcceptedTerms}
+                    className={`w-full font-bold py-4 px-6 rounded-xl shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 text-lg ${
+                      hasAcceptedTerms && (threatContent.trim() || imagePreview || audioBlob) && !isLoading
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-[1.02] focus:ring-blue-300'
+                        : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                    }`}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
+                        {audioBlob ? 'Analyzing voice recording...' : 'Analyzing with AI...'}
                       </div>
-                      <div className="ml-3">
-                        <h3 className="text-lg font-semibold mb-2">❌ Analysis Error</h3>
-                        <p className="text-sm">{error}</p>
+                    ) : hasAcceptedTerms ? (
+                      <div className="flex items-center justify-center">
+                        <span className="mr-2">🔍</span>
+                        Analyze
                       </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Results Display */}
-                {analysisResult && !error && (
-                  <ResultsDisplay 
-                    analysisResult={analysisResult} 
-                    threatContent={threatContent} 
-                  />
-                )}
-
-                {/* Awaiting Analysis State */}
-                {!isLoading && !analysisResult && !error && (
-                  <div className="text-center py-12 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300">
-                    <div className="max-w-md mx-auto">
-                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        <span className="mr-2">⚠️</span>
+                        Accept Terms to Analyze
                       </div>
-                      <h3 className="text-lg font-semibold text-slate-700 mb-2">
-                        {threatContent.trim() || imagePreview || audioBlob ? "Ready to Analyze" : "Upload Content to Start"}
-                      </h3>
-                      <p className="text-sm text-slate-500">
-                        {threatContent.trim() || imagePreview || audioBlob 
-                          ? "Click the analyze button to start AI-powered scam detection" 
-                          : "Add text, upload an image, or record a voice message to begin scam analysis"
-                        }
+                    )}
+                  </button>
+                  
+                  {!hasAcceptedTerms && (
+                    <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                      <p className="text-sm text-yellow-700">
+                        <span className="font-semibold">⚠️ Terms Required:</span> You must accept our terms and conditions before using this feature.{' '}
+                        <button 
+                          onClick={() => setShowTermsModal(true)} 
+                          className="font-bold text-yellow-800 hover:text-yellow-900 underline transition-colors"
+                        >
+                          View Terms & Conditions
+                        </button>
                       </p>
                     </div>
-                  </div>
-                )}
+                  )}
+
+                  {/* Error Display */}
+                  {error && (
+                    <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl p-6">
+                      <div className="flex items-start">
+                        <div className="flex-shrink-0">
+                          <svg className="h-6 w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                        </div>
+                        <div className="ml-3">
+                          <h3 className="text-lg font-semibold mb-2">❌ Analysis Error</h3>
+                          <p className="text-sm">{error}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Results Display */}
+                  {analysisResult && !error && (
+                    <ResultsDisplay 
+                      analysisResult={analysisResult} 
+                      threatContent={threatContent} 
+                    />
+                  )}
+
+                  {/* Awaiting Analysis State */}
+                  {!isLoading && !analysisResult && !error && (
+                    <div className="text-center py-12 bg-slate-50 rounded-xl border-2 border-dashed border-slate-300">
+                      <div className="max-w-md mx-auto">
+                        <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                          </svg>
+                        </div>
+                        <h3 className="text-lg font-semibold text-slate-700 mb-2">
+                          {threatContent.trim() || imagePreview || audioBlob ? "Ready to Analyze" : "Upload Content to Start"}
+                        </h3>
+                        <p className="text-sm text-slate-500">
+                          {threatContent.trim() || imagePreview || audioBlob 
+                            ? "Click the analyze button to start AI-powered scam detection" 
+                            : "Add text, upload an image, or record a voice message to begin scam analysis"
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

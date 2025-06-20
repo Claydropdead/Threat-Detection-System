@@ -631,18 +631,25 @@ export default function LandingPage() {
             <div className="text-center">
               <div className="text-slate-400 text-sm mb-2">
                 © 2025 CyberSafe 4B - Police Regional Office Mimaropa. All rights reserved.
-              </div>
-              <div className="text-sm text-slate-600 mb-4">
+              </div>              <div className="text-sm text-slate-600 mb-4">
                 Made with <span className="text-red-500">❤</span> by <a href="https://pinesprojects.hashnode.dev" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">Pinesprojects</a>
-              </div>
-              <div className="flex justify-center">
-                <Image 
-                  src="/banner.jpg" 
-                  alt="MIMAROPA Regional Logos" 
-                  width={120} 
-                  height={36} 
-                  className="h-8 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
-                />
+              </div>              <div className="flex justify-center space-x-4">
+                {/* Government and Security Organization Logos */}
+                <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg" title="Philippine National Police">
+                  <span className="text-white text-xs font-bold">PNP</span>
+                </div>
+                <div className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center hover:bg-red-700 hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg" title="CyberSafe 4B">
+                  <span className="text-white text-xs font-bold">4B</span>
+                </div>
+                <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700 hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg" title="ICT Division">
+                  <span className="text-white text-xs font-bold">ICT</span>
+                </div>
+                <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg" title="Cybersecurity Shield">
+                  <span className="text-white text-lg">🛡️</span>
+                </div>
+                <div className="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center hover:bg-orange-700 hover:scale-110 transition-all duration-300 cursor-pointer shadow-lg" title="Republic of the Philippines">
+                  <span className="text-white text-lg">🇵🇭</span>
+                </div>
               </div>
             </div>
           </div>
