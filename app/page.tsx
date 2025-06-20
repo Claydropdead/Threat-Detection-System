@@ -10,91 +10,90 @@ export default function LandingPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(true);
   
-  const fullText = "A Safer CyberSpace for Every Filipino.";const features = [
+  const fullText = "A Safer CyberSpace for Every Filipino.";  const features = [
     {
-      icon: "🛡️",
-      title: "AI-Powered Detection",
-      description: "Advanced artificial intelligence na nag-aanalyze ng mga suspicious messages at content para sa mga mamamayan ng MIMAROPA",
+      icon: "🧠",
+      title: "Smart Threat Detection",
+      description: "Analyzes text, images, audio, and URLs to identify phishing, fraud, impersonation, and misinformation targeting Filipinos",
       details: [
-        "Machine learning algorithms",
-        "Pattern recognition technology", 
-        "Real-time threat database",
-        "Local threat pattern analysis"
+        "Multi-modal content analysis",
+        "Philippine-specific threat patterns", 
+        "Purpose-first assessment approach",
+        "Context-aware risk evaluation"
       ]
-    },
-    {
-      icon: "⚡",
-      title: "Instant Analysis",
-      description: "Mabilis na threat assessment para sa immediate protection ng mga Pilipinong may access sa technology",
-      details: [
-        "3-second analysis time",
-        "Instant threat scoring",
-        "Real-time vulnerability checks",
-        "Immediate risk assessment"
-      ]
-    },
-    {
+    },    {
       icon: "🇵🇭",
-      title: "MIMAROPA-Focused",
-      description: "Specially designed para sa mga cyber threats na nakakaapekto sa Region IV-B at buong Pilipinas",
+      title: "Filipino-Focused Protection",
+      description: "Specialized detection of OFW scams, GCash/Maya fraud, government impersonation, and cultural exploitation tactics",
       details: [
-        "Regional threat pattern recognition",
-        "Tagalog/English analysis",
-        "Philippine-specific threats",
-        "Local context awareness"
+        "Local financial app fraud detection",
+        "Tagalog/English bilingual analysis",
+        "Cultural context understanding",
+        "Regional threat landscape awareness"
+      ]
+    },
+    {
+      icon: "🎯",
+      title: "User Intent Recognition",
+      description: "Understands what users actually want to know and provides relevant, educational responses instead of generic warnings",
+      details: [
+        "Content purpose research",
+        "Intent-matched responses",
+        "Educational explanations",
+        "False positive reduction"
       ]
     },
     {
       icon: "🔒",
-      title: "Privacy & Security",
-      description: "Secure at private na analysis na sumusunod sa mga data protection standards",
+      title: "Privacy Protection",
+      description: "Secure analysis with no personal data storage and immediate processing for user privacy protection",
       details: [
-        "Zero data retention",
-        "End-to-end encryption",
-        "No personal data storage",
-        "Anonymous analysis"
+        "No data retention policy",
+        "Temporary processing only",
+        "Anonymous threat analysis",
+        "Secure API communications"
       ]
     },
     {
       icon: "📚",
-      title: "Educational Resource",
-      description: "Comprehensive cyber security awareness tool para sa publiko at law enforcement",
+      title: "Educational Focus",
+      description: "Teaches users to recognize threats independently while providing context-specific safety guidance",
       details: [
-        "Threat identification guide",
-        "Prevention techniques",
-        "Educational materials",
-        "Awareness campaigns"
+        "Threat pattern education",
+        "Verification techniques",
+        "Critical thinking skills",
+        "Prevention strategies"
       ]
     },
     {
       icon: "🤝",
-      title: "Community Protection",
-      description: "Collaborative effort ng RICTMD at PRO4B para sa mas secure na digital environment",
+      title: "Community Initiative",
+      description: "Government-backed cybersecurity awareness program supporting MIMAROPA region's digital safety",
       details: [
-        "Government-backed initiative",
-        "Law enforcement support",
-        "Community outreach",
-        "Public-private partnership"
+        "RICTMD PRO4B partnership",
+        "Law enforcement collaboration",
+        "Public education outreach",
+        "Regional cybersecurity support"
       ]
     }
   ];  const howItWorksSteps = [
     {
       step: "1",
-      title: "Upload or Paste Content",
-      description: "Upload a screenshot or paste the suspicious message, email, or content you've received for analysis",
+      title: "Submit Content for Analysis",
+      description: "Upload images, paste text messages, record audio, or enter URLs of suspicious content you've received or encountered online",
       icon: "📱"
     },
     {
       step: "2", 
-      title: "AI Analysis",
-      description: "Our advanced AI system analyzes the content for threat indicators, malicious patterns, and security risks",
-      icon: "🧠"
+      title: "AI Content Research",
+      description: "Our system understands your question, researches what the content actually is, and analyzes for specific threat indicators like phishing, fraud, or impersonation",
+      icon: "🔍"
     },
     {
       step: "3",
-      title: "Get Results",
-      description: "Receive instant risk assessment and detailed security recommendations to protect yourself",
-      icon: "✅"
+      title: "Get Educational Results",
+      description: "Receive detailed explanations, threat assessments, safety advice, and learn how to recognize similar threats in the future",
+      icon: "🎓"
     }
   ];
   useEffect(() => {
@@ -181,31 +180,27 @@ export default function LandingPage() {
             CyberSafe 4B is an initiative of the Regional Information and Communications Technology Management Division (RICTMD) under Police Regional Office 4B – MIMAROPA. Our mission is to help every Filipino become more aware, alert, and protected in the digital space. We provide updated, accurate, and real-time information.
           </p>
           
-          {/* Our Core Features */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-              <div className="text-4xl mb-4">🤖</div>
-              <h3 className="text-xl font-bold mb-3 text-blue-900">AI-Powered Detection</h3>
+          {/* Our Core Features */}          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
+              <div className="text-4xl mb-4">🧠</div>
+              <h3 className="text-xl font-bold mb-3 text-blue-900">Smart Content Analysis</h3>
               <p className="text-slate-700 leading-relaxed">
-                Advanced artificial intelligence that analyzes suspicious messages, emails, and content to protect Filipino communities from cyber threats in real-time.
+                Analyzes text messages, images, audio recordings, and websites to identify phishing attempts, financial fraud, impersonation scams, and misinformation targeting Filipinos.
               </p>
             </div>
-            
-            <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
-              <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold mb-3 text-green-900">Instant Analysis</h3>
-              <p className="text-slate-700 leading-relaxed">
-                Get immediate threat assessments and security recommendations within seconds, helping you make informed decisions about digital content safety.
-              </p>
-            </div>
-            
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200">
               <div className="text-4xl mb-4">🇵🇭</div>
-              <h3 className="text-xl font-bold mb-3 text-purple-900">Philippine-Focused</h3>
+              <h3 className="text-xl font-bold mb-3 text-green-900">Philippine Context Aware</h3>
               <p className="text-slate-700 leading-relaxed">
-                Specially designed for Filipino communities with understanding of local languages, culture, and specific cyber threats targeting our region.
+                Specialized detection of OFW scams, GCash/Maya fraud, government impersonation, local banking threats, and scams exploiting Filipino cultural values and trust patterns.
               </p>
-            </div>          </div>
+            </div>
+              <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl font-bold mb-3 text-purple-900">Purpose-First Detection</h3>
+              <p className="text-slate-700 leading-relaxed">
+                Understands user intent and researches content purpose before assessment, reducing false alarms while providing accurate threat identification and educational guidance.
+              </p>
+            </div></div>
         </div>
       </section>
 
@@ -245,8 +240,149 @@ export default function LandingPage() {
               Start Analyzing Now
             </a>
           </div>
+        </div>      </section>
+
+      {/* Specific Threats We Detect */}
+      <section className="bg-slate-50 py-16 border-t border-slate-100">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-slate-900">Threats We Actually Detect</h2>
+            <p className="text-slate-700 max-w-3xl mx-auto">
+              Our system specializes in identifying real threats targeting Filipinos, not generic warnings. Here's what we actually analyze and detect:
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-slate-200">
+              <div className="text-3xl mb-3">💰</div>
+              <h3 className="font-bold text-lg mb-2 text-slate-900">Financial Fraud</h3>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                GCash/Maya fake notifications, investment scams, loan fraud, fake banking messages, and financial app impersonation targeting Filipino users.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-slate-200">
+              <div className="text-3xl mb-3">🏛️</div>
+              <h3 className="font-bold text-lg mb-2 text-slate-900">Government Impersonation</h3>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Fake SSS, PhilHealth, BIR, DTI messages, fraudulent government announcements, and official agency spoofing attempts.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-slate-200">
+              <div className="text-3xl mb-3">🌏</div>
+              <h3 className="font-bold text-lg mb-2 text-slate-900">OFW Targeting Scams</h3>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Remittance fraud, fake job offers abroad, OFW assistance scams, and exploitation targeting overseas Filipino workers and their families.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-slate-200">
+              <div className="text-3xl mb-3">🎣</div>
+              <h3 className="font-bold text-lg mb-2 text-slate-900">Phishing & Identity Theft</h3>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Fake login pages, credential harvesting, personal data collection scams, and identity verification frauds targeting Filipino accounts.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-slate-200">
+              <div className="text-3xl mb-3">📱</div>
+              <h3 className="font-bold text-lg mb-2 text-slate-900">Voice & Audio Scams</h3>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Phone call frauds, voice message scams, AI-generated voice impersonation, and audio-based manipulation targeting Filipinos.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-slate-200">
+              <div className="text-3xl mb-3">🔗</div>
+              <h3 className="font-bold text-lg mb-2 text-slate-900">Malicious Links & Sites</h3>
+              <p className="text-slate-700 text-sm leading-relaxed">
+                Suspicious websites, malware distribution, fake shopping sites, and dangerous downloads disguised as legitimate Filipino services.
+              </p>
+            </div>
+          </div>          <div className="mt-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8 border border-blue-200 shadow-lg">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold mb-3 text-blue-900">What Makes Us Different</h3>
+              <p className="text-blue-700 max-w-2xl mx-auto">
+                Our approach focuses on education and understanding, not fear-based warnings
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-green-200">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-green-600 text-xl font-bold">✅</span>
+                  </div>
+                  <h4 className="text-xl font-bold text-green-800">What We Do</h4>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Research content purpose before judging</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Understand user intent and questions</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Provide educational explanations</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Focus on actual Filipino threat patterns</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-green-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Give context-specific safety advice</span>
+                  </li>
+                </ul>
+              </div>
+              
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-red-200">
+                <div className="flex items-center mb-4">
+                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
+                    <span className="text-red-600 text-xl font-bold">❌</span>
+                  </div>
+                  <h4 className="text-xl font-bold text-red-800">What We Don't Do</h4>
+                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Make assumptions based on keywords</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Give generic "be careful" warnings</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Flag legitimate content as threats</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Ignore cultural and linguistic context</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-red-500 mr-3 mt-1">•</span>
+                    <span className="text-gray-700">Provide one-size-fits-all responses</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="text-center mt-8">
+              <div className="inline-flex items-center bg-blue-600 text-white px-6 py-3 rounded-full">
+                <span className="mr-2">🎯</span>
+                <span className="font-semibold">Smart Analysis, Not Fear-Based Warnings</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>      {/* Featured Cyber Safety Posts */}
+      </section>
+
+      {/* Featured Cyber Safety Posts */}
       <section className="container mx-auto px-6 py-16">
         <div className="max-w-4xl mx-auto">
           <h3 className="text-2xl font-bold mb-8 text-center">Facebook Cyber Security Advisories</h3>
@@ -295,16 +431,14 @@ export default function LandingPage() {
                  className="text-blue-600 text-xs hover:underline">
                 View on Facebook →
               </a>
-            </div>
-
-            {/* Sample Facebook Post Card 3 */}
+            </div>            {/* Sample Facebook Post Card 3 */}
             <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center space-x-2 mb-3">
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-bold">f</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm text-slate-800">Police Regional Office Mimaropa</h4>
+                  <h4 className="font-semibold text-sm text-slate-800">Anti Cybercrime Unit</h4>
                   <p className="text-xs text-slate-500">Social media protection</p>
                 </div>
               </div>
@@ -361,16 +495,14 @@ export default function LandingPage() {
                  className="text-blue-600 text-xs hover:underline">
                 View on Facebook →
               </a>
-            </div>
-
-            {/* Sample Facebook Post Card 6 */}
+            </div>            {/* Sample Facebook Post Card 6 */}
             <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center space-x-2 mb-3">
                 <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                   <span className="text-white text-sm font-bold">f</span>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-sm text-slate-800">Police Regional Office Mimaropa</h4>
+                  <h4 className="font-semibold text-sm text-slate-800">Anti Cybercrime Unit</h4>
                   <p className="text-xs text-slate-500">WiFi security</p>
                 </div>
               </div>
@@ -391,10 +523,19 @@ export default function LandingPage() {
         <div className="container mx-auto px-6 text-center">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6 leading-tight">
-              Empowering Every Filipino with AI-Driven Cybersecurity
+              Smart Cybersecurity Education for Every Filipino
             </h2>            <p className="text-blue-100 text-lg md:text-xl mb-4 leading-relaxed">
-              CyberSafe 4B stands as your digital guardian, utilizing cutting-edge artificial intelligence to detect threats, educate communities, and strengthen our nation's cyber resilience.
+              CyberSafe 4B helps Filipinos understand digital threats through intelligent analysis that researches content purpose, provides educational explanations, and teaches threat recognition skills - not just generic warnings.
             </p>
+            <div className="mt-8">
+              <a 
+                href="/analysis" 
+                className="inline-flex items-center bg-white text-blue-700 font-semibold px-8 py-3 rounded-lg shadow-lg hover:bg-blue-50 transition-all"
+              >
+                <span className="mr-2">🎓</span>
+                Learn While You Analyze
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -486,20 +627,23 @@ export default function LandingPage() {
               </div>
             </div>
           </div>          {/* Bottom Bar */}
-          <div className="border-t border-slate-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">            <div className="text-slate-400 text-sm mb-4 md:mb-0">
-              © 2025 CyberSafe 4B - Police Regional Office Mimaropa. All rights reserved.
-            <p className="text-sm text-slate-600 mb-4">
-              Made with <span className="text-red-500">❤</span> by <a href="https://pinesprojects.hashnode.dev" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">Pinesprojects</a>
-            </p>
-            </div>
-            <div className="flex items-center">
-              <Image 
-                src="/banner.jpg" 
-                alt="MIMAROPA Regional Logos" 
-                width={120} 
-                height={36} 
-                className="h-8 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
-              />
+          <div className="border-t border-slate-700 mt-8 pt-8">
+            <div className="text-center">
+              <div className="text-slate-400 text-sm mb-2">
+                © 2025 CyberSafe 4B - Police Regional Office Mimaropa. All rights reserved.
+              </div>
+              <div className="text-sm text-slate-600 mb-4">
+                Made with <span className="text-red-500">❤</span> by <a href="https://pinesprojects.hashnode.dev" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 transition-colors">Pinesprojects</a>
+              </div>
+              <div className="flex justify-center">
+                <Image 
+                  src="/banner.jpg" 
+                  alt="MIMAROPA Regional Logos" 
+                  width={120} 
+                  height={36} 
+                  className="h-8 w-auto object-contain opacity-80 hover:opacity-100 transition-opacity"
+                />
+              </div>
             </div>
           </div>
         </div>
