@@ -39,6 +39,18 @@ export default function Home() {
     voice: false
   });
 
+  // Feedback form state
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [feedbackForm, setFeedbackForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+    type: 'general' // general, bug, feature, improvement
+  });
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+  const [feedbackSuccess, setFeedbackSuccess] = useState(false);
+
   // Update content tracking
   useEffect(() => {
     setHasContent({
@@ -260,6 +272,46 @@ export default function Home() {
     }
   };
 
+  // Handle feedback form submission
+  const handleFeedbackSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingFeedback(true);
+
+    try {
+      const response = await fetch('/api/send-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(feedbackForm),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send feedback');
+      }
+
+      setFeedbackSuccess(true);
+      setFeedbackForm({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        type: 'general'
+      });
+
+      // Auto close modal after success
+      setTimeout(() => {
+        setShowFeedbackModal(false);
+        setFeedbackSuccess(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Feedback submission error:', error);
+      alert('Failed to send feedback. Please try again.');
+    } finally {
+      setIsSubmittingFeedback(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col">
       {/* Terms and Conditions Modal */}
@@ -268,6 +320,143 @@ export default function Home() {
         onAccept={handleAcceptTerms} 
         onClose={handleCloseTerms} 
       />
+
+      {/* Feedback Modal */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-slate-900 flex items-center">
+                  <span className="mr-2">💬</span>
+                  Send Feedback
+                </h3>
+                <button
+                  onClick={() => setShowFeedbackModal(false)}
+                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+
+              {feedbackSuccess ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-semibold text-green-800 mb-2">Feedback Sent!</h4>
+                  <p className="text-sm text-green-600">Thank you for your feedback. We'll review it soon.</p>
+                </div>
+              ) : (
+                <form onSubmit={handleFeedbackSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Feedback Type
+                    </label>
+                    <select
+                      value={feedbackForm.type}
+                      onChange={(e) => setFeedbackForm({...feedbackForm, type: e.target.value})}
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      required
+                    >
+                      <option value="general">General Feedback</option>
+                      <option value="bug">Bug Report</option>
+                      <option value="feature">Feature Request</option>
+                      <option value="improvement">Improvement Suggestion</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Name (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={feedbackForm.name}
+                      onChange={(e) => setFeedbackForm({...feedbackForm, name: e.target.value})}
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      placeholder="Your name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Email (Optional)
+                    </label>
+                    <input
+                      type="email"
+                      value={feedbackForm.email}
+                      onChange={(e) => setFeedbackForm({...feedbackForm, email: e.target.value})}
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      value={feedbackForm.subject}
+                      onChange={(e) => setFeedbackForm({...feedbackForm, subject: e.target.value})}
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      placeholder="Brief subject line"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Message
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={feedbackForm.message}
+                      onChange={(e) => setFeedbackForm({...feedbackForm, message: e.target.value})}
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none"
+                      placeholder="Please describe your feedback in detail..."
+                      required
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowFeedbackModal(false)}
+                      className="flex-1 px-4 py-2 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                      disabled={isSubmittingFeedback}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmittingFeedback || !feedbackForm.subject || !feedbackForm.message}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                    >
+                      {isSubmittingFeedback ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Sending...
+                        </>
+                      ) : (
+                        'Send Feedback'
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Bar - Aligned with landing page */}
       <header className="w-full border-b border-slate-100 bg-white sticky top-0 z-50">
@@ -290,6 +479,16 @@ export default function Home() {
             <Link href="/analysis" className="text-blue-600 font-semibold">
               Analyze Content
             </Link>
+            <button 
+              onClick={() => setShowFeedbackModal(true)}
+              className="hover:text-blue-600 transition-colors flex items-center"
+              title="Send Feedback"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
+              </svg>
+              Feedback
+            </button>
             <button 
               onClick={() => setShowTermsModal(true)}
               className="hover:text-blue-600 transition-colors flex items-center"
@@ -782,6 +981,22 @@ export default function Home() {
             </p>
           </div>
         </footer>
+
+        {/* Floating Feedback Button */}
+        {!showFeedbackModal && (
+          <button
+            onClick={() => setShowFeedbackModal(true)}
+            className="fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-300 z-40 group"
+            title="Send Feedback"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clipRule="evenodd" />
+            </svg>
+            <span className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-slate-900 text-white text-sm px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+              Send Feedback
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );

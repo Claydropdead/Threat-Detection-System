@@ -150,11 +150,10 @@ export default function LandingPage() {
             />
             <span className="text-gray-400 text-3xl font-light">|</span>
             <span className="text-3xl font-bold tracking-tight text-blue-900">CyberSafe 4B</span>
-          </div>
-          <nav className="hidden md:flex items-center space-x-8 text-base font-medium">
+          </div>          <nav className="hidden md:flex items-center space-x-8 text-base font-medium">
             <a href="#" className="hover:text-blue-600 transition-colors">Home</a>
             <a href="#howitworks" className="hover:text-blue-600 transition-colors">How It Works</a>
-            <a href="#contact" className="hover:text-blue-600 transition-colors">Contact us</a>
+            <a href="#contact" className="hover:text-blue-600 transition-colors">Contact Us</a>
           </nav>
         </div>
       </header>      {/* Hero Section */}      <section className="container mx-auto flex flex-col md:flex-row items-center justify-between px-6 py-8 gap-6">
@@ -564,11 +563,9 @@ export default function LandingPage() {
 
             {/* Quick Links */}
             <div>
-              <h4 className="font-semibold mb-4 text-white">Quick Links</h4>
-              <ul className="space-y-2 text-slate-300">
+              <h4 className="font-semibold mb-4 text-white">Quick Links</h4>              <ul className="space-y-2 text-slate-300">
                 <li><a href="#" className="hover:text-white transition-colors">Home</a></li>
                 <li><a href="#howitworks" className="hover:text-white transition-colors">How It Works</a></li>
-                <li><a href="/analysis" className="hover:text-white transition-colors">Threat Analysis</a></li>
                 <li><a href="#contact" className="hover:text-white transition-colors">Contact Us</a></li>
               </ul>
             </div>            {/* Contact Info */}
