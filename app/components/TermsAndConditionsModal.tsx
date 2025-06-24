@@ -77,66 +77,168 @@ export default function TermsAndConditionsModal({
           {language === 'english' ? (            <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">CyberSafe 4B Terms and Conditions</h3>
               
-              <p>By using CyberSafe 4B's threat analysis service, you agree to the following terms and conditions:</p>
+              <p className="text-sm italic mb-4">Last Updated: June 23, 2025</p>
               
-              <h4 className="font-semibold mt-4">1. Purpose and Limitations</h4>
-              <p>CyberSafe 4B is designed to help identify potential threats in text messages, emails, images, and audio content. This service is provided for informational purposes only and should not be considered as definitive legal or financial advice.</p>
+              <p>By using CyberSafe 4B's cybersecurity threat analysis service, operated by the Regional Information and Communications Technology Management Division (RICTMD) under Police Regional Office 4B – MIMAROPA, you agree to the following terms and conditions:</p>
               
-              <h4 className="font-semibold mt-4">2. No Guarantee of Accuracy</h4>
-              <p>While we strive for accuracy in our analysis, CyberSafe 4B cannot guarantee 100% accuracy in threat detection. False positives and false negatives may occur. Users should exercise their own judgment when acting on the information provided.</p>
+              <h4 className="font-semibold mt-4">1. Service Description and Purpose</h4>
+              <p>CyberSafe 4B is an AI-powered cybersecurity awareness tool designed to help identify potential threats in digital content including text messages, emails, images, audio recordings, and website URLs. This service is provided for educational and informational purposes to enhance cybersecurity awareness among Filipino communities, particularly in the MIMAROPA region.</p>
               
-              <h4 className="font-semibold mt-4">3. Data Usage</h4>
+              <h4 className="font-semibold mt-4">2. Educational Nature and Limitations</h4>
+              <p>This service provides <strong>educational assessments only</strong> and should not be considered as:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Definitive legal, financial, or professional advice</li>
+                <li>Replacement for official law enforcement investigation</li>
+                <li>Guaranteed protection against all cyber threats</li>
+                <li>Substitute for professional cybersecurity consultation</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">3. Accuracy and Reliability</h4>
+              <p>While we employ advanced AI technology and maintain high standards, CyberSafe 4B:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Cannot guarantee 100% accuracy in threat detection</li>
+                <li>May produce false positives (flagging safe content as risky) or false negatives (missing actual threats)</li>
+                <li>Relies on AI analysis that may be influenced by content complexity, language variations, or novel threat techniques</li>
+                <li>Should be used alongside, not instead of, critical thinking and verification from multiple sources</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">4. Data Processing and Privacy</h4>
               <p>When you submit content for analysis:</p>
               <ul className="list-disc ml-5 space-y-1">
-                <li>Your text, images, and audio will be processed by our AI system to perform the analysis.</li>
-                <li>We may store anonymized data to improve our service and detection capabilities.</li>
-                <li>We do not sell or share your personal data with third parties for marketing purposes.</li>
+                <li><strong>Processing:</strong> Your submitted content (text, images, audio, URLs) is processed temporarily by the Google Gemini API to perform threat analysis</li>
+                <li><strong>No Data Storage:</strong> Our system does not store any of your submitted content - all processing is done in real-time and content is immediately discarded after analysis</li>
+                <li><strong>Third-Party Processing:</strong> Content is sent to Google's Gemini API for analysis according to Google's privacy policies and data handling practices</li>
+                <li><strong>No Personal Data Sale:</strong> We never sell or share your personal information with third parties for commercial purposes</li>
+                <li><strong>No Data Retention:</strong> As our system does not store data, there is no long-term data retention or government access to stored content</li>
               </ul>
               
-              <h4 className="font-semibold mt-4">4. User Responsibility</h4>
-              <p>Users are responsible for:</p>
+              <h4 className="font-semibold mt-4">5. User Responsibilities and Prohibited Uses</h4>
+              <p>Users must:</p>
               <ul className="list-disc ml-5 space-y-1">
-                <li>Providing accurate information for analysis.</li>
-                <li>Complying with all applicable laws when using this service.</li>
-                <li>Not submitting content that violates privacy rights or intellectual property laws.</li>
+                <li>Provide content lawfully obtained and owned by them or with proper authorization</li>
+                <li>Not submit content containing personal information of others without consent</li>
+                <li>Not attempt to test, hack, or exploit the service for malicious purposes</li>
+                <li>Not use the service to harass, defame, or harm others</li>
+                <li>Comply with all applicable Philippine and international laws</li>
+                <li>Not submit copyrighted material without proper authorization</li>
+                <li>Use the service responsibly and in good faith for legitimate cybersecurity purposes</li>
               </ul>
-                <h4 className="font-semibold mt-4">5. Liability Limitation</h4>
-              <p>CyberSafe 4B and its operators shall not be liable for any direct, indirect, incidental, special, or consequential damages resulting from the use or inability to use our services or for the cost of procurement of substitute services.</p>
               
-              <h4 className="font-semibold mt-4">6. Changes to Terms</h4>
-              <p>We reserve the right to modify these terms at any time. Continued use of the service after such modifications constitutes your acceptance of the revised terms.</p>
+              <h4 className="font-semibold mt-4">6. Feedback and Communication</h4>
+              <p>By using our feedback feature, you agree that:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Feedback may be used to improve our services</li>
+                <li>We may contact you regarding your feedback using the provided contact information</li>
+                <li>Your feedback helps enhance cybersecurity protection for all Filipino users</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">7. Limitation of Liability</h4>
+              <p>CyberSafe 4B, RICTMD, PNP PRO4B-MIMAROPA, and related personnel shall not be liable for:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Any direct, indirect, incidental, special, or consequential damages</li>
+                <li>Financial losses resulting from actions taken based on our analysis</li>
+                <li>Damages from undetected threats or false threat assessments</li>
+                <li>Service interruptions, technical failures, or system errors</li>
+                <li>Third-party actions or services integrated with our platform</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">8. Service Availability and Modifications</h4>
+              <p>We reserve the right to:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Modify, suspend, or discontinue the service at any time</li>
+                <li>Update our analysis algorithms and detection methods</li>
+                <li>Implement usage limits or access restrictions as needed</li>
+                <li>Change these terms with notice to users</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">9. Governing Law and Jurisdiction</h4>
+              <p>These terms are governed by the laws of the Republic of the Philippines. Any disputes shall be resolved in the courts of the Philippines, with preference for the jurisdiction covering the MIMAROPA region.</p>
+              
+              <h4 className="font-semibold mt-4">10. Contact and Reporting</h4>
+              <p>For questions about these terms or to report issues, contact us through the feedback feature or reach out to RICTMD PRO4B-MIMAROPA through official channels.</p>
             </div>
           ) : (
             <div className="space-y-4 text-gray-700 dark:text-gray-300">              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Mga Tuntunin at Kondisyon ng CyberSafe 4B</h3>
               
-              <p>Sa paggamit ng serbisyo ng pagsusuri ng threats ng CyberSafe 4B, sumasang-ayon ka sa mga sumusunod na tuntunin at kondisyon:</p>
+              <p className="text-sm italic mb-4">Huling Na-update: Hunyo 23, 2025</p>
               
-              <h4 className="font-semibold mt-4">1. Layunin at Limitasyon</h4>
-              <p>Ang CyberSafe 4B ay dinisenyo upang matulungan ang pagtukoy ng mga potensyal na threats sa mga text message, email, larawan, at audio content. Ang serbisyong ito ay ibinibigay para sa layuning pagbibigay-kaalaman lamang at hindi dapat ituring na tiyak na legal o pinansyal na payo.</p>
+              <p>Sa paggamit ng serbisyo ng pagsusuri ng cybersecurity threats ng CyberSafe 4B, na pinapaandar ng Regional Information and Communications Technology Management Division (RICTMD) sa ilalim ng Police Regional Office 4B – MIMAROPA, sumasang-ayon ka sa mga sumusunod na tuntunin at kondisyon:</p>
               
-              <h4 className="font-semibold mt-4">2. Walang Garantiya ng Katumpakan</h4>
-              <p>Bagaman nagsisikap kami para sa katumpakan sa aming pagsusuri, hindi makakagarantiya ng CyberSafe 4B ang 100% na katumpakan sa pagtukoy ng threats. Maaaring mangyari ang mga maling positibo at maling negatibong resulta. Ang mga gumagamit ay dapat gamitin ang sarili nilang paghatol kapag kumikilos batay sa impormasyong ibinigay.</p>
+              <h4 className="font-semibold mt-4">1. Paglalarawan at Layunin ng Serbisyo</h4>
+              <p>Ang CyberSafe 4B ay isang AI-powered na cybersecurity awareness tool na dinisenyo upang matulungan ang pagtukoy ng mga potensyal na threats sa digital content kabilang ang mga text message, email, larawan, audio recording, at website URL. Ang serbisyong ito ay ibinibigay para sa layuning pang-edukasyon at pagbibigay-kaalaman upang mapahusay ang cybersecurity awareness sa mga komunidad ng mga Pilipino, lalo na sa rehiyon ng MIMAROPA.</p>
               
-              <h4 className="font-semibold mt-4">3. Paggamit ng Data</h4>
-              <p>Kapag nagsumite ka ng nilalaman para sa pagsusuri:</p>
+              <h4 className="font-semibold mt-4">2. Katangian ng Edukasyon at mga Limitasyon</h4>
+              <p>Ang serbisyong ito ay nagbibigay ng <strong>mga pang-edukasyong pagtatasa lamang</strong> at hindi dapat ituring bilang:</p>
               <ul className="list-disc ml-5 space-y-1">
-                <li>Ang iyong teksto, mga larawan, at audio ay ipoproseso ng aming AI system upang magsagawa ng pagsusuri.</li>
-                <li>Maaari kaming mag-imbak ng hindi nagpapakilalang data upang mapabuti ang aming serbisyo at mga kakayahan sa pagtukoy.</li>
-                <li>Hindi namin ibinebenta o ibinabahagi ang iyong personal na data sa mga third party para sa mga layuning pang-marketing.</li>
+                <li>Tiyak na legal, pinansyal, o propesyonal na payo</li>
+                <li>Kapalit ng opisyal na imbestigasyon ng law enforcement</li>
+                <li>Garantisadong proteksyon laban sa lahat ng cyber threats</li>
+                <li>Kapalit ng propesyonal na cybersecurity consultation</li>
               </ul>
               
-              <h4 className="font-semibold mt-4">4. Responsibilidad ng Gumagamit</h4>
-              <p>Ang mga gumagamit ay may pananagutan para sa:</p>
+              <h4 className="font-semibold mt-4">3. Katumpakan at Reliability</h4>
+              <p>Bagaman gumagamit kami ng advanced AI technology at nananatiling mataas ang aming mga pamantayan, ang CyberSafe 4B:</p>
               <ul className="list-disc ml-5 space-y-1">
-                <li>Pagbibigay ng tumpak na impormasyon para sa pagsusuri.</li>
-                <li>Pagsunod sa lahat ng naaangkop na batas kapag gumagamit ng serbisyong ito.</li>
-                <li>Hindi pagsumite ng nilalaman na lumalabag sa mga karapatan sa privacy o mga batas sa intellectual property.</li>
+                <li>Hindi makakagarantiya ng 100% na katumpakan sa pagtukoy ng threats</li>
+                <li>Maaaring mag-produce ng false positives (pag-flag ng safe content bilang delikado) o false negatives (hindi makita ang tunay na threats)</li>
+                <li>Umaasa sa AI analysis na maaaring ma-impluwensyahan ng complexity ng content, variations ng wika, o mga bagong threat techniques</li>
+                <li>Dapat gamitin kasama, hindi kapalit, ng critical thinking at verification mula sa maraming sources</li>
               </ul>
-                <h4 className="font-semibold mt-4">5. Limitasyon ng Pananagutan</h4>
-              <p>Ang CyberSafe 4B at ang mga operator nito ay hindi mananagot para sa anumang direkta, hindi direkta, insidental, espesyal, o konsekwenteng pinsala na magreresulta mula sa paggamit o kawalan ng kakayahang gumamit ng aming mga serbisyo o para sa gastos ng pagkuha ng mga kapalit na serbisyo.</p>
               
-              <h4 className="font-semibold mt-4">6. Mga Pagbabago sa Tuntunin</h4>
-              <p>Nakalaan ang aming karapatan na baguhin ang mga tuntuning ito anumang oras. Ang patuloy na paggamit ng serbisyo pagkatapos ng nasabing mga pagbabago ay bumubuo sa iyong pagtanggap sa mga binagong tuntunin.</p>
+              <h4 className="font-semibold mt-4">4. Data Processing at Privacy</h4>
+              <p>Kapag nagsumite ka ng content para sa analysis:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li><strong>Processing:</strong> Ang inyong naisubmit na content (text, images, audio, URLs) ay pinoproseso nang pansamantala ng Google Gemini API upang magsagawa ng threat analysis</li>
+                <li><strong>Walang Data Storage:</strong> Ang aming system ay hindi nag-iimbak ng anumang content na inyong naisubmit - lahat ng processing ay ginagawa nang real-time at ang content ay agad na tinatanggal pagkatapos ng analysis</li>
+                <li><strong>Third-Party Processing:</strong> Ang content ay ipinapadala sa Google's Gemini API para sa analysis ayon sa privacy policies at data handling practices ng Google</li>
+                <li><strong>Walang Personal Data Sale:</strong> Hindi namin kailanman ibinebenta o ibinabahagi ang inyong personal information sa mga third parties para sa commercial purposes</li>
+                <li><strong>Walang Data Retention:</strong> Dahil ang aming system ay hindi nag-iimbak ng data, walang long-term data retention o government access sa naka-store na content</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">5. Mga Responsibilidad ng User at Prohibited Uses</h4>
+              <p>Ang mga users ay dapat:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Magbigay ng content na legal na nakuha at pag-aari nila o may tamang authorization</li>
+                <li>Hindi magsumite ng content na naglalaman ng personal information ng iba nang walang consent</li>
+                <li>Hindi subukang mag-test, hack, o mag-exploit ng service para sa malicious purposes</li>
+                <li>Hindi gamitin ang service upang mang-harass, mang-defame, o manakit ng iba</li>
+                <li>Sumunod sa lahat ng naaangkop na batas ng Pilipinas at international</li>
+                <li>Hindi magsumite ng copyrighted material nang walang tamang authorization</li>
+                <li>Gamitin ang service nang responsable at in good faith para sa mga legitimate cybersecurity purposes</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">6. Feedback at Komunikasyon</h4>
+              <p>Sa paggamit ng aming feedback feature, sumasang-ayon kayo na:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Ang feedback ay maaaring gamitin upang mapabuti ang aming mga serbisyo</li>
+                <li>Maaari kaming makipag-ugnayan sa inyo tungkol sa inyong feedback gamit ang ibinigay na contact information</li>
+                <li>Ang inyong feedback ay tumutulong na mapahusay ang cybersecurity protection para sa lahat ng Filipino users</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">7. Limitasyon ng Pananagutan</h4>
+              <p>Ang CyberSafe 4B, RICTMD, PNP PRO4B-MIMAROPA, at mga kaugnay na personnel ay hindi mananagot para sa:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Anumang direkta, hindi direkta, insidental, espesyal, o konsekwenteng pinsala</li>
+                <li>Mga pinansyal na pagkalugi na nagresulta mula sa mga aksyong ginawa batay sa aming analysis</li>
+                <li>Mga pinsala mula sa hindi natukoy na threats o maling threat assessments</li>
+                <li>Mga service interruptions, technical failures, o system errors</li>
+                <li>Mga aksyon o serbisyo ng third-party na naka-integrate sa aming platform</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">8. Service Availability at Modifications</h4>
+              <p>Nakalaan ang aming karapatan na:</p>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Baguhin, suspindihin, o ihinto ang serbisyo anumang oras</li>
+                <li>I-update ang aming analysis algorithms at detection methods</li>
+                <li>Magpatupad ng usage limits o access restrictions kung kinakailangan</li>
+                <li>Baguhin ang mga tuntuning ito na may abiso sa mga users</li>
+              </ul>
+              
+              <h4 className="font-semibold mt-4">9. Governing Law at Jurisdiction</h4>
+              <p>Ang mga tuntuning ito ay pinamamahalaan ng mga batas ng Republika ng Pilipinas. Ang anumang mga dispute ay malulutas sa mga hukuman ng Pilipinas, na may preference para sa jurisdiction na sumasaklaw sa rehiyon ng MIMAROPA.</p>
+              
+              <h4 className="font-semibold mt-4">10. Contact at Reporting</h4>
+              <p>Para sa mga tanong tungkol sa mga tuntuning ito o para mag-report ng mga isyu, makipag-ugnayan sa amin sa pamamagitan ng feedback feature o makipag-ugnayan sa RICTMD PRO4B-MIMAROPA sa pamamagitan ng mga opisyal na channels.</p>
             </div>
           )}
         </div>        <div className="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row gap-3 sm:gap-0 justify-between items-center">
