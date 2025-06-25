@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { saveUserConsent, hasUserConsent } from '../utils/consentManager';
 
 interface TermsAndConditionsModalProps {
@@ -16,6 +16,8 @@ export default function TermsAndConditionsModal({
 }: TermsAndConditionsModalProps) {
   const [language, setLanguage] = useState<'english' | 'tagalog'>('english');
   const [alreadyAccepted, setAlreadyAccepted] = useState(false);  // Check if terms have already been accepted
+  const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (typeof window !== 'undefined') {
       // Our enhanced hasUserConsent now checks all storage types
@@ -23,6 +25,31 @@ export default function TermsAndConditionsModal({
       setAlreadyAccepted(isAccepted);
     }
   }, [isOpen]);
+
+  // Reset scroll state when modal opens or language changes
+  useEffect(() => {
+    if (isOpen) {
+      setHasScrolledToBottom(false);
+      // Check if content is already at bottom (in case content is short)
+      setTimeout(() => {
+        checkScrollPosition();
+      }, 100);
+    }
+  }, [isOpen, language]);
+
+  // Function to check if user has scrolled to bottom
+  const checkScrollPosition = () => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+      const isScrolledToBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      setHasScrolledToBottom(isScrolledToBottom);
+    }
+  };
+
+  // Handle scroll events
+  const handleScroll = () => {
+    checkScrollPosition();
+  };
 
   // Close modal with ESC key
   useEffect(() => {
@@ -73,7 +100,11 @@ export default function TermsAndConditionsModal({
             </button>
           </div>
         </div>
-          <div className="p-6 overflow-y-auto max-h-[50vh] sm:max-h-[60vh] md:max-h-[65vh] overflow-x-hidden">
+          <div 
+            ref={scrollContainerRef}
+            onScroll={handleScroll}
+            className="p-6 overflow-y-auto max-h-[50vh] sm:max-h-[60vh] md:max-h-[65vh] overflow-x-hidden"
+          >
           {language === 'english' ? (            <div className="space-y-4 text-gray-700 dark:text-gray-300">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">CyberSafe 4B Terms and Conditions</h3>
               
@@ -258,7 +289,21 @@ export default function TermsAndConditionsModal({
                 className="w-full sm:w-auto px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 order-2 sm:order-1"
               >
                 {language === 'english' ? 'Decline' : 'Tanggihan'}
-              </button>              <button
+              </button>
+              
+              {/* Scroll indicator message */}
+              {!hasScrolledToBottom && (
+                <div className="w-full sm:w-auto text-center sm:text-left order-3 sm:order-2">
+                  <p className="text-sm text-orange-600 dark:text-orange-400 mb-2">
+                    {language === 'english' 
+                      ? '⬇️ Please scroll down and read all terms to continue' 
+                      : '⬇️ Mangyaring mag-scroll pababa at basahin ang lahat ng tuntunin upang magpatuloy'
+                    }
+                  </p>
+                </div>
+              )}
+              
+              <button
                 onClick={() => {
                   // Save consent using our utility which now takes care of all formats
                   saveUserConsent('termsAndConditions');
@@ -267,7 +312,12 @@ export default function TermsAndConditionsModal({
                   // Notify parent component
                   onAccept();
                 }}
-                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 order-1 sm:order-2"
+                disabled={!hasScrolledToBottom}
+                className={`w-full sm:w-auto px-4 py-2 rounded-md focus:outline-none focus:ring-2 order-1 sm:order-3 ${
+                  hasScrolledToBottom
+                    ? 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 cursor-pointer'
+                    : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                }`}
               >
                 {language === 'english' ? 'I Accept the Terms' : 'Tinatanggap Ko ang Mga Tuntunin'}
               </button>
