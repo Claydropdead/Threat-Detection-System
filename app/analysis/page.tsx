@@ -51,6 +51,11 @@ export default function Home() {
   const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
 
+  // Anti-spam timer state
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [cooldownLoaded, setCooldownLoaded] = useState(false);
+  const cooldownTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   // Update content tracking
   useEffect(() => {
     setHasContent({
@@ -59,6 +64,68 @@ export default function Home() {
       voice: !!audioBlob
     });
   }, [threatContent, imagePreview, audioBlob]);
+  
+  // Initialize cooldown from localStorage on mount
+  useEffect(() => {
+    const storedCooldown = localStorage.getItem('threatAnalysisCooldown');
+    if (storedCooldown) {
+      const cooldownData = JSON.parse(storedCooldown);
+      const currentTime = Date.now();
+      const remainingSeconds = Math.max(0, Math.ceil((cooldownData.endTime - currentTime) / 1000));
+      
+      if (remainingSeconds > 0) {
+        setCooldownSeconds(remainingSeconds);
+        startCooldownTimer(remainingSeconds);
+      } else {
+        // Cooldown has expired, remove from localStorage
+        localStorage.removeItem('threatAnalysisCooldown');
+      }
+    }
+    setCooldownLoaded(true);
+  }, []);
+  
+  // Start cooldown timer without storing to localStorage (used for resuming)
+  const startCooldownTimer = (seconds: number) => {
+    const countdown = () => {
+      setCooldownSeconds(prev => {
+        if (prev <= 1) {
+          if (cooldownTimerRef.current) {
+            clearInterval(cooldownTimerRef.current);
+            cooldownTimerRef.current = null;
+          }
+          // Remove from localStorage when cooldown ends
+          localStorage.removeItem('threatAnalysisCooldown');
+          return 0;
+        }
+        return prev - 1;
+      });
+    };
+    
+    cooldownTimerRef.current = setInterval(countdown, 1000);
+  };
+  
+  // Anti-spam cooldown function
+  const startCooldown = (seconds: number = 30) => {
+    const endTime = Date.now() + (seconds * 1000);
+    
+    // Store cooldown info in localStorage
+    localStorage.setItem('threatAnalysisCooldown', JSON.stringify({
+      endTime: endTime,
+      duration: seconds
+    }));
+    
+    setCooldownSeconds(seconds);
+    startCooldownTimer(seconds);
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) {
+        clearInterval(cooldownTimerRef.current);
+      }
+    };
+  }, []);
   
   // Check if user has previously accepted terms
   useEffect(() => {
@@ -216,6 +283,11 @@ export default function Home() {
     setImagePreview(null);
   };
   const handleDetectScam = async () => {
+    // Check for cooldown
+    if (cooldownSeconds > 0) {
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     setAnalysisResult(null);
@@ -265,8 +337,14 @@ export default function Home() {
 
       const result: ThreatDetectionResult = await response.json();
       setAnalysisResult(result);
+      
+      // Start cooldown after successful analysis to prevent spam
+      startCooldown(30);
+      
     } catch (err: any) {
       setError(err.message || "An unexpected error occurred.");
+      // Start a shorter cooldown on error to prevent spam
+      startCooldown(15);
     } finally {
       setIsLoading(false);
     }
@@ -865,20 +943,36 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={hasAcceptedTerms ? handleDetectScam : () => setShowTermsModal(true)}
-                    disabled={isLoading || (!threatContent.trim() && !imagePreview && !audioBlob) || !hasAcceptedTerms}
+                    disabled={isLoading || (!threatContent.trim() && !imagePreview && !audioBlob) || !hasAcceptedTerms || cooldownSeconds > 0 || !cooldownLoaded}
                     className={`w-full font-bold py-4 px-6 rounded-xl shadow-lg transition-all duration-200 focus:outline-none focus:ring-4 text-lg ${
-                      hasAcceptedTerms && (threatContent.trim() || imagePreview || audioBlob) && !isLoading
+                      hasAcceptedTerms && (threatContent.trim() || imagePreview || audioBlob) && !isLoading && cooldownSeconds === 0 && cooldownLoaded
                         ? 'bg-blue-600 hover:bg-blue-700 text-white transform hover:scale-[1.02] focus:ring-blue-300'
                         : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                     }`}
                   >
-                    {isLoading ? (
+                    {!cooldownLoaded ? (
+                      <div className="flex items-center justify-center">
+                        <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Loading...
+                      </div>
+                    ) : isLoading ? (
                       <div className="flex items-center justify-center">
                         <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         {audioBlob ? 'Analyzing voice recording...' : 'Analyzing with AI...'}
+                      </div>
+                    ) : cooldownSeconds > 0 ? (
+                      <div className="flex items-center justify-center">
+                        <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Wait {cooldownSeconds}s
                       </div>
                     ) : hasAcceptedTerms ? (
                       <div className="flex items-center justify-center">
