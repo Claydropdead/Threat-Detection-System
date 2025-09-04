@@ -176,7 +176,7 @@ export default function LandingPage() {
       <section className="bg-slate-50 py-16 border-t border-slate-100">
         <div className="container mx-auto px-6">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">What is CyberSafe 4B?</h2>          <p className="text-slate-700 max-w-3xl mb-10">
-            CyberSafe4B is an online-based platform designed to protect individuals from digital threats, fraud, malicious content, phishing, malware, identity theft, suspicious links and websites, text scams, and even voice-based attacks. It is an initiative of the Regional Information and Communications Technology Management Division (RICTMD) under the Philippine National Police, Police Regional Office - MIMAROPA. Our mission is to help every Filipino become more aware, alert, and protected in the digital space. We provide updated, accurate, and real-time information.
+            CyberSafe4B is an easy to use designed to help individuals determine digital threats, fraud, malicious content, phishing, malware, identity theft, suspicious links and websites, text scams, and even voice-based attacks. It is an initiative of the Regional Information and Communications Technology Management Division (RICTMD) under the Philippine National Police, Police Regional Office - MIMAROPA. Our mission is to help every Filipino become more aware, alert, and protected in the digital space. We provide updated, accurate, and real-time information.
           </p>
           
           {/* Our Core Features */}          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
